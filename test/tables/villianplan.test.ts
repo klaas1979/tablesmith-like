@@ -18,7 +18,7 @@ describe('ToAD Villian Plan.tab', () => {
     expect(tablesmith.tableForName(tablename)?.getCurrentGroup().getName()).toEqual('Reason_Why_in_Service');
   });
 
-  it('[ToAD Villian Plan.Start] generates a plan', () => {
+  it('[ToAD Villian Plan] generates a plan', () => {
     const result = tablesmith.evaluate('[ToAD Villian Plan]');
     console.log(result);
     expect(result.length).toBeGreaterThan(40);
