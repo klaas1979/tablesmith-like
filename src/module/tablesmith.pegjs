@@ -101,7 +101,7 @@ _ "Whitspace"
 
 /* Stuff to ignore within a Table file. */
 Ignore
-  = EmptyLine* Comment*
+  = EmptyLine* Comment* EmptyLine*
 
 EmptyLine
  = [\n]
