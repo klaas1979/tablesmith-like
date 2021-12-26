@@ -63,24 +63,31 @@ describe('Tablesmith#evaluate Expression', () => {
   });
 });
 
-describe('Tablesmith#evaluate Group calling other Group', () => {
+describe('Tablesmith#evaluate Calling Groups', () => {
   beforeEach(() => {
     tablesmith.reset();
     filename = 'simpletable';
   });
 
-  it('Group calling an other [table.group]', () => {
+  it('Call [table.group]', () => {
     simpleTable = `:name\n1,[${filename}.other]\n\n:other\n1,Other`;
     tablesmith.addTable(filename, simpleTable);
     const result = tablesmith.evaluate(`[${filename}.name]`);
     expect(result).toBe('Other');
   });
 
-  it('Group calling an other [group]', () => {
+  it('Call [group] in same table', () => {
     simpleTable = `:name\n1,[other]\n\n:other\n1,Other`;
     tablesmith.addTable(filename, simpleTable);
     const result = tablesmith.evaluate(`[${filename}.name]`);
     expect(result).toBe('Other');
+  });
+
+  it('Chained [group] calls in same table', () => {
+    simpleTable = `:first\n1,[second]\n\n:second\n1,[third]\n:third\n1,Third`;
+    tablesmith.addTable(filename, simpleTable);
+    const result = tablesmith.evaluate(`[${filename}.first]`);
+    expect(result).toBe('Third');
   });
 });
 
