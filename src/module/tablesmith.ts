@@ -4,6 +4,7 @@ import TSTable from './tstable';
 import TSExpressionFactory from './expressions/tsexpressionsfactory';
 import RollResult from './expressions/rollresult';
 import { roller } from './expressions/rollerinstance';
+import path from 'path';
 
 const parserFilePath = 'src/module/tablesmith.pegjs';
 const callParserFilePath = 'src/module/tablesmithcall.pegjs';
@@ -42,11 +43,11 @@ class Tablesmith {
     this.callParser.parse(expression, options);
     this.evaluateTable = this.tableForName(options.table);
     if (!this.evaluateTable) throw `TSTable for name='${options.table}' not defined! Expression was '${expression}'`;
-
+    _setDefaultGroup(options);
     const group = this.evaluateTable.groupForName(options.group);
     if (!group)
       throw `TSTable for name='${options.table}' does not contain Group='${options.group}'! Expression was '${expression}'`;
-    const rollResult = createRollResult(group.getMaxValue(), options.fixedResult, options.modifier);
+    const rollResult = _createRollResult(group.getMaxValue(), options.fixedResult, options.modifier);
 
     const result = group.result(rollResult);
     this.evaluateTable = undefined;
@@ -68,7 +69,7 @@ class Tablesmith {
    * @param fileContent file as a single string to be parsed.
    */
   addTable(filename: string, fileContent: string): void {
-    const tstable = new TSTable(filename);
+    const tstable = new TSTable(_stripPathAndExtensions(filename));
     try {
       this.parser.parse(fileContent, _options(tstable));
     } catch (error) {
@@ -78,7 +79,6 @@ class Tablesmith {
     }
     this.tstables.push(tstable);
   }
-
   /**
    * Searches all tables for table with given name and returns it.
    * @param name of table to retrieve.
@@ -97,6 +97,15 @@ class Tablesmith {
   }
 }
 
+/**
+ * Strips file path and ".tab" extension to make table callable under it's name.
+ * @param filename to strip from.
+ * @returns string base file name without ".tab" extension.
+ */
+function _stripPathAndExtensions(filename: string): string {
+  return path.basename(filename, '.tab');
+}
+
 function _parser(): peggy.Parser {
   const peggyGrammar = fs.readFileSync(parserFilePath, 'utf8');
   return peggy.generate(peggyGrammar);
@@ -112,13 +121,21 @@ function _options(table: TSTable): { table: TSTable; expressionFactory: TSExpres
 }
 
 /**
+ * Tests if Group to call in options is set or sets it to default Group for any Table "Start".
+ * @param options definining a Table call, with Group to set to default if undefined.
+ */
+function _setDefaultGroup(options: { group: string }): void {
+  if (!options.group || options.group.length == 0) options.group = 'Start';
+}
+
+/**
  * Creates RollResult to be used for table evaluation.
  * @param maxValue if roll is needed this is the max value for the die.
  * @param fixedResult is result fixed? If true uses modifier to set the fixed result.
  * @param modifier modifier for roll or the fixed result if it is preset.
  * @returns RollResult for given values.
  */
-function createRollResult(maxValue: number, fixedResult: boolean, modifier: number): RollResult {
+function _createRollResult(maxValue: number, fixedResult: boolean, modifier: number): RollResult {
   let result;
   if (!fixedResult) {
     result = roller.roll(maxValue, modifier);

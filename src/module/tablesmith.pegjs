@@ -93,7 +93,7 @@ CloseBracket
 
 /* Simple name without Dot or special characters. */
 Name
-  = $[a-z0-9_]i+
+  = $[a-z0-9 _]i+
 
 int
  = $([0-9]+)
