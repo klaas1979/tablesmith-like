@@ -63,6 +63,7 @@ ModifierType
 TsFunction
   = _ "{Dice~" _ MathExpression _ "}" { options.table.addExpressionToRange(options.expressionFactory.create()); }
   / _ "{Calc~" _ MathExpression _ "}" { options.table.addExpressionToRange(options.expressionFactory.create()); }
+  / _ "{Bold~" text:Value "}" { options.table.addExpressionToRange(options.expressionFactory.createBold(text)); }
   / _ "{CR~" _ "}" { options.table.addExpressionToRange(options.expressionFactory.createNewline()); }
 
 MathExpression

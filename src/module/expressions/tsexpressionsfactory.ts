@@ -12,6 +12,7 @@ import BracketTerm from './bracketterm';
 import GroupCallModifierTerm from './groupcallmodifierterm';
 import GroupCallExpression from './groupcallexpression';
 import TSNewlineExpression from './tsnewlineexpression';
+import TSBoldExpression from './tsboldexpression';
 type TermCreator = (a: Term, b: Term) => Term;
 
 /**
@@ -165,8 +166,17 @@ class TSExpressionFactory {
    * @param text to create simple TSExpression for.
    * @returns TSTextExpression for given text.
    */
-  createText(text: string): TSExpression {
+  createText(text: string): TSTextExpression {
     return new TSTextExpression(text);
+  }
+
+  /**
+   * Creates a new TSExpression for bold text.
+   * @param text to create bold TSExpression for.
+   * @returns TSTextExpression for given text.
+   */
+  createBold(text: string): TSBoldExpression {
+    return new TSBoldExpression(text);
   }
 
   /**
