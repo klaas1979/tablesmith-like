@@ -47,7 +47,7 @@ Expression
 
 /* The simplest Expression is a test value that is returned as is, without further processing. */
 Value
-  = text:$[^{}\n]+ { options.table.addExpressionToRange(options.expressionFactory.createText(text)); }
+  = text:PlainText { options.table.addExpressionToRange(options.expressionFactory.createText(text)); }
 
 /* Call of another group within this Table or within another. Table */
 GroupFunction
@@ -90,6 +90,9 @@ OpenBracket
 
 CloseBracket
   = ")" { options.expressionFactory.closeBracket(); }
+
+PlainText
+ = $[^{}[\]\n]+
 
 /* Simple name without Dot or special characters. */
 Name
