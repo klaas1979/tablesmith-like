@@ -1,0 +1,38 @@
+{
+  "name": "foundryvtt-tablesmith",
+  "title": "foundryvtt-tablesmith",
+  "description": "",
+  "version": "0.0.0",
+  "author": "<your name>",
+  "authors": [
+    {
+      "name": "<your name>",
+      "email": "<optionally your e-mail address>",
+      "discord": "<optionally your discord username>"
+    }
+  ],
+  "minimumCoreVersion": "0.8.8",
+  "compatibleCoreVersion": "0.8.8",
+  "scripts": [],
+  "esmodules": ["module/foundryvtt-tablesmith.js"],
+  "styles": ["styles/foundryvtt-tablesmith.css"],
+  "packs": [],
+  "dependencies": [],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "socket": false,
+  "url": "",
+  "manifest": "",
+  "download": "https://host/path/to/0.0.0.zip",
+  "license": "",
+  "readme": "",
+  "bugs": "",
+  "changelog": "",
+  "system": [],
+  "library": false
+}
