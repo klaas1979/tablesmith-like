@@ -63,6 +63,7 @@ ModifierType
 TsFunction
   = _ "{Dice~" _ MathExpression _ "}" { options.table.addExpressionToRange(options.expressionFactory.create()); }
   / _ "{Calc~" _ MathExpression _ "}" { options.table.addExpressionToRange(options.expressionFactory.create()); }
+  / _ "{CR~" _ "}" { options.table.addExpressionToRange(options.expressionFactory.createNewline()); }
 
 MathExpression
   = MathTerm (_ MathSum _ MathTerm)*
@@ -91,7 +92,7 @@ CloseBracket
 
 /* Simple name without Dot or special characters. */
 Name
-  = $[a-z0-9]i+
+  = $[a-z0-9_]i+
 
 int
  = $([0-9]+)
@@ -104,7 +105,7 @@ Ignore
   = EmptyLine* Comment* EmptyLine*
 
 EmptyLine
- = [\n]
+ = _ [\n]
 
 /* The only allowed comments in Tablesmith */
 Comment

@@ -11,6 +11,7 @@ import DivTerm from './divterm';
 import BracketTerm from './bracketterm';
 import GroupCallModifierTerm from './groupcallmodifierterm';
 import GroupCallExpression from './groupcallexpression';
+import TSNewlineExpression from './tsnewlineexpression';
 type TermCreator = (a: Term, b: Term) => Term;
 
 /**
@@ -166,6 +167,14 @@ class TSExpressionFactory {
    */
   createText(text: string): TSExpression {
     return new TSTextExpression(text);
+  }
+
+  /**
+   * Creates a new line expression.
+   * @returns An expression evaluating to a new line.
+   */
+  createNewline(): TSExpression {
+    return new TSNewlineExpression();
   }
 }
 

@@ -69,7 +69,13 @@ class Tablesmith {
    */
   addTable(filename: string, fileContent: string): void {
     const tstable = new TSTable(filename);
-    this.parser.parse(fileContent, _options(tstable));
+    try {
+      this.parser.parse(fileContent, _options(tstable));
+    } catch (error) {
+      const syntaxError = error as peggy.parser.SyntaxError;
+      console.log(syntaxError.location);
+      throw `Could not add Table it has a Syntax Error at location=#${syntaxError.location}`;
+    }
     this.tstables.push(tstable);
   }
 
