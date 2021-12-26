@@ -18,33 +18,38 @@ describe('Tablesmith#addTable', () => {
   });
 });
 
-describe('Tablesmith#evaluate use result or add modifier', () => {
+describe('Tablesmith#evaluate default values and modifiers', () => {
   beforeEach(() => {
     tablesmith.reset();
     filename = 'simpletable';
-    simpleTable = ':name\n1,One\n2,Two\n';
+    simpleTable = ':Start\n1,One\n2,Two\n';
     tablesmith.addTable(filename, simpleTable);
   });
 
   it('call without "=", "+" or "-" just rolls', () => {
-    tablesmith.evaluate(`[${filename}.name]`);
+    tablesmith.evaluate(`[${filename}.Start]`);
     const roll = roller.rolls?.pop()?.total;
     expect(roll).toBeGreaterThanOrEqual(1);
     expect(roll).toBeLessThanOrEqual(2);
   });
 
+  it('[tablename] defaults Group to "Start"', () => {
+    const result = tablesmith.evaluate(`[${filename}]`);
+    expect(result.length).toBeGreaterThan(1);
+  });
+
   it('call with modifier -10 returns min', () => {
-    const result = tablesmith.evaluate(`[${filename}.name-10]`);
+    const result = tablesmith.evaluate(`[${filename}.Start-10]`);
     expect(result).toBe('One');
   });
 
   it('call with modifier +10 returns max', () => {
-    const result = tablesmith.evaluate(`[${filename}.name+10]`);
+    const result = tablesmith.evaluate(`[${filename}.Start+10]`);
     expect(result).toBe('Two');
   });
 
   it('with = uses given result on table', () => {
-    const result = tablesmith.evaluate(`[${filename}.name=1]`);
+    const result = tablesmith.evaluate(`[${filename}.Start=1]`);
     expect(result).toBe('One');
   });
 });
