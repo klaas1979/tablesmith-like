@@ -77,7 +77,8 @@ class TSGroup {
   }
 
   /**
-   * Returns text result for given roll. If result is below min range value returns first range, if above max returns
+   * Returns text result for given roll including any defined before are afters in the group.
+   * If result is below min range value returns first range, if above max returns
    * last ranges text.
    * @param rollResult The RollResult to lockup the groups text with.
    * @returns evaluated expression for Range donating result.
@@ -93,7 +94,7 @@ class TSGroup {
     }
     if (!result)
       throw `Could not get result for Group '${this.name}' roll='${rollResult.total}' maxValue=${this.getMaxValue()}`;
-    return result.getText();
+    return `${this.before.getText()}${result.getText()}${this.after.getText()}`;
   }
 
   /**

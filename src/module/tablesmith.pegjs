@@ -16,7 +16,7 @@ Table
 
 /* A group is a subtable, all Tablesmith stuff starting with :Name to be called and rolled */
 Group
-  = GroupName Range+
+  = GroupName GroupContent+
 
 /* The name for a group, this is the name without dot.
    TODO name for calls to other tables. */
@@ -24,12 +24,22 @@ GroupName
   = [:]name:Name EmptyLine { options.table.addGroup(name); }
 
 /* Range is a single line in a group donating the lower and upper end for the result, i.e. 1-2,Result */
-Range
-  = RangeValue line:Line EmptyLine? 
+GroupContent
+  = RangeValue line:Line EmptyLine?
+  / BeforeValue  line:Line EmptyLine?
+  / AfterValue  line:Line EmptyLine?
 
 /* Only the range expression with the colon ',' */
 RangeValue
   = (int _ "-" _)? up:int Colen { options.table.addRange(toInt(up)); }
+
+/* Only the before expression  */
+BeforeValue
+  = "<" _ { options.table.addBefore(); }
+
+/* Only the after expression  */
+AfterValue
+  = ">" _ { options.table.addAfter(); }
 
 /* Separates the range lower-upper value from it's Expression */
 Colen

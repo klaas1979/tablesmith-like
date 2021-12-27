@@ -59,6 +59,20 @@ describe('Tablesmith#evaluate Group calls', () => {
   });
 });
 
+describe('Tablesmith#evaluate for Group with before and after', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+    simpleTable = ':Start\n<Before\n>After\n1,One\n';
+    tablesmith.addTable(filename, simpleTable);
+  });
+
+  it('[tablename] adds before and after to group result', () => {
+    const result = tablesmith.evaluate(`[${filename}]`);
+    expect(result).toBe('BeforeOneAfter');
+  });
+});
+
 describe('Tablesmith#evaluate Expression', () => {
   beforeEach(() => {
     tablesmith.reset();
