@@ -1,8 +1,12 @@
 import RollResult from './expressions/rollresult';
+import TSExpression from './expressions/tsexpression';
+import TSExpressions from './expressions/tsexpressions';
 import TSRange from './tsrange';
 /**
  * TSGroup is a Group within a Table. In Tablesmith it looks like:
  * :name
+ * < before value, can be omitted
+ * > after value, can be omitted
  * 1,Value
  * 2,other value
  * 3-5, other
@@ -12,9 +16,15 @@ import TSRange from './tsrange';
 class TSGroup {
   name: string;
   ranges: TSRange[];
+  before: TSExpressions;
+  after: TSExpressions;
+  current: TSExpressions | undefined;
   constructor(name: string) {
     this.name = name;
     this.ranges = [];
+    this.before = new TSExpressions();
+    this.after = new TSExpressions();
+    this.current = undefined;
   }
 
   /**
@@ -34,12 +44,28 @@ class TSGroup {
   }
 
   /**
-   * Last range is the current one, needed to setup a group and add content to it.
-   * @returns Returns the currently added range, the last one.
+   * Returns the TSExpressions setup as before for this group.
+   * @returns The TSExpressions making up the before for each table result.
    */
-  getCurrentRange(): TSRange {
-    if (this.ranges.length == 0) throw `No range defined for group '${this.name}'`;
-    return this._lastRange();
+  getBefore(): TSExpressions {
+    return this.before;
+  }
+
+  /**
+   * Returns the TSExpressions setup as after for this group.
+   * @returns The TSExpressions making up the after for each table result.
+   */
+  getAfter(): TSExpressions {
+    return this.after;
+  }
+
+  /**
+   * The currently edited expressions collection to add expressions to, can be from before, after or group.
+   * @returns Returns the currently added TSExpression to add expressions to.
+   */
+  getCurrentExpressions(): TSExpressions {
+    if (!this.current) throw `No range nor a before '<' or after '>' setup for group '${this.name}'`;
+    return this.current;
   }
 
   /**
@@ -58,7 +84,6 @@ class TSGroup {
    */
   result(rollResult: RollResult): string {
     let result;
-    // eslint-disable-next-line prefer-const
     if (rollResult.total < 1) {
       result = this._firstRange();
     } else if (rollResult.total > this.getMaxValue()) {
@@ -72,12 +97,37 @@ class TSGroup {
   }
 
   /**
-   * Adds a new Range to Group starting after last range or 1 if it is the first and going up to given value.
+   * Adds a new Range to Group starting after last range or 1 if it is the first and going up to given value and
+   * sets this Range up as current expressions to add to.
    * @param upper the number donating the new ranges max value.
    */
   addRange(upper: number): void {
     const lower = this.ranges.length > 0 ? this._lastRange().upper + 1 : 1;
-    this.ranges.push(new TSRange(lower, upper));
+    const range = new TSRange(lower, upper);
+    this.ranges.push(range);
+    this.current = range.getExpressions();
+  }
+
+  /**
+   * Helper setting up the current expressions to add to, to before.
+   */
+  addBefore(): void {
+    this.current = this.before;
+  }
+
+  /**
+   * Helper setting up the current expressions to add to, to after.
+   */
+  addAfter(): void {
+    this.current = this.after;
+  }
+
+  /**
+   * Adds expression to currently setup expressions, that can be a Range or a before or after part.
+   * @param expression to add to this group.
+   */
+  addExpression(expression: TSExpression): void {
+    this.getCurrentExpressions().add(expression);
   }
 
   private _rangeFor(total: number): TSRange {

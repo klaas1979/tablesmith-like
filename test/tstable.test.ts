@@ -23,21 +23,45 @@ describe('TSTable', () => {
     expect(() => tstable.addRange(2)).toThrow(`Group not initialized got upper='2'`);
   });
 
-  it('#addRange basic content line adds to ranges', () => {
+  it('#addBefore adds before to group, not counted as Range', () => {
+    tstable.addGroup('groupName');
+    tstable.addRange(1);
+    tstable.addBefore();
+    tstable.addExpression(new TSTextExpression('test'));
+    expect(tstable.getCurrentGroup().getRanges().length).toBe(1);
+  });
+
+  it('#addBefore setups addExpression to add to it', () => {
+    tstable.addGroup('groupName');
+    tstable.addRange(1);
+    tstable.addBefore();
+    tstable.addExpression(new TSTextExpression('test'));
+    expect(tstable.getCurrentGroup().getBefore().size()).toBe(1);
+  });
+
+  it('#addAfter adds after to group, not counted as Range', () => {
+    tstable.addGroup('groupName');
+    tstable.addRange(1);
+    tstable.addAfter();
+    tstable.addExpression(new TSTextExpression('test'));
+    expect(tstable.getCurrentGroup().getRanges().length).toBe(1);
+  });
+  it('#addAfter setups addExpression to add to it', () => {
+    tstable.addGroup('groupName');
+    tstable.addRange(1);
+    tstable.addAfter();
+    tstable.addExpression(new TSTextExpression('test'));
+    expect(tstable.getCurrentGroup().getAfter().size()).toBe(1);
+  });
+
+  it('#addExpressionToRange basic content line adds to ranges', () => {
     tstable.addGroup('groupName');
     tstable.addRange(1);
     const expression = new TSTextExpression('Text');
-    tstable.addExpressionToRange(expression);
+    tstable.addExpression(expression);
     const expected = new TSRange(1, 1);
     expected.add(expression);
     expect(tstable.getCurrentGroup().getRanges()).toEqual([expected]);
-  });
-
-  it('#addRange calculates lower from previous range', () => {
-    tstable.addGroup('groupName');
-    tstable.addRange(1);
-    tstable.addRange(10);
-    expect(tstable.getCurrentGroup().getRanges()).toEqual([new TSRange(1, 1), new TSRange(2, 10)]);
   });
 });
 describe('Tablesmith#groupForName', () => {

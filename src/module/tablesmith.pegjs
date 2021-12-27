@@ -47,11 +47,11 @@ Expression
 
 /* The simplest Expression is a test value that is returned as is, without further processing. */
 Value
-  = text:PlainText { options.table.addExpressionToRange(options.expressionFactory.createText(text)); }
+  = text:PlainText { options.table.addExpression(options.expressionFactory.createText(text)); }
 
 /* Call of another group within this Table or within another. Table */
 GroupFunction
-  = "[" table:(@Name ".")? group:Name Modifier? "]" {  options.table.addExpressionToRange(options.expressionFactory.groupCall(table, group)); }
+  = "[" table:(@Name ".")? group:Name Modifier? "]" {  options.table.addExpression(options.expressionFactory.groupCall(table, group)); }
   
 Modifier
   = modType:ModifierType _ modifier:int { options.expressionFactory.addGroupCallModifier(modType, toInt(`${modifier}`)); }
@@ -61,10 +61,10 @@ ModifierType
 
 /* This are all supported functions from Tablesmith */
 TsFunction
-  = _ "{Dice~" _ MathExpression _ "}" { options.table.addExpressionToRange(options.expressionFactory.create()); }
-  / _ "{Calc~" _ MathExpression _ "}" { options.table.addExpressionToRange(options.expressionFactory.create()); }
-  / _ "{Bold~" text:Value "}" { options.table.addExpressionToRange(options.expressionFactory.createBold(text)); }
-  / _ "{CR~" _ "}" { options.table.addExpressionToRange(options.expressionFactory.createNewline()); }
+  = _ "{Dice~" _ MathExpression _ "}" { options.table.addExpression(options.expressionFactory.create()); }
+  / _ "{Calc~" _ MathExpression _ "}" { options.table.addExpression(options.expressionFactory.create()); }
+  / _ "{Bold~" text:Value "}" { options.table.addExpression(options.expressionFactory.createBold(text)); }
+  / _ "{CR~" _ "}" { options.table.addExpression(options.expressionFactory.createNewline()); }
 
 MathExpression
   = MathTerm (_ MathSum _ MathTerm)*

@@ -1,6 +1,5 @@
 import TSExpression from './expressions/tsexpression';
 import TSGroup from './tsgroup';
-import TSRange from './tsrange';
 
 /**
  * A single table or tablesmith file, tables can contain many groups to be rolled upon.
@@ -66,19 +65,27 @@ class TSTable {
   }
 
   /**
-   * Returns the current last range of last Group.
-   * @returns The current range in current Group.
+   * Sets up group before range, that is always added to each table result before other text.
    */
-  getCurrentRange(): TSRange {
-    return this.groups[this.groups.length - 1].getCurrentRange();
+  addBefore(): void {
+    if (!this.getCurrentGroup()) throw `Group not initialized got addBefore`;
+    this.getCurrentGroup().addBefore();
   }
 
   /**
-   * Adds given expression to last Range of last Group.
-   * @param expression to add to last range of group.
+   * Sets up group after range, that is always added to each table result after all other text.
    */
-  addExpressionToRange(expression: TSExpression) {
-    this.getCurrentRange().add(expression);
+  addAfter(): void {
+    if (!this.getCurrentGroup()) throw `Group not initialized got addAfter`;
+    this.getCurrentGroup().addAfter();
+  }
+
+  /**
+   * Adds given expression to last range of current group or the before or after part.
+   * @param expression to add to currently setup expressions.
+   */
+  addExpression(expression: TSExpression): void {
+    this.getCurrentGroup().addExpression(expression);
   }
 }
 
