@@ -85,6 +85,13 @@ describe('Tablesmith#evaluate', () => {
     const result = tablesmith.evaluate(`[${filename}]`);
     expect(result).toBe('One<br/>Two');
   });
+
+  it('LastRoll returns roll for last Group to be rolled upon', () => {
+    simpleTable = ':Start\n1,One{LastRoll~}[Other=2]\n:Other\n1,notused\n2,Two{LastRoll~}';
+    tablesmith.addTable(filename, simpleTable);
+    const result = tablesmith.evaluate(`[${filename}]`);
+    expect(result).toBe('One1Two2');
+  });
 });
 
 describe('Tablesmith#evaluate Expression', () => {

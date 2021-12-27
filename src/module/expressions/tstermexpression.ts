@@ -1,3 +1,4 @@
+import TSGroup from '../tsgroup';
 import { roller } from './rollerinstance';
 import Term from './term';
 import TSExpression from './tsexpression';
@@ -18,6 +19,10 @@ class TSTermExpression implements TSExpression {
   }
   getExpression(): string {
     return this.term.getTerm();
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setGroup(group: TSGroup): void {
+    // empty
   }
 }
 

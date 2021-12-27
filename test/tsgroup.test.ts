@@ -17,6 +17,11 @@ describe('TSGroup', () => {
     rangeExpression = new TSTextExpression('One');
     range.add(rangeExpression);
   });
+  it('#result stores roll as LastRoll', () => {
+    roll = new RollResult(1, 1);
+    group.result(roll);
+    expect(group.getLastRoll()).toBe(roll);
+  });
 
   it('#result returns evaluated expression for roll', () => {
     roll = new RollResult(1, 1);

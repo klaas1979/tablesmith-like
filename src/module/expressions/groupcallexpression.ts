@@ -1,4 +1,5 @@
 import { tablesmith } from '../tablesmithinstance';
+import TSGroup from '../tsgroup';
 import DiceTerm from './diceterm';
 import GroupCallModifier from './groupcallmodifierterm';
 import IntTerm from './intterm';
@@ -35,6 +36,10 @@ class GroupCallExpression implements TSExpression {
 
   getExpression(): string {
     return `[${this.table}.${this.group}${this.groupCallModifier.getTerm()}]`;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setGroup(group: TSGroup): void {
+    // empty
   }
 }
 

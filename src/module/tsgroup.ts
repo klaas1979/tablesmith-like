@@ -19,6 +19,7 @@ class TSGroup {
   before: TSExpressions;
   after: TSExpressions;
   current: TSExpressions | undefined;
+  lastRoll: RollResult | undefined;
   constructor(name: string) {
     this.name = name;
     this.ranges = [];
@@ -69,6 +70,15 @@ class TSGroup {
   }
 
   /**
+   * Returns the last roll made on this group, or throws if not rolled and called.
+   * @returns RollResult that represents the LastRoll on this group.
+   */
+  getLastRoll(): RollResult {
+    if (!this.lastRoll) throw `LastRoll not set for Group '${this.name}'`;
+    return this.lastRoll;
+  }
+
+  /**
    * Returns the maximum value of this Group, i.e. the upper bound for the last range.
    * @returns max value that is contained in the ranges.
    */
@@ -84,6 +94,7 @@ class TSGroup {
    * @returns evaluated expression for Range donating result.
    */
   result(rollResult: RollResult): string {
+    this.lastRoll = rollResult;
     let result;
     if (rollResult.total < 1) {
       result = this._firstRange();
@@ -128,6 +139,7 @@ class TSGroup {
    * @param expression to add to this group.
    */
   addExpression(expression: TSExpression): void {
+    expression.setGroup(this);
     this.getCurrentExpressions().add(expression);
   }
 

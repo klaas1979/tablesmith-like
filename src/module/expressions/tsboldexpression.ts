@@ -1,3 +1,4 @@
+import TSGroup from '../tsgroup';
 import TSExpression from './tsexpression';
 
 /**
@@ -13,6 +14,10 @@ class TSBoldExpression implements TSExpression {
   }
   getExpression(): string {
     return `{Bold~${this.text}}`;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setGroup(group: TSGroup): void {
+    // empty
   }
 }
 

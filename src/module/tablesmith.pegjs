@@ -73,6 +73,7 @@ ModifierType
 TsFunction
   = _ "{Dice~" _ MathExpression _ "}" { options.table.addExpression(options.expressionFactory.create()); }
   / _ "{Calc~" _ MathExpression _ "}" { options.table.addExpression(options.expressionFactory.create()); }
+  / _ "{LastRoll~" _ "}" { options.table.addExpression(options.expressionFactory.createLastRoll()); }
   / _ "{Bold~" text:PlainText "}" { options.table.addExpression(options.expressionFactory.createBold(text)); }
   / _ "{Line~" _ align:Align _ "," _ width:(@int _ "%")? _ "}" { options.table.addExpression(options.expressionFactory.createLine(align, width)); }
   / _ "{CR~" _ "}" { options.table.addExpression(options.expressionFactory.createNewline()); }

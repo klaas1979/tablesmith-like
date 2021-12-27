@@ -1,3 +1,4 @@
+import TSGroup from '../tsgroup';
 import TSExpression from './tsexpression';
 
 /**
@@ -9,6 +10,11 @@ class TSNewlineExpression implements TSExpression {
   }
   getExpression(): string {
     return '{CR~}';
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setGroup(group: TSGroup): void {
+    // empty
   }
 }
 
