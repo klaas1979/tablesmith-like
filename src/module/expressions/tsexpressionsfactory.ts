@@ -13,6 +13,7 @@ import GroupCallModifierTerm from './groupcallmodifierterm';
 import GroupCallExpression from './groupcallexpression';
 import TSNewlineExpression from './tsnewlineexpression';
 import TSBoldExpression from './tsboldexpression';
+import TSLineExpression from './tslineexpression';
 type TermCreator = (a: Term, b: Term) => Term;
 
 /**
@@ -177,6 +178,16 @@ class TSExpressionFactory {
    */
   createBold(text: string): TSBoldExpression {
     return new TSBoldExpression(text);
+  }
+
+  /**
+   * Creates a Line separator for values.
+   * @param align of separator, should be "left", "center" or "right"
+   * @param width in percent, int between 1-100
+   * @returns TSLineExpression for given values.
+   */
+  createLine(align: 'left' | 'center' | 'right', width = 100): TSLineExpression {
+    return new TSLineExpression(align, width);
   }
 
   /**

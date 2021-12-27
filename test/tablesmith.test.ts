@@ -59,17 +59,31 @@ describe('Tablesmith#evaluate Group calls', () => {
   });
 });
 
-describe('Tablesmith#evaluate for Group with before and after', () => {
+describe('Tablesmith#evaluate', () => {
   beforeEach(() => {
     tablesmith.reset();
     filename = 'simpletable';
-    simpleTable = ':Start\n<Before\n>After\n1,One\n';
-    tablesmith.addTable(filename, simpleTable);
   });
 
-  it('[tablename] adds before and after to group result', () => {
+  it('for Group with before and after adds before and after to group result', () => {
+    simpleTable = ':Start\n<Before\n>After\n1,One\n';
+    tablesmith.addTable(filename, simpleTable);
     const result = tablesmith.evaluate(`[${filename}]`);
     expect(result).toBe('BeforeOneAfter');
+  });
+
+  it('for Group with Bold formats in html', () => {
+    simpleTable = ':Start\n1,{Bold~One}\n';
+    tablesmith.addTable(filename, simpleTable);
+    const result = tablesmith.evaluate(`[${filename}]`);
+    expect(result).toBe('<b>One</b>');
+  });
+
+  it('for Group with Line formats htm', () => {
+    simpleTable = ':Start\n1,One{Line~center,100%}Two\n';
+    tablesmith.addTable(filename, simpleTable);
+    const result = tablesmith.evaluate(`[${filename}]`);
+    expect(result).toBe('One<br/>Two');
   });
 });
 

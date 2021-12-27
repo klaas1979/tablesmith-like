@@ -73,7 +73,8 @@ ModifierType
 TsFunction
   = _ "{Dice~" _ MathExpression _ "}" { options.table.addExpression(options.expressionFactory.create()); }
   / _ "{Calc~" _ MathExpression _ "}" { options.table.addExpression(options.expressionFactory.create()); }
-  / _ "{Bold~" text:Value "}" { options.table.addExpression(options.expressionFactory.createBold(text)); }
+  / _ "{Bold~" text:PlainText "}" { options.table.addExpression(options.expressionFactory.createBold(text)); }
+  / _ "{Line~" _ align:Align _ "," _ width:(@int _ "%")? _ "}" { options.table.addExpression(options.expressionFactory.createLine(align, width)); }
   / _ "{CR~" _ "}" { options.table.addExpression(options.expressionFactory.createNewline()); }
 
 MathExpression
@@ -103,6 +104,9 @@ CloseBracket
 
 PlainText
  = $[^{}[\]\n]+
+
+Align
+ = $"center" / $"left" / $"right"
 
 /* Simple name without Dot or special characters. */
 Name
