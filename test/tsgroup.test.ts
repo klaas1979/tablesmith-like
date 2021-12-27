@@ -1,6 +1,5 @@
 import RollResult from '../src/module/expressions/rollresult';
 import TSExpression from '../src/module/expressions/tsexpression';
-import TSExpressions from '../src/module/expressions/tsexpressions';
 import TSTextExpression from '../src/module/expressions/tstextexpression';
 import TSGroup from '../src/module/tsgroup';
 import TSRange from '../src/module/tsrange';
