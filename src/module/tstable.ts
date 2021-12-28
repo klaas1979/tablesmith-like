@@ -82,10 +82,10 @@ class TSTable {
 
   /**
    * Adds given expression to last range of current group or the before or after part.
-   * @param expression to add to currently setup expressions.
+   * @param expression to add to currently setup expressions, if undefined it is ignored.
    */
-  addExpression(expression: TSExpression): void {
-    this.getCurrentGroup().addExpression(expression);
+  addExpression(expression: TSExpression | undefined): void {
+    if (expression) this.getCurrentGroup().addExpression(expression);
   }
 }
 

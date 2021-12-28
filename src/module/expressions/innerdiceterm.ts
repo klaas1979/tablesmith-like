@@ -3,10 +3,10 @@ import Term from './term';
 import TermResult from './termresult';
 
 /**
- * Term for a dice roll, containing one or many dice rolls possible chained by math expressions,
- * i.e. 3d6+2d4.
+ * Inner Term for a dice roll, containing one or many dice rolls with possible to be chained by math expressions,
+ * i.e. 3d6+2d4. The inner dice while not add Function name to term, but only the bare dice term.
  */
-class DiceTerm implements Term {
+class InnerDiceTerm implements Term {
   dice: Term;
   sides: Term;
   constructor(dice: Term, sides: Term) {
@@ -33,4 +33,4 @@ class DiceTerm implements Term {
   }
 }
 
-export default DiceTerm;
+export default InnerDiceTerm;

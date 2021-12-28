@@ -17,11 +17,15 @@ class Tablesmith {
   tstables: TSTable[];
   evaluateTable: TSTable | undefined;
   parser: peggy.Parser;
+  parserGrammar: string;
+  debugText: string;
   callParser: peggy.Parser;
   constructor() {
     this.tstables = [];
-    this.parser = _parser();
+    this.parserGrammar = _parserGrammarSource();
+    this.parser = _parser(this.parserGrammar);
     this.callParser = _callParser();
+    this.debugText = '';
   }
 
   /**
@@ -29,6 +33,14 @@ class Tablesmith {
    */
   reset(): void {
     this.tstables = [];
+  }
+
+  /**
+   * Returns expressions factories debug text.
+   * @returns The DebugText from the underlying TSExpressionFactory.
+   */
+  getDebugText(): string {
+    return this.debugText;
   }
 
   /**
@@ -71,14 +83,30 @@ class Tablesmith {
   addTable(filename: string, fileContent: string): void {
     const tstable = new TSTable(_stripPathAndExtensions(filename));
     try {
-      this.parser.parse(fileContent, _options(tstable));
+      const options = this._parseOptions(tstable);
+      this.parser.parse(fileContent, options);
+      this.debugText = options.expressionFactory.getDebugText();
     } catch (error) {
       const syntaxError = error as peggy.parser.SyntaxError;
-      console.log(syntaxError.location);
-      throw `Could not add Table it has a Syntax Error at location=#${syntaxError.location}`;
+      if (typeof syntaxError.format === 'function') {
+        const description = syntaxError.format([{ source: this.parserGrammar, text: fileContent }]);
+        throw description;
+      }
+      throw error;
     }
     this.tstables.push(tstable);
   }
+
+  _parseOptions(table: TSTable): {
+    table: TSTable;
+    expressionFactory: TSExpressionFactory;
+  } {
+    return {
+      table: table,
+      expressionFactory: new TSExpressionFactory(),
+    };
+  }
+
   /**
    * Searches all tables for table with given name and returns it.
    * @param name of table to retrieve.
@@ -106,18 +134,17 @@ function _stripPathAndExtensions(filename: string): string {
   return path.basename(filename, '.tab');
 }
 
-function _parser(): peggy.Parser {
-  const peggyGrammar = fs.readFileSync(parserFilePath, 'utf8');
-  return peggy.generate(peggyGrammar);
+function _parserGrammarSource(): string {
+  return fs.readFileSync(parserFilePath, 'utf8');
+}
+
+function _parser(grammar: string): peggy.Parser {
+  return peggy.generate(grammar);
 }
 
 function _callParser(): peggy.Parser {
   const peggyGrammar = fs.readFileSync(callParserFilePath, 'utf8');
   return peggy.generate(peggyGrammar);
-}
-
-function _options(table: TSTable): { table: TSTable; expressionFactory: TSExpressionFactory } {
-  return { table: table, expressionFactory: new TSExpressionFactory() };
 }
 
 /**

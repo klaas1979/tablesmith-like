@@ -5,7 +5,7 @@ import TSExpression from './tsexpression';
 
 /**
  * A TSExpression that is based on Terms and needs to be evaluated to get the correct result,
- * must Term expressions are Dice or Calc expressions.
+ * most Term expressions are Dice or Calc expressions.
  */
 class TSTermExpression implements TSExpression {
   term: Term;

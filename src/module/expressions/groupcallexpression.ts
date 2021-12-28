@@ -1,6 +1,6 @@
 import { tablesmith } from '../tablesmithinstance';
 import TSGroup from '../tsgroup';
-import DiceTerm from './diceterm';
+import InnerDiceTerm from './innerdiceterm';
 import GroupCallModifier from './groupcallmodifierterm';
 import IntTerm from './intterm';
 import { roller } from './rollerinstance';
@@ -28,8 +28,8 @@ class GroupCallExpression implements TSExpression {
     const tsGroup = tsTable.groupForName(this.group);
     if (!tsGroup) throw `Group '${this.group}' is not defined cannot evaluate!`;
     const maxValue = tsGroup.getMaxValue();
-    const diceTerm = new DiceTerm(new IntTerm(1), new IntTerm(maxValue));
-    const termResult = this.groupCallModifier.modify(diceTerm).roll(roller);
+    const innerDiceTerm = new InnerDiceTerm(new IntTerm(1), new IntTerm(maxValue));
+    const termResult = this.groupCallModifier.modify(innerDiceTerm).roll(roller);
 
     return tsGroup.result(new RollResult(maxValue, termResult.total));
   }
