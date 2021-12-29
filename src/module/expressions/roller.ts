@@ -6,8 +6,64 @@ import twist from './mersennetwister';
  */
 class Roller {
   rolls: RollResult[];
+  variables: Map<string, Map<string, undefined | string | number>>;
+  callTables: string[];
   constructor() {
     this.rolls = [];
+    this.variables = new Map();
+    this.callTables = [];
+  }
+
+  /**
+   * Returns a Tablesmith variable.
+   * @param tablename to get variable from.
+   * @param variablename to get for table.
+   * @returns value of variable can be string, number or undefined.
+   */
+  getVar(tablename: string | undefined, variablename: string): undefined | string | number {
+    const lookupTablename = !tablename ? this.getCurrentCallTablename() : tablename;
+    const table = this.variables.get(lookupTablename);
+    if (!table || !table?.has(variablename))
+      throw `Variable '${variablename}' not defined for Table '${lookupTablename}'`;
+    return table.get(variablename);
+  }
+
+  /**
+   * Pushes the currently evaluated tablename on top of the Stack.
+   * @param name tablename to push on top of the current call tablename stack.
+   */
+  pushCurrentCallTablename(name: string) {
+    this.callTables.push(name);
+  }
+
+  /**
+   * Removes latest table from current call table stack.
+   */
+  popCurrentCallTablename() {
+    this.callTables.pop();
+  }
+
+  /**
+   * Returns the current table evaluation is happening in.
+   * @returns string tablename for current table evaluation runs in.
+   */
+  getCurrentCallTablename(): string {
+    return this.callTables[this.callTables.length - 1];
+  }
+
+  /**
+   * Sets Tablesmith variable to given value.
+   * @param tablename to set variable in.
+   * @param variablename for variable to set value for.
+   * @param value to set, may be string, number or undefined.
+   */
+  assignVar(tablename: string, variablename: string, value: undefined | string | number) {
+    let table = this.variables.get(tablename);
+    if (!table) {
+      table = new Map();
+      this.variables.set(tablename, table);
+    }
+    table.set(variablename, value);
   }
 
   /**

@@ -1,3 +1,4 @@
+import { roller } from './expressions/rollerinstance';
 import TSExpression from './expressions/tsexpression';
 import TSGroup from './tsgroup';
 
@@ -44,6 +45,15 @@ class TSTable {
    */
   getCurrentGroup(): TSGroup {
     return this.groups[this.groups.length - 1];
+  }
+
+  /**
+   * Declares a variale in this table with optional default value.
+   * @param variablename to add to this table.
+   * @param value default value to initialize the variable with.
+   */
+  declareVariable(variablename: string, value: string | undefined) {
+    roller.assignVar(this.name, variablename, value);
   }
 
   /**

@@ -11,11 +11,12 @@ import MultTerm from './multterm';
 import DivTerm from './divterm';
 import BracketTerm from './bracketterm';
 import GroupCallModifierTerm from './groupcallmodifierterm';
-import GroupCallExpression from './groupcallexpression';
+import TSGroupCallExpression from './tsgroupcallexpression';
 import TSNewlineExpression from './tsnewlineexpression';
 import TSBoldExpression from './tsboldexpression';
 import TSLineExpression from './tslineexpression';
 import TSLastRollExpression from './tslastrollexpression';
+import TSVariableGetExpression from './tsvariablegetexpression';
 type TermCreator = (a: Term, b: Term) => Term;
 
 let debugParsing = '';
@@ -228,13 +229,13 @@ class TSExpressionFactory {
    * @param group to call.
    * @returns GroupCallExpression for provided values and posible modifier.
    */
-  groupCall(table: string, group: string): GroupCallExpression {
+  groupCall(table: string, group: string): TSGroupCallExpression {
     debugText('groupCall');
     const modifier = this.context.groupCallModifier
       ? this.context.groupCallModifier
       : GroupCallModifierTerm.createUnmodified();
     this.context.groupCallModifier = undefined;
-    return new GroupCallExpression(table, group, modifier);
+    return new TSGroupCallExpression(table, group, modifier);
   }
 
   /**
@@ -259,6 +260,17 @@ class TSExpressionFactory {
         throw `Unknown modifier type '${modifierType}'`;
     }
     this.context.groupCallModifier = result;
+  }
+
+  /**
+   * Creates a new TSExpression to get value for variable.
+   * @param tablename the tablename to get variable from or undefined if it was not provided.
+   * @param variablename to get from expression.
+   * @returns Variable Get expression for this table.
+   */
+  createVariableGet(tablename: string | undefined, variablename: string): TSVariableGetExpression {
+    debugText('createVariableGet');
+    return new TSVariableGetExpression(tablename, variablename);
   }
 
   /**

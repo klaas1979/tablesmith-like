@@ -12,7 +12,7 @@ import TSExpression from './tsexpression';
  * Term defining the fixed result. If "+" or "-" are used as modifier add Term that describes the modifier
  * the modifer.
  */
-class GroupCallExpression implements TSExpression {
+class TSGroupCallExpression implements TSExpression {
   table: string | undefined;
   group: string;
   groupCallModifier: GroupCallModifier;
@@ -23,7 +23,7 @@ class GroupCallExpression implements TSExpression {
   }
 
   evaluate(): string {
-    const tsTable = this.table ? tablesmith.tableForName(this.table) : tablesmith.getEvaluateTable();
+    const tsTable = tablesmith.tableForName(this.table ? this.table : roller.getCurrentCallTablename());
     if (!tsTable) throw `Table '${this.table}' is not defined cannot evaluate!`;
     const tsGroup = tsTable.groupForName(this.group);
     if (!tsGroup) throw `Group '${this.group}' is not defined cannot evaluate!`;
@@ -31,7 +31,10 @@ class GroupCallExpression implements TSExpression {
     const innerDiceTerm = new InnerDiceTerm(new IntTerm(1), new IntTerm(maxValue));
     const termResult = this.groupCallModifier.modify(innerDiceTerm).roll(roller);
 
-    return tsGroup.result(new RollResult(maxValue, termResult.total));
+    roller.pushCurrentCallTablename(tsTable.name);
+    const result = tsGroup.result(new RollResult(maxValue, termResult.total));
+    roller.popCurrentCallTablename();
+    return result;
   }
 
   getExpression(): string {
@@ -43,4 +46,4 @@ class GroupCallExpression implements TSExpression {
   }
 }
 
-export default GroupCallExpression;
+export default TSGroupCallExpression;

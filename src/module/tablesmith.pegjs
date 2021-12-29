@@ -32,7 +32,17 @@
 
 /* A Tablesmith file as starting point, it is called Table */
 Table
-  = (Ignore Group)+
+  = (Ignore TableContent)+
+
+/** Content allowed in Table in general are variables or groups */
+TableContent
+  = VariableDeclaration
+  / Group
+
+VariableDeclaration
+  = "%" name:Name "%," value:PlainText? { errorHandling(() => {
+            options.table.declareVariable(name, value);
+          }); }
 
 /* A group is a subtable, all Tablesmith stuff starting with :Name to be called and rolled */
 Group
@@ -81,7 +91,13 @@ Line
 Expression
   = GroupFunction Expression*
   / TsFunction Expression*
+  / VariableGet Expression*
   / Value Expression*
+
+VariableGet
+  = "%" tablename:(Name ".")? varname:Name "%"{ errorHandling(() => {
+            options.table.addExpression(options.expressionFactory.createVariableGet(tablename, varname));
+          }); }
 
 /* The simplest Expression is a test value that is returned as is, without further processing. */
 Value

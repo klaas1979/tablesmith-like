@@ -53,26 +53,18 @@ class Tablesmith {
   evaluate(expression: string): string {
     const options = { table: '', group: '', fixedResult: false, modifier: 0 };
     this.callParser.parse(expression, options);
-    this.evaluateTable = this.tableForName(options.table);
-    if (!this.evaluateTable) throw `TSTable for name='${options.table}' not defined! Expression was '${expression}'`;
+    const evaluateTable = this.tableForName(options.table);
+    if (!evaluateTable) throw `TSTable for name='${options.table}' not defined! Expression was '${expression}'`;
+    roller.pushCurrentCallTablename(options.table);
     _setDefaultGroup(options);
-    const group = this.evaluateTable.groupForName(options.group);
+    const group = evaluateTable.groupForName(options.group);
     if (!group)
       throw `TSTable for name='${options.table}' does not contain Group='${options.group}'! Expression was '${expression}'`;
     const rollResult = _createRollResult(group.getMaxValue(), options.fixedResult, options.modifier);
 
     const result = group.result(rollResult);
-    this.evaluateTable = undefined;
+    roller.popCurrentCallTablename();
     return result;
-  }
-
-  /**
-   * Returns the table the call to evaluate was initiated on. Needed to resolve quick references to groups without table.
-   * @returns The Table the call to evaluate started, or throws if not in an evaluate call.
-   */
-  getEvaluateTable(): TSTable {
-    if (!this.evaluateTable) throw 'No evaluation started, no table set!';
-    return this.evaluateTable;
   }
 
   /**

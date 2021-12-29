@@ -1,3 +1,4 @@
+import { roller } from '../../src/module/expressions/rollerinstance';
 import { tablesmith } from '../../src/module/tablesmithinstance';
 
 let filename: string;
@@ -101,5 +102,30 @@ describe('Parsing nested Math in Dice~ or Calc~', () => {
     expect(term).toBe('{Dice~{Dice~3d1}d{Dice~1d1}}');
     const total = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getText();
     expect(total).toBe('3');
+  });
+});
+
+describe('Parsing variables', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('variable declaration without initial value creates empty variable', () => {
+    simpleTable = '%varname%,\n:Start\n1,%varname%\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(roller.getVar(filename, 'varname')).toBeNull();
+  });
+
+  it('variable declaration with initial value creates variable with value set', () => {
+    simpleTable = '%varname%,value\n:Start\n1,%varname%\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(roller.getVar(filename, 'varname')).toBe('value');
+  });
+
+  it('declared variable can be referenced from Group', () => {
+    simpleTable = '%varname%,value\n:Start\n1,%varname%\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('value');
   });
 });
