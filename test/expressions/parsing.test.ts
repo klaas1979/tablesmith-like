@@ -124,8 +124,20 @@ describe('Parsing variables', () => {
   });
 
   it('declared variable can be referenced from Group', () => {
-    simpleTable = '%varname%,value\n:Start\n1,%varname%\n';
+    simpleTable = `%varname%,value\n:Start\n1,%${filename}.varname%\n`;
     tablesmith.addTable(filename, simpleTable);
     expect(tablesmith.evaluate(`[${filename}]`)).toBe('value');
+  });
+
+  it('declared variable can be referenced with table and name from Group', () => {
+    simpleTable = `%varname%,value\n:Start\n1,%varname%\n`;
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('value');
+  });
+
+  it('declared variable can be referenced from {Dice~', () => {
+    simpleTable = '%varname%,10\n:Start\n1,{Dice~1d1-%varname%}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('-9');
   });
 });

@@ -136,6 +136,21 @@ class TSExpressionFactory {
   }
 
   /**
+   * Called by parser if variable reference is found in a Term.
+   */
+  addVariableGet(tablename: string | undefined, variablename: string): void {
+    debugText('addVariableGet');
+    const variableTerm = new TSVariableGetExpression(tablename, variablename);
+    const term = this.context.terms.pop();
+    const termCreator = this.context.termCreators.pop();
+    if (term && termCreator) {
+      this.context.terms.push(termCreator(term, variableTerm));
+    } else {
+      this.context.terms.push(variableTerm);
+    }
+  }
+
+  /**
    * Called by parser if number has been found for a Term.
    * @param int the number that has been parsed.
    */

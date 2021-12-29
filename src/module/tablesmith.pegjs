@@ -95,7 +95,7 @@ Expression
   / Value Expression*
 
 VariableGet
-  = "%" tablename:(Name ".")? varname:Name "%"{ errorHandling(() => {
+  = "%" tablename:(@Name ".")? varname:Name "%"{ errorHandling(() => {
             options.table.addExpression(options.expressionFactory.createVariableGet(tablename, varname));
           }); }
 
@@ -181,6 +181,9 @@ MathFactor
   / OpenBracket _ MathExpression _ CloseBracket
   / _ number:int { errorHandling(() => {
             options.expressionFactory.addNumber(toInt(number));
+          }); }
+  / "%" tablename:(@Name ".")? varname:Name "%"{ errorHandling(() => {
+            options.expressionFactory.addVariableGet(tablename, varname);
           }); }
 
 OpenBracket
