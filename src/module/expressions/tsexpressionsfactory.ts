@@ -17,6 +17,7 @@ import TSBoldExpression from './tsboldexpression';
 import TSLineExpression from './tslineexpression';
 import TSLastRollExpression from './tslastrollexpression';
 import TSVariableGetExpression from './tsvariablegetexpression';
+import TSVariableSetExpression from './tsvariablesetexpression';
 type TermCreator = (a: Term, b: Term) => Term;
 
 let debugParsing = '';
@@ -281,11 +282,23 @@ class TSExpressionFactory {
    * Creates a new TSExpression to get value for variable.
    * @param tablename the tablename to get variable from or undefined if it was not provided.
    * @param variablename to get from expression.
-   * @returns Variable Get expression for this table.
+   * @returns Variable Get Expression for this table.
    */
   createVariableGet(tablename: string | undefined, variablename: string): TSVariableGetExpression {
     debugText('createVariableGet');
     return new TSVariableGetExpression(tablename, variablename);
+  }
+
+  /**
+   * Creates a new TSExpression to set value for variable.
+   * @param tablename the tablename to set variable to or undefined if it was not provided.
+   * @param variablename to set from expression.
+   * @param type the type of the set operation.
+   * @returns Variable Set expression for this table.
+   */
+  createVariableSet(tablename: string | undefined, variablename: string, type: string): TSVariableSetExpression {
+    debugText('createVariableGet');
+    return new TSVariableSetExpression(tablename, variablename, type);
   }
 
   /**

@@ -75,6 +75,14 @@ class TSTable {
   }
 
   /**
+   * Toggles between variable assignment on/off.
+   */
+  toggleVariableAssigment(): void {
+    if (!this.getCurrentGroup()) throw `Group not initialized got addBefore`;
+    this.getCurrentGroup().toggleVariableAssigment();
+  }
+
+  /**
    * Sets up group before range, that is always added to each table result before other text.
    */
   addBefore(): void {

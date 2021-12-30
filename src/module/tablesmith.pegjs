@@ -92,11 +92,28 @@ Expression
   = GroupFunction Expression*
   / TsFunction Expression*
   / VariableGet Expression*
+  / VariableSet Expression*
   / Value Expression*
 
 VariableGet
-  = "%" tablename:(@Name ".")? varname:Name "%"{ errorHandling(() => {
+  = "%" tablename:(@Name ".")? varname:Name "%" { errorHandling(() => {
             options.table.addExpression(options.expressionFactory.createVariableGet(tablename, varname));
+          }); }
+
+VariableSet
+  = VariableSetIdentifier tablename:(@Name ".")? varname:Name type:$[-+=*/\\<>&] VariableSetExpressions VariableSetIdentifier { errorHandling(() => {
+            options.table.addExpression(options.expressionFactory.createVariableSet(tablename, varname, type));
+          }); }
+
+VariableSetExpressions
+  = GroupFunction VariableSetExpressions*
+  / TsFunction VariableSetExpressions*
+  / VariableGet VariableSetExpressions*
+  / Value VariableSetExpressions*
+
+VariableSetIdentifier
+  = "|" { errorHandling(() => {
+            options.table.toggleVariableAssigment();
           }); }
 
 /* The simplest Expression is a test value that is returned as is, without further processing. */
@@ -196,8 +213,9 @@ CloseBracket
             options.expressionFactory.closeBracket();
           }); }
 
+/** Matches all text that is printed verbose, without special chars that are key chars for the DSL. */
 PlainText
- = $[^{}[\]\n]+
+ = $[^{}[\]|\n]+
 
 Align
  = $"center" / $"left" / $"right"

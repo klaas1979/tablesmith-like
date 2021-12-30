@@ -57,11 +57,12 @@ class Roller {
    * @param variablename for variable to set value for.
    * @param value to set, may be string, number or undefined.
    */
-  assignVar(tablename: string, variablename: string, value: undefined | string | number) {
-    let table = this.variables.get(tablename);
+  assignVar(tablename: undefined | string, variablename: string, value: undefined | string | number) {
+    const lookupTablename = !tablename ? this.getCurrentCallTablename() : tablename;
+    let table = this.variables.get(lookupTablename);
     if (!table) {
       table = new Map();
-      this.variables.set(tablename, table);
+      this.variables.set(lookupTablename, table);
     }
     table.set(variablename, value);
   }

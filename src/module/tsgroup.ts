@@ -1,6 +1,7 @@
 import RollResult from './expressions/rollresult';
 import TSExpression from './expressions/tsexpression';
 import TSExpressions from './expressions/tsexpressions';
+import TSVariableSetExpression from './expressions/tsvariablesetexpression';
 import TSRange from './tsrange';
 /**
  * TSGroup is a Group within a Table. In Tablesmith it looks like:
@@ -19,6 +20,8 @@ class TSGroup {
   before: TSExpressions;
   after: TSExpressions;
   current: TSExpressions | undefined;
+  assignment: TSExpressions | undefined;
+  stacked: TSExpressions | undefined;
   lastRoll: RollResult | undefined;
   constructor(name: string) {
     this.name = name;
@@ -135,12 +138,47 @@ class TSGroup {
   }
 
   /**
+   * Toggles variable assignment Context on and off. If toggled on the Expressions are collected
+   * for the variable assignment and the current expressions stacked away. If toggled of the old expression stack
+   * is restored to save Expressions following variable assignment.
+   */
+  toggleVariableAssigment(): void {
+    if (!this.assignment) this.startVariableAssignment();
+    else this.endVariableAssignment();
+  }
+
+  private startVariableAssignment(): void {
+    this.stacked = this.current;
+    this.assignment = new TSExpressions();
+    this.current = this.assignment;
+  }
+
+  private endVariableAssignment(): void {
+    this.current = this.stacked;
+  }
+
+  /**
    * Adds expression to currently setup expressions, that can be a Range or a before or after part.
    * @param expression to add to this group.
    */
   addExpression(expression: TSExpression): void {
     expression.setGroup(this);
+    this.addAssignmentExpressionsIfExists(expression);
     this.getCurrentExpressions().add(expression);
+  }
+
+  /**
+   * If assignment expressions exists, adds them to the given expression.
+   * @param expression to existing assignment expressions to.
+   */
+  private addAssignmentExpressionsIfExists(expression: TSExpression) {
+    if (this.assignment) {
+      const setExpression = expression as TSVariableSetExpression;
+      if (typeof setExpression.setValueExpressions === 'function') {
+        setExpression.setValueExpressions(this.assignment);
+        this.assignment = undefined;
+      }
+    }
   }
 
   private _rangeFor(total: number): TSRange {
