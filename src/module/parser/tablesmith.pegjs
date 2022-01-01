@@ -243,11 +243,11 @@ TSMathFunction
           }); }
 
 Dice = '{Dice~'  { errorHandling(() => {
-            options.pf.stackExpressionContext();
+            options.pf.mathBuilder.stackExpressionContext();
           }); }
 
 Calc = '{Calc~'  { errorHandling(() => {
-            options.pf.stackExpressionContext();
+            options.pf.mathBuilder.stackExpressionContext();
           }); }
 
 MathExpression
@@ -255,10 +255,10 @@ MathExpression
 
 MathSum
   = '+' { errorHandling(() => { 
-            options.pf.addAddition();
+            options.pf.mathBuilder.addAddition();
           }); }
   / '-' { errorHandling(() => { 
-            options.pf.addSubtraction();
+            options.pf.mathBuilder.addSubtraction();
           }); }
 
 MathTerm
@@ -266,33 +266,33 @@ MathTerm
   
 MathMult
   = 'd'  { errorHandling(() => {
-            options.pf.addDice();
+            options.pf.mathBuilder.addDice();
           }); }
   / '*' { errorHandling(() => { 
-            options.pf.addMultiplication();
+            options.pf.mathBuilder.addMultiplication();
           }); }
   / '/' { errorHandling(() => { 
-            options.pf.addDivision();
+            options.pf.mathBuilder.addDivision();
           }); }
 
 MathFactor
   = TSMathFunction
   / OpenBracket _ MathExpression _ CloseBracket
   / _ number:int { errorHandling(() => {
-            options.pf.addNumber(toInt(number));
+            options.pf.mathBuilder.addNumber(toInt(number));
           }); }
   / '%' tablename:(@Name '.')? varname:Name '%'{ errorHandling(() => {
-            options.pf.addVariableGet(tablename, varname);
+            options.pf.mathBuilder.addVariableGet(tablename, varname);
           }); }
 
 OpenBracket
   = '(' { errorHandling(() => {
-            options.pf.openBracket();
+            options.pf.mathBuilder.openBracket();
           }); }
 
 CloseBracket
   = ')' { errorHandling(() => {
-            options.pf.closeBracket();
+            options.pf.mathBuilder.closeBracket();
           }); }
 
 /** Matches all text that is printed verbose, without special chars that are key chars for the DSL. */
