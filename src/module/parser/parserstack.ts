@@ -12,12 +12,12 @@ class ParserStack {
   assignment: TSExpressions | undefined;
   stacked: TSExpressions[];
   ifFunctionNames: string[];
-  ifOperators: string[];
+  booleanOperators: string[];
   ifFalseValuesAdded: boolean[];
 
   constructor() {
     this.stacked = [];
-    this.ifOperators = [];
+    this.booleanOperators = [];
     this.ifFunctionNames = [];
     this.ifFalseValuesAdded = [];
   }
@@ -119,11 +119,11 @@ class ParserStack {
   }
 
   /**
-   * Pushes given operator to stack of if operators. And stacks expression Context as well.
-   * @param operator to stack for if boolean expression.
+   * Pushes given operator to stack of boolean comparison operators. And stacks expression Context as well.
+   * @param operator to stack for a boolean expression.
    */
-  stackIfOperator(operator: string) {
-    this.ifOperators.push(operator);
+  stackBooleanOperator(operator: string) {
+    this.booleanOperators.push(operator);
     this.stack();
   }
 
@@ -131,9 +131,9 @@ class ParserStack {
    * Unstacks if operator and returns it, leaves expression context untouched.
    * @returns if operator from stack.
    */
-  unstackIfOperator(): string {
-    const op = this.ifOperators.pop();
-    if (!op) throw 'No if operator to unstack!';
+  unstackBooleanOperator(): string {
+    const op = this.booleanOperators.pop();
+    if (!op) throw 'No boolean comparison operator to unstack!';
     return op;
   }
 

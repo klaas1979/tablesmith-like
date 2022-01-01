@@ -138,14 +138,8 @@ ModifierType
 
 /* This are all supported functions from Tablesmith */
 TsFunction
-  = IfSlash _ IfExpressionPart _ IfOperator _ IfExpressionPart _ IfQuestionmark _ IfExpressionTextSlash _ (IfSlashSeparator _ IfExpressionTextSlash? _)? IfEnd {
-          errorHandling(() => {
-            
-          }); }
-  / IfColon _ IfExpressionPart _ IfOperator _ IfExpressionPart _ IfQuestionmark _ IfExpressionTextColon _ (IfColonSeparator _ IfExpressionTextColon? _)? IfEnd {
-          errorHandling(() => {
-            
-          }); }
+  = IfSlash _ BooleanExpression _ IfQuestionmark _ IfExpressionTextSlash _ (IfSlashSeparator _ IfExpressionTextSlash? _)? IfEnd
+  / IfColon _ BooleanExpression _ IfQuestionmark _ IfExpressionTextColon _ (IfColonSeparator _ IfExpressionTextColon? _)? IfEnd
   / TSMathFunction
   / _ '{Bold~' text:PlainText '}'  { errorHandling(() => { 
             options.pf.createBold(text);
@@ -169,9 +163,12 @@ IfColon
 
           }); }
 
-IfOperator
+BooleanExpression
+  = IfExpressionPart _ BooleanOperator _ IfExpressionPart
+
+BooleanOperator
   = op:(@'!=' / @'<=' / @'>=' / @[=<>]) { errorHandling(() => {
-            options.pf.setIfOperator(op);
+            options.pf.setBooleanComparisonOperator(op);
           }); }
 
 IfQuestionmark

@@ -71,11 +71,11 @@ class TSTableGroupBuilder {
   }
 
   /**
-   * Sets the operator used in boolean expression of If.
-   * @param operator to set for if boolean expression.
+   * Sets the operator used in boolean comparison.
+   * @param operator to set for comparison.
    */
-  setIfOperator(operator: string) {
-    this.stack.stackIfOperator(operator);
+  setBooleanComparisonOperator(operator: string) {
+    this.stack.stackBooleanOperator(operator);
   }
 
   /**
@@ -107,7 +107,7 @@ class TSTableGroupBuilder {
     }
     const ifExpression2 = this.stack.unstack();
     const ifExpression1 = this.stack.unstack();
-    const operator = this.stack.unstackIfOperator();
+    const operator = this.stack.unstackBooleanOperator();
     const functionName = this.stack.unstackIf();
     this.stack.unstack(); // pop out the last if, to be back to previous context
     return new TSIfExpression(functionName, ifExpression1, operator, ifExpression2, trueVal, falseVal);

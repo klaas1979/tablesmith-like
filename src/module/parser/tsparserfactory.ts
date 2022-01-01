@@ -89,12 +89,12 @@ class TSParserFactory {
   }
 
   /**
-   * Sets the operator used in boolean expression of If.
-   * @param operator to set for if boolean expression.
+   * Sets the operator used in boolean expression comparison for if, and, or etc.
+   * @param operator to set for boolean expression.
    */
-  setIfOperator(operator: string): void {
+  setBooleanComparisonOperator(operator: string): void {
     if (!this.groupBuilder) throw `Cannot add If Operator, no Group set!`;
-    this.groupBuilder.setIfOperator(operator);
+    this.groupBuilder.setBooleanComparisonOperator(operator);
   }
 
   /**
