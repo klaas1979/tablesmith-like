@@ -138,14 +138,17 @@ ModifierType
 
 /* This are all supported functions from Tablesmith */
 TsFunction
-  = TSBooleanFunctions
+  = TSConditionalFunctions
+  / TSLogicalFunctions
   / TSMathFunction
   / TSFormatFunctions
 
-TSBooleanFunctions
+TSConditionalFunctions
   = IfSlash _ BooleanExpression _ IfQuestionmark _ IfExpressionTextSlash _ (IfSlashSeparator _ IfExpressionTextSlash? _)? IfEnd
   / IfColon _ BooleanExpression _ IfQuestionmark _ IfExpressionTextColon _ (IfColonSeparator _ IfExpressionTextColon? _)? IfEnd
-  / StartLogicalExpression _ BooleanExpression _ LogicalExpressionSeparator _ BooleanExpression _ EndLogicalExpression
+
+TSLogicalFunctions
+  = StartLogicalExpression _ BooleanExpression _ LogicalExpressionSeparator _ BooleanExpression _ EndLogicalExpression
 
 StartLogicalExpression
   = '{' name:('Or' / 'And' / 'Xor') '~' { errorHandling(() => {
