@@ -145,6 +145,22 @@ TsFunction
 TSBooleanFunctions
   = IfSlash _ BooleanExpression _ IfQuestionmark _ IfExpressionTextSlash _ (IfSlashSeparator _ IfExpressionTextSlash? _)? IfEnd
   / IfColon _ BooleanExpression _ IfQuestionmark _ IfExpressionTextColon _ (IfColonSeparator _ IfExpressionTextColon? _)? IfEnd
+  / StartBooleanExpression _ BooleanExpression _ BooleanExpressionSeparator _ BooleanExpression _ EndBooleanExpression
+
+StartBooleanExpression
+  = '{' name:('Or' / 'And') '~' { errorHandling(() => {
+            options.pf.startBooleanExpression(name);
+          }); }
+
+BooleanExpressionSeparator
+  = ',' { errorHandling(() => {
+            options.pf.startNextBooleanExpression();
+          }); }
+
+EndBooleanExpression
+  = '}' { errorHandling(() => {
+            options.pf.createBooleanExpression();
+          }); }
 
 IfSlash
   = '{' name:'If' '~' { errorHandling(() => {
@@ -172,17 +188,17 @@ IfQuestionmark
           }); }
 
 IfSlashSeparator
-  = '/'{ errorHandling(() => {
+  = '/' { errorHandling(() => {
             options.pf.startIfFalseValue();
           }); }
 
 IfColonSeparator
-  = ':'{ errorHandling(() => {
+  = ':' { errorHandling(() => {
             options.pf.startIfFalseValue();
           }); }
 
 IfEnd
-  = '}'{ errorHandling(() => {
+  = '}' { errorHandling(() => {
             options.pf.createIf();
           }); }
 
@@ -302,7 +318,7 @@ PlainText
  = $[^{}[\]%|\n]+
 
 PlainTextIfPart
- = $[^!=<>?/{}[\]%|\n]+
+ = $[^!=<>,?/{}[\]%|\n]+
 
 /** Text that is allowed within an If with slash "/" {If~}. */
 PlainTextIfSlash

@@ -4,6 +4,8 @@ import TSExpression from '../expressions/tsexpression';
 import ParserStack from './parserstack';
 import TSIfExpression from '../expressions/tsifexpression';
 import TSExpressions from '../expressions/tsexpressions';
+import TSBooleanExpression from '../expressions/tsbooleanexpression';
+import BooleanComparison from '../expressions/booleancomparison';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -63,6 +65,21 @@ class TSTableGroupBuilder {
   }
 
   /**
+   * Starts boolean expression with given type.
+   * @param type can be "And" or "Or".
+   */
+  startBooleanExpression(type: string) {
+    this.stack.stackBoolean(type);
+  }
+
+  /**
+   * Starts the next boolean expression part for Boolean functions.
+   */
+  startNextBooleanExpression(): void {
+    this.stack.stack();
+  }
+
+  /**
    * Starts an If expression.
    * @param functionname of the If can be "If" or "IIf".
    */
@@ -110,7 +127,26 @@ class TSTableGroupBuilder {
     const operator = this.stack.unstackBooleanOperator();
     const functionName = this.stack.unstackIf();
     this.stack.unstack(); // pop out the last if, to be back to previous context
-    return new TSIfExpression(functionName, ifExpression1, operator, ifExpression2, trueVal, falseVal);
+    const booleanComparision = new BooleanComparison(ifExpression1, operator, ifExpression2);
+    return new TSIfExpression(functionName, booleanComparision, trueVal, falseVal);
+  }
+
+  /**
+   * Creates Boolean Expression "Or" or "And" from last stacked values and returns it.
+   * @returns TSIfExpression If Expression on top of stack.
+   */
+  createBooleanExpression(): TSBooleanExpression {
+    let ifExpression2 = this.stack.getCurrentExpressions();
+    let ifExpression1 = this.stack.unstack();
+    let operator = this.stack.unstackBooleanOperator();
+    const booleanComparison2 = new BooleanComparison(ifExpression1, operator, ifExpression2);
+    ifExpression2 = this.stack.unstack();
+    ifExpression1 = this.stack.unstack();
+    operator = this.stack.unstackBooleanOperator();
+    const booleanComparison1 = new BooleanComparison(ifExpression1, operator, ifExpression2);
+    const functionName = this.stack.unstackBoolean();
+    this.stack.unstack(); // pop out the last if, to be back to previous context
+    return new TSBooleanExpression(functionName, booleanComparison1, booleanComparison2);
   }
 }
 

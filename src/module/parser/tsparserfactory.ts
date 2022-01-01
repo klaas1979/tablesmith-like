@@ -83,6 +83,19 @@ class TSParserFactory {
     this.groupBuilder.toggleVariableAssigment();
   }
 
+  /**
+   * Starts boolean expression with given type.
+   * @param type can be "And" or "Or".
+   */
+  startBooleanExpression(type: string) {
+    if (!this.groupBuilder) throw `Cannot start if expression, no Group set!`;
+    this.groupBuilder.startBooleanExpression(type);
+  }
+
+  /**
+   * Starts a TS-Iffunction.
+   * @param functionName of the if expression used "If" or "IIf".
+   */
   startIf(functionName: string) {
     if (!this.groupBuilder) throw `Cannot start If without defined Group!`;
     this.groupBuilder.startIf(functionName);
@@ -137,10 +150,29 @@ class TSParserFactory {
    * @param functionName the Tablesmith function the created term represents.
    * @returns TSExpresion for current math term.
    */
-  private createIf(): void {
+  createIf(): void {
     if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
     const ifExpression = this.groupBuilder.createIf();
     this.groupBuilder.addExpression(ifExpression);
+  }
+
+  /**
+   * Creates result for math expressions when parser finds ending of a Dice or Calc, pops current expression context.
+   * @param functionName the Tablesmith function the created term represents.
+   * @returns TSExpresion for current math term.
+   */
+  createBooleanExpression(): void {
+    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
+    const booleanExpression = this.groupBuilder.createBooleanExpression();
+    this.groupBuilder.addExpression(booleanExpression);
+  }
+
+  /**
+   * Starts the next boolean expression for Boolean functions, separated by ",".
+   */
+  startNextBooleanExpression(): void {
+    if (!this.groupBuilder) throw `Cannot parse boolean expression without defined Group!`;
+    this.groupBuilder.startNextBooleanExpression();
   }
 
   /**
