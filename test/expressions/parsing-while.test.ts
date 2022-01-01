@@ -35,4 +35,10 @@ describe('Parsing {While~', () => {
     tablesmith.addTable(filename, simpleTable);
     expect(tablesmith.evaluate(`[${filename}]`)).toBe('body');
   });
+
+  it('nesting whiles', () => {
+    simpleTable = '%var%,2,%var2%,0\n:Start\n1,{While~%var%,{While~%var2%<3,|var2+1|.}|var-1||var2=0|x}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('...x...x');
+  });
 });
