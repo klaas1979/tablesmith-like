@@ -146,7 +146,8 @@ TsFunction
 TSConditionalFunctions
   = IfSlash _ BooleanExpression _ IfQuestionmark _ IfExpressionTextSlash _ (IfSlashSeparator _ IfExpressionTextSlash? _)? IfEnd
   / IfColon _ BooleanExpression _ IfQuestionmark _ IfExpressionTextColon _ (IfColonSeparator _ IfExpressionTextColon? _)? IfEnd
-  / WhileStart _ WhileExpression _ WhileSeparator _ Expression _ WhileEnd
+  / WhileStart _ WhileExpression _ BlockSeparator _ Expression _ WhileEnd
+  / LoopStart _ LoopExpression _ BlockSeparator _ Expression _ LoopEnd
 
 WhileStart
   = '{While~' { errorHandling(() => {
@@ -156,14 +157,27 @@ WhileStart
 WhileExpression
   = IfExpressionPart (_ BooleanOperator _ IfExpressionPart)?
 
-WhileSeparator
+BlockSeparator
   = ',' { errorHandling(() => {
-            options.pf.startWhileBlock();
+            options.pf.startIteratorBlock();
           }); }
 
 WhileEnd
   = '}' { errorHandling(() => {
             options.pf.createWhile();
+          }); }
+
+LoopStart
+  = '{Loop~' { errorHandling(() => {
+            options.pf.startLoop();
+          }); }
+
+LoopExpression
+  = IfExpressionPart
+
+LoopEnd
+  = '}' { errorHandling(() => {
+            options.pf.createLoop();
           }); }
 
 TSLogicalFunctions

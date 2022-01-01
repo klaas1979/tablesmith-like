@@ -3,7 +3,7 @@ import TSExpression from './tsexpression';
 import TSExpressions from './tsexpressions';
 
 /**
- * Ternary if expression for TS-Function IIf ":" or If "/".
+ * While expression to loop while a condition is true or a value is not "0".
  */
 class TSWhileExpression implements TSExpression {
   checkExpression: TSExpression;

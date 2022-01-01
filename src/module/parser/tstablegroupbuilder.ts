@@ -7,6 +7,7 @@ import TSExpressions from '../expressions/tsexpressions';
 import TSLogicalExpression from '../expressions/tslogicalexpression';
 import BooleanComparison from '../expressions/booleancomparison';
 import TSWhileExpression from '../expressions/tswhileexpression';
+import TSLoopExpression from '../expressions/tsloopexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -89,9 +90,16 @@ class TSTableGroupBuilder {
   }
 
   /**
-   * Starts the block to evaluate for the while loop.
+   * Starts a Loop expression.
    */
-  startWhileBlock() {
+  startLoop() {
+    this.stack.stack();
+  }
+
+  /**
+   * Starts the block to evaluate for a while or loop function.
+   */
+  startIteratorBlock() {
     this.stack.stack();
   }
 
@@ -126,8 +134,8 @@ class TSTableGroupBuilder {
   }
 
   /**
-   * Creates if Expression from last stacked values and returns it.
-   * @returns TSIfExpression If Expression on top of stack.
+   * Creates while Expression from last stacked values and returns it.
+   * @returns TSWhileExpression from top of stack.
    */
   createWhile(): TSWhileExpression {
     const block = this.stack.getCurrentExpressions();
@@ -146,6 +154,17 @@ class TSTableGroupBuilder {
     }
     this.stack.unstack(); // pop out the last if, to be back to previous context
     return new TSWhileExpression(checkExpression, block);
+  }
+
+  /**
+   * Creates while Expression from last stacked values and returns it.
+   * @returns TSLoopExpression from top of stack.
+   */
+  createLoop(): TSLoopExpression {
+    const block = this.stack.getCurrentExpressions();
+    const counterExpression = this.stack.unstack();
+    this.stack.unstack(); // pop out the last if, to be back to previous context
+    return new TSLoopExpression(counterExpression, block);
   }
 
   /**

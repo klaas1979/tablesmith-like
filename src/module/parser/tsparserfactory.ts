@@ -93,8 +93,7 @@ class TSParserFactory {
   }
 
   /**
-   * Starts a TS-While Function
-   * @param functionName of the if expression used "If" or "IIf".
+   * Starts a TS-While Function.
    */
   startWhile() {
     if (!this.groupBuilder) throw `Cannot start while without defined Group!`;
@@ -102,11 +101,19 @@ class TSParserFactory {
   }
 
   /**
-   * Starts the block to evaluate for the while loop.
+   * Starts a TS-Loop Function.
    */
-  startWhileBlock() {
-    if (!this.groupBuilder) throw `Cannot start while without defined Group!`;
-    this.groupBuilder.startWhileBlock();
+  startLoop() {
+    if (!this.groupBuilder) throw `Cannot start loop without defined Group!`;
+    this.groupBuilder.startLoop();
+  }
+
+  /**
+   * Starts the block to evaluate for while or loop functions.
+   */
+  startIteratorBlock() {
+    if (!this.groupBuilder) throw `Cannot start iterator block without defined Group!`;
+    this.groupBuilder.startIteratorBlock();
   }
 
   /**
@@ -154,7 +161,6 @@ class TSParserFactory {
 
   /**
    * Creates result for math expressions when parser finds ending of a Dice function.
-   * @returns TSExpression for current math term Dice.
    */
   createCalc(): void {
     if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
@@ -163,9 +169,7 @@ class TSParserFactory {
   }
 
   /**
-   * Creates result for math expressions when parser finds ending of a Dice or Calc, pops current expression context.
-   * @param functionName the Tablesmith function the created term represents.
-   * @returns TSExpresion for current math term.
+   * Creates While loop expression and adds to current group.
    */
   createWhile(): void {
     if (!this.groupBuilder) throw `Cannot create While without defined Group!`;
@@ -174,9 +178,16 @@ class TSParserFactory {
   }
 
   /**
-   * Creates result for math expressions when parser finds ending of a Dice or Calc, pops current expression context.
-   * @param functionName the Tablesmith function the created term represents.
-   * @returns TSExpresion for current math term.
+   * Creates loop expressions adds to current group.
+   */
+  createLoop(): void {
+    if (!this.groupBuilder) throw `Cannot create Loop without defined Group!`;
+    const loopExpression = this.groupBuilder.createLoop();
+    this.groupBuilder.addExpression(loopExpression);
+  }
+
+  /**
+   * Creates if expression and adds to current group.
    */
   createIf(): void {
     if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
@@ -186,8 +197,6 @@ class TSParserFactory {
 
   /**
    * Creates logical expression for "Or", "And" or "Xor".
-   * @param functionName the Tablesmith function the created term represents.
-   * @returns TSExpresion for current math term.
    */
   createLogicalExpression(): void {
     if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
