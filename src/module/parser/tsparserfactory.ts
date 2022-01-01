@@ -13,11 +13,6 @@ import TSTable from '../tstable';
 import TSTableGroupBuilder from './tstablegroupbuilder';
 import MathTermExpressionBuilder from './mathtermexpressionbuilder';
 
-let debugParsing = '';
-function debugText(text: string) {
-  debugParsing += text + '\n';
-}
-
 /**
  * Factory used by the Peggy Parser to create the in memory representaion of a Tablesmith Table file.
  */
@@ -34,10 +29,6 @@ class TSParserFactory {
     this.mathBuilder = new MathTermExpressionBuilder();
     this.ifOperators = [];
     this.ifFunctionNames = [];
-  }
-
-  getDebugText(): string {
-    return debugParsing;
   }
 
   /**
@@ -99,12 +90,10 @@ class TSParserFactory {
    * @param operator to stack in context for later retrieval.
    */
   stackIfOperator(operator: string) {
-    debugText('stackIfOperator');
     this.ifOperators.push(operator);
   }
 
   stackIfFuntionName(functionName: string) {
-    debugText('stackIfFuntionName');
     this.ifFunctionNames.push(functionName);
   }
 
@@ -133,7 +122,6 @@ class TSParserFactory {
    * @returns TSExpresion for current math term.
    */
   private createIf(): TSExpression | undefined {
-    debugText('createIf');
     return undefined;
     // let result;
     // const falseVal = this.context;
@@ -155,7 +143,6 @@ class TSParserFactory {
    * @param group to call.
    */
   createGroupCall(table: string, group: string): void {
-    debugText('groupCall');
     const modifier = this.groupCallModifier ? this.groupCallModifier : GroupCallModifierTerm.createUnmodified();
     this.groupCallModifier = undefined;
     if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
@@ -168,7 +155,6 @@ class TSParserFactory {
    * @param modifier to add to roll, or if fixed result the result to use.
    */
   addGroupCallModifier(modifierType: string, modifier: number): void {
-    debugText('addGroupCallModifier');
     let result;
     switch (modifierType) {
       case '=':
@@ -192,7 +178,6 @@ class TSParserFactory {
    * @param variablename to get from expression.
    */
   createVariableGet(tablename: string | undefined, variablename: string) {
-    debugText('createVariableGet');
     if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
     this.groupBuilder.addExpression(new TSVariableGetExpression(tablename, variablename));
   }
@@ -204,7 +189,6 @@ class TSParserFactory {
    * @param type the type of the set operation.
    */
   createVariableSet(tablename: string | undefined, variablename: string, type: string) {
-    debugText('createVariableGet');
     if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
     this.groupBuilder.addExpression(new TSVariableSetExpression(tablename, variablename, type));
   }
@@ -214,7 +198,6 @@ class TSParserFactory {
    * @param text to create simple TSExpression for.
    */
   createText(text: string): void {
-    debugText('createText');
     if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
     this.groupBuilder.addExpression(new TSTextExpression(text));
   }
@@ -225,7 +208,6 @@ class TSParserFactory {
    * @returns TSTextExpression for given text.
    */
   createBold(text: string): void {
-    debugText('createBold');
     if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
     this.groupBuilder.addExpression(new TSBoldExpression(text));
   }
@@ -236,7 +218,6 @@ class TSParserFactory {
    * @param width in percent, int between 1-100
    */
   createLastRoll(): void {
-    debugText('createLastRoll');
     if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
     this.groupBuilder.addExpression(new TSLastRollExpression());
   }
@@ -247,7 +228,6 @@ class TSParserFactory {
    * @param width in percent, int between 1-100
    */
   createLine(align: 'left' | 'center' | 'right', width = 100): void {
-    debugText('createLine');
     if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
     this.groupBuilder.addExpression(new TSLineExpression(align, width));
   }
@@ -256,7 +236,6 @@ class TSParserFactory {
    * Creates a new line expression.
    */
   createNewline(): void {
-    debugText('createNewline');
     if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
     this.groupBuilder.addExpression(new TSNewlineExpression());
   }
