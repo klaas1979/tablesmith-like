@@ -77,7 +77,6 @@ class Tablesmith {
     try {
       const options = this._parseOptions(tstable);
       this.parser.parse(fileContent, options);
-      this.debugText = options.pf.getDebugText();
     } catch (error) {
       const syntaxError = error as peggy.parser.SyntaxError;
       if (typeof syntaxError.format === 'function') {

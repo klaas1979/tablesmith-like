@@ -12,6 +12,7 @@ import TSVariableSetExpression from '../expressions/tsvariablesetexpression';
 import TSTable from '../tstable';
 import TSTableGroupBuilder from './tstablegroupbuilder';
 import MathTermExpressionBuilder from './mathtermexpressionbuilder';
+import ParserStack from './parserstack';
 
 /**
  * Factory used by the Peggy Parser to create the in memory representaion of a Tablesmith Table file.
@@ -19,6 +20,7 @@ import MathTermExpressionBuilder from './mathtermexpressionbuilder';
 class TSParserFactory {
   table: TSTable;
   groupBuilder: TSTableGroupBuilder | undefined;
+  parserStack: ParserStack;
   mathBuilder: MathTermExpressionBuilder;
   groupCallModifier: GroupCallModifierTerm | undefined;
 
@@ -26,6 +28,7 @@ class TSParserFactory {
   ifOperators: string[];
   constructor(table: TSTable) {
     this.table = table;
+    this.parserStack = new ParserStack();
     this.mathBuilder = new MathTermExpressionBuilder();
     this.ifOperators = [];
     this.ifFunctionNames = [];
@@ -46,7 +49,7 @@ class TSParserFactory {
    */
   addGroup(name: string): void {
     const group = this.table.addGroup(name);
-    this.groupBuilder = new TSTableGroupBuilder(group);
+    this.groupBuilder = new TSTableGroupBuilder(group, this.parserStack);
   }
 
   /**
