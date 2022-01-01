@@ -93,7 +93,24 @@ class TSParserFactory {
   }
 
   /**
-   * Starts a TS-Iffunction.
+   * Starts a TS-While Function
+   * @param functionName of the if expression used "If" or "IIf".
+   */
+  startWhile() {
+    if (!this.groupBuilder) throw `Cannot start while without defined Group!`;
+    this.groupBuilder.startWhile();
+  }
+
+  /**
+   * Starts the block to evaluate for the while loop.
+   */
+  startWhileBlock() {
+    if (!this.groupBuilder) throw `Cannot start while without defined Group!`;
+    this.groupBuilder.startWhileBlock();
+  }
+
+  /**
+   * Starts a TS If Function.
    * @param functionName of the if expression used "If" or "IIf".
    */
   startIf(functionName: string) {
@@ -143,6 +160,17 @@ class TSParserFactory {
     if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
     const calc = this.mathBuilder.create('Calc');
     if (calc) this.groupBuilder.addExpression(calc);
+  }
+
+  /**
+   * Creates result for math expressions when parser finds ending of a Dice or Calc, pops current expression context.
+   * @param functionName the Tablesmith function the created term represents.
+   * @returns TSExpresion for current math term.
+   */
+  createWhile(): void {
+    if (!this.groupBuilder) throw `Cannot create While without defined Group!`;
+    const whileExpression = this.groupBuilder.createWhile();
+    this.groupBuilder.addExpression(whileExpression);
   }
 
   /**

@@ -18,8 +18,8 @@ class BooleanComparison implements TSExpression {
   evaluate(): string {
     let boolResult;
     try {
-      const e1 = this.ifExpression1.getText(),
-        e2 = this.ifExpression2.getText();
+      const e1 = this.ifExpression1.evaluate(),
+        e2 = this.ifExpression2.evaluate();
       switch (this.operator) {
         case '=':
           boolResult = e1 == e2;

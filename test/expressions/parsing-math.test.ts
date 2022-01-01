@@ -98,7 +98,7 @@ describe('Parsing nested Math in Dice~ or Calc~', () => {
     tablesmith.addTable(filename, simpleTable);
     const term = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
     expect(term).toBe('{Dice~{Dice~3d1}d{Dice~1d1}}');
-    const total = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getText();
+    const total = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.evaluate();
     expect(total).toBe('3');
   });
 });

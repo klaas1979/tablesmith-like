@@ -40,8 +40,8 @@ class TSRange {
    * Text result for this range.
    * @returns strnig representing the evaluated expressions for this range.
    */
-  getText(): string {
-    return this.expressions.getText();
+  evaluate(): string {
+    return this.expressions.evaluate();
   }
 
   /**

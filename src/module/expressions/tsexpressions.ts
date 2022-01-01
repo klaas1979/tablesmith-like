@@ -1,9 +1,10 @@
+import TSGroup from '../tsgroup';
 import TSExpression from './tsexpression';
 
 /**
  * Collection of expressions that make up the result of a TSRange or the Before and After parts within a Group.
  */
-class TSExpressions {
+class TSExpressions implements TSExpression {
   expressions: TSExpression[];
   constructor() {
     this.expressions = [];
@@ -13,7 +14,7 @@ class TSExpressions {
    * Gets text result for this expressions.
    * @returns string resulting text, for evaluating all expressions contained.
    */
-  getText(): string {
+  evaluate(): string {
     let result = '';
     this.expressions.forEach((expression) => {
       result += expression.evaluate();
@@ -46,6 +47,11 @@ class TSExpressions {
    */
   add(expression: TSExpression) {
     this.expressions.push(expression);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setGroup(group: TSGroup): void {
+    // empty
   }
 }
 

@@ -24,7 +24,7 @@ class TSIfExpression implements TSExpression {
   }
   evaluate(): string {
     const boolResult = this.booleanComparision.evaluate();
-    return boolResult == '1' ? this.trueVal.getText() : this.falseVal.getText();
+    return boolResult == '1' ? this.trueVal.evaluate() : this.falseVal.evaluate();
   }
 
   getExpression(): string {

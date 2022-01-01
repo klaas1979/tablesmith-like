@@ -6,6 +6,7 @@ import TSIfExpression from '../expressions/tsifexpression';
 import TSExpressions from '../expressions/tsexpressions';
 import TSLogicalExpression from '../expressions/tslogicalexpression';
 import BooleanComparison from '../expressions/booleancomparison';
+import TSWhileExpression from '../expressions/tswhileexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -80,6 +81,21 @@ class TSTableGroupBuilder {
   }
 
   /**
+   * Starts an while expression.
+   */
+  startWhile() {
+    this.stack.stackWhileState();
+    this.stack.stack();
+  }
+
+  /**
+   * Starts the block to evaluate for the while loop.
+   */
+  startWhileBlock() {
+    this.stack.stack();
+  }
+
+  /**
    * Starts an If expression.
    * @param functionname of the If can be "If" or "IIf".
    */
@@ -107,6 +123,29 @@ class TSTableGroupBuilder {
    */
   startIfFalseValue(): void {
     this.stack.stackIfFalseValue();
+  }
+
+  /**
+   * Creates if Expression from last stacked values and returns it.
+   * @returns TSIfExpression If Expression on top of stack.
+   */
+  createWhile(): TSWhileExpression {
+    const block = this.stack.getCurrentExpressions();
+    let checkExpression: TSExpression;
+    const stackedContexts = this.stack.unstackWhileState();
+    // number of stacked states can be 3 for BooleanComparison or 2 for a single Expression
+    if (stackedContexts == 3) {
+      const ifExpression2 = this.stack.unstack();
+      const ifExpression1 = this.stack.unstack();
+      const operator = this.stack.unstackBooleanOperator();
+      checkExpression = new BooleanComparison(ifExpression1, operator, ifExpression2);
+    } else if (stackedContexts == 2) {
+      checkExpression = this.stack.unstack();
+    } else {
+      throw `Unknown number of stacked contexts for While creation '${stackedContexts}', expected 2 or 3!`;
+    }
+    this.stack.unstack(); // pop out the last if, to be back to previous context
+    return new TSWhileExpression(checkExpression, block);
   }
 
   /**

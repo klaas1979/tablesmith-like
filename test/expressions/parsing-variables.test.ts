@@ -22,13 +22,13 @@ describe('Parsing variables', () => {
     expect(roller.getVar(filename, 'varname')).toBe('value');
   });
 
-  it('declared variable can be referenced from Group', () => {
+  it('declared variable can be referenced with table and name from Group', () => {
     simpleTable = `%varname%,value\n:Start\n1,%${filename}.varname%\n`;
     tablesmith.addTable(filename, simpleTable);
     expect(tablesmith.evaluate(`[${filename}]`)).toBe('value');
   });
 
-  it('declared variable can be referenced with table and name from Group', () => {
+  it('declared variable can be referenced from Group', () => {
     simpleTable = `%varname%,value\n:Start\n1,%varname%\n`;
     tablesmith.addTable(filename, simpleTable);
     expect(tablesmith.evaluate(`[${filename}]`)).toBe('value');

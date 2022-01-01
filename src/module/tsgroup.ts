@@ -93,7 +93,7 @@ class TSGroup {
     }
     if (!result)
       throw `Could not get result for Group '${this.name}' roll='${rollResult.total}' maxValue=${this.getMaxValue()}`;
-    return `${this.before.getText()}${result.getText()}${this.after.getText()}`;
+    return `${this.before.evaluate()}${result.evaluate()}${this.after.evaluate()}`;
   }
 
   /**

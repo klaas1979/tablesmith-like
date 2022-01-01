@@ -29,7 +29,7 @@ class TSVariableSetExpression implements TSExpression {
   evaluate(): string {
     if (!this.valueExpressions)
       throw `No TSExpressions set for Variable set expression table '${this.tablename}', variable '${this.variablename}'`;
-    const value = this.valueExpressions.getText();
+    const value = this.valueExpressions.evaluate();
     const currentValue = roller.getVar(this.tablename, this.variablename);
     switch (this.type) {
       case '=':

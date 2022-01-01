@@ -95,12 +95,12 @@ Expression
   / Value Expression*
 
 VariableGet
-  = '%' tablename:(@Name '.')? varname:Name '%' { errorHandling(() => {
+  = '%' tablename:(@Name '.')? varname:VariableName '%' { errorHandling(() => {
             options.pf.createVariableGet(tablename, varname);
           }); }
 
 VariableSet
-  = VariableSetIdentifier tablename:(@Name '.')? varname:Name type:$[-+=*/\\<>&] VariableSetExpressions VariableSetIdentifier { errorHandling(() => {
+  = VariableSetIdentifier tablename:(@Name '.')? varname:VariableName type:$[-+=*/\\<>&] VariableSetExpressions VariableSetIdentifier { errorHandling(() => {
             options.pf.createVariableSet(tablename, varname, type);
           }); }
 
@@ -146,6 +146,25 @@ TsFunction
 TSConditionalFunctions
   = IfSlash _ BooleanExpression _ IfQuestionmark _ IfExpressionTextSlash _ (IfSlashSeparator _ IfExpressionTextSlash? _)? IfEnd
   / IfColon _ BooleanExpression _ IfQuestionmark _ IfExpressionTextColon _ (IfColonSeparator _ IfExpressionTextColon? _)? IfEnd
+  / WhileStart _ WhileExpression _ WhileSeparator _ Expression _ WhileEnd
+
+WhileStart
+  = '{While~' { errorHandling(() => {
+            options.pf.startWhile();
+          }); }
+
+WhileExpression
+  = IfExpressionPart (_ BooleanOperator _ IfExpressionPart)?
+
+WhileSeparator
+  = ',' { errorHandling(() => {
+            options.pf.startWhileBlock();
+          }); }
+
+WhileEnd
+  = '}' { errorHandling(() => {
+            options.pf.createWhile();
+          }); }
 
 TSLogicalFunctions
   = StartLogicalExpression _ BooleanExpression _ LogicalExpressionSeparator _ BooleanExpression _ EndLogicalExpression
@@ -333,6 +352,10 @@ PlainTextIfSlash
 
 Align
  = $'center' / $'left' / $'right'
+
+/* Simple name without Dot or special characters. */
+VariableName
+  = $[a-z0-9_]i+
 
 /* Simple name without Dot or special characters. */
 Name
