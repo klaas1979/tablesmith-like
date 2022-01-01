@@ -11,8 +11,15 @@ class ParserStack {
   current: TSExpressions | undefined;
   assignment: TSExpressions | undefined;
   stacked: TSExpressions[];
+  ifFunctionNames: string[];
+  ifOperators: string[];
+  ifFalseValuesAdded: boolean[];
+
   constructor() {
     this.stacked = [];
+    this.ifOperators = [];
+    this.ifFunctionNames = [];
+    this.ifFalseValuesAdded = [];
   }
 
   /**
@@ -67,6 +74,82 @@ class ParserStack {
 
   private endVariableAssignment(): void {
     this.current = this.stacked.pop();
+  }
+
+  /**
+   * Pushes a new TSExpresions collection on stack and sets it as current.
+   */
+  stack(): void {
+    if (this.assignment) throw 'Cannot stack Context within an unfinished assignment expression!';
+    if (!this.current) throw 'Cannot stack Context if no current Expressions set!';
+    this.stacked.push(this.current);
+    this.current = new TSExpressions();
+  }
+
+  /**
+   * Unstacks TSExpressions and sets it as current, old current is lost / forgotten. If nothing to unstack
+   * throws an exception.
+   * @returns new current TSExpressions for convenience.
+   */
+  unstack(): TSExpressions {
+    if (this.assignment) throw 'Cannot unstack Context within an unfinished assignment expression!';
+    this.current = this.stacked.pop();
+    if (!this.current) throw 'Cannot unstack expressions stack is empty!';
+    return this.current;
+  }
+
+  /**
+   * Stacks context for an if expression.
+   * @param ifname the name of the If expression to stack.
+   */
+  stackIf(ifname: string): void {
+    this.ifFunctionNames.push(ifname);
+    this.ifFalseValuesAdded.push(false);
+    this.stack();
+  }
+
+  /**
+   * Unstacks if operator and returns it.
+   * @returns if operator from stack.
+   */
+  unstackIf(): string {
+    const functionname = this.ifFunctionNames.pop();
+    if (!functionname) throw 'No if functionname to unstack!';
+    return functionname;
+  }
+
+  /**
+   * Pushes given operator to stack of if operators. And stacks expression Context as well.
+   * @param operator to stack for if boolean expression.
+   */
+  stackIfOperator(operator: string) {
+    this.ifOperators.push(operator);
+    this.stack();
+  }
+
+  /**
+   * Unstacks if operator and returns it, leaves expression context untouched.
+   * @returns if operator from stack.
+   */
+  unstackIfOperator(): string {
+    const op = this.ifOperators.pop();
+    if (!op) throw 'No if operator to unstack!';
+    return op;
+  }
+
+  /**
+   * Stacks context for false value and stores that it has done this, to ensure that context is popped later.
+   */
+  stackIfFalseValue(): void {
+    this.stack();
+    this.ifFalseValuesAdded.pop();
+    this.ifFalseValuesAdded.push(true);
+  }
+
+  unstackIfFalseValueAdded(): boolean {
+    const added = this.ifFalseValuesAdded.pop();
+    if (added == undefined) throw 'No falseValuedAdded in stack, cannot unstack!';
+    return added;
   }
 }
 

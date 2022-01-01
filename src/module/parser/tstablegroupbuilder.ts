@@ -2,6 +2,8 @@ import TSGroup from '../tsgroup';
 import TSRange from '../tsrange';
 import TSExpression from '../expressions/tsexpression';
 import ParserStack from './parserstack';
+import TSIfExpression from '../expressions/tsifexpression';
+import TSExpressions from '../expressions/tsexpressions';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -58,6 +60,57 @@ class TSTableGroupBuilder {
    */
   toggleVariableAssigment(): void {
     this.stack.toggleVariableAssigment();
+  }
+
+  /**
+   * Starts an If expression.
+   * @param functionname of the If can be "If" or "IIf".
+   */
+  startIf(functionname: string) {
+    this.stack.stackIf(functionname);
+  }
+
+  /**
+   * Sets the operator used in boolean expression of If.
+   * @param operator to set for if boolean expression.
+   */
+  setIfOperator(operator: string) {
+    this.stack.stackIfOperator(operator);
+  }
+
+  /**
+   * Starts the true value Expressions for the if.
+   */
+  startIfTrueValue(): void {
+    this.stack.stack();
+  }
+
+  /**
+   * Starts the true value Expressions for the if.
+   */
+  startIfFalseValue(): void {
+    this.stack.stackIfFalseValue();
+  }
+
+  /**
+   * Creates if Expression from last stacked values and returns it.
+   * @returns TSIfExpression If Expression on top of stack.
+   */
+  createIf(): TSIfExpression {
+    let falseVal, trueVal;
+    if (this.stack.unstackIfFalseValueAdded()) {
+      falseVal = this.stack.getCurrentExpressions();
+      trueVal = this.stack.unstack();
+    } else {
+      falseVal = new TSExpressions();
+      trueVal = this.stack.getCurrentExpressions();
+    }
+    const ifExpression2 = this.stack.unstack();
+    const ifExpression1 = this.stack.unstack();
+    const operator = this.stack.unstackIfOperator();
+    const functionName = this.stack.unstackIf();
+    this.stack.unstack(); // pop out the last if, to be back to previous context
+    return new TSIfExpression(functionName, ifExpression1, operator, ifExpression2, trueVal, falseVal);
   }
 }
 

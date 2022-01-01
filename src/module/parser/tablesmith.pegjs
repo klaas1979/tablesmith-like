@@ -138,11 +138,11 @@ ModifierType
 
 /* This are all supported functions from Tablesmith */
 TsFunction
-  = IfSlash _ IfExpressionPart _ IfOperator _ IfExpressionPart _ IfQuestionmark _ IfExpressionTextSlash _ '/' _ IfExpressionTextSlash _ IfEnd {
+  = IfSlash _ IfExpressionPart _ IfOperator _ IfExpressionPart _ IfQuestionmark _ IfExpressionTextSlash _ (IfSlashSeparator _ IfExpressionTextSlash? _)? IfEnd {
           errorHandling(() => {
             
           }); }
-  / IfColon _ IfExpressionPart _ IfOperator _ IfExpressionPart _ IfQuestionmark _ IfExpressionTextColon _ ':' _ IfExpressionTextColon _ IfEnd {
+  / IfColon _ IfExpressionPart _ IfOperator _ IfExpressionPart _ IfQuestionmark _ IfExpressionTextColon _ (IfColonSeparator _ IfExpressionTextColon? _)? IfEnd {
           errorHandling(() => {
             
           }); }
@@ -159,40 +159,39 @@ TsFunction
 
 IfSlash
   = '{' name:'If' '~' { errorHandling(() => {
-            options.pf.stackIfFuntionName(name);
-            options.pf.stackExpressionContext();
+            options.pf.startIf(name);
+
           }); }
 
 IfColon
   = '{' name:'IIf' '~' { errorHandling(() => {
-            options.pf.stackIfFuntionName(name);
-            options.pf.stackExpressionContext();
+            options.pf.startIf(name);
+
+          }); }
+
+IfOperator
+  = op:(@'!=' / @'<=' / @'>=' / @[=<>]) { errorHandling(() => {
+            options.pf.setIfOperator(op);
           }); }
 
 IfQuestionmark
   = '?' { errorHandling(() => {
-            options.pf.stackExpressionContext();
+            options.pf.startIfTrueValue();
           }); }
 
 IfSlashSeparator
   = '/'{ errorHandling(() => {
-            options.pf.stackExpressionContext();
+            options.pf.startIfFalseValue();
           }); }
 
 IfColonSeparator
   = ':'{ errorHandling(() => {
-            options.pf.stackExpressionContext();
+            options.pf.startIfFalseValue();
           }); }
 
 IfEnd
   = '}'{ errorHandling(() => {
             options.pf.createIf();
-          }); }
-
-IfOperator
-  = op:(@[=<>] / @'!=' / @'<=' / @'>=') { errorHandling(() => {
-            options.pf.stackIfOperator(op);
-            options.pf.stackExpressionContext();
           }); }
 
 /* Expressions that are allowed in the boolean part before the "?". */
@@ -297,18 +296,18 @@ CloseBracket
 
 /** Matches all text that is printed verbose, without special chars that are key chars for the DSL. */
 PlainText
- = $[^{}[\]|\n]+
+ = $[^{}[\]%|\n]+
 
 PlainTextIfPart
- = $[^!=<>?/{}[\]|\n]+
+ = $[^!=<>?/{}[\]%|\n]+
 
 /** Text that is allowed within an If with slash "/" {If~}. */
 PlainTextIfSlash
- = $[^/{}[\]|\n]+
+ = $[^/{}[\]%|\n]+
 
 /** Text that is allowed within an If with colon ":" {IIf~}. */
  PlainTextIfColon
- = $[^:{}[\]|\n]+
+ = $[^:{}[\]%|\n]+
 
 Align
  = $'center' / $'left' / $'right'

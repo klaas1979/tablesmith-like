@@ -1,5 +1,4 @@
 import IntTerm from '../expressions/terms/intterm';
-import TSExpression from '../expressions/tsexpression';
 import TSTextExpression from '../expressions/tstextexpression';
 import GroupCallModifierTerm from '../expressions/terms/groupcallmodifierterm';
 import TSGroupCallExpression from '../expressions/tsgroupcallexpression';
@@ -24,14 +23,10 @@ class TSParserFactory {
   mathBuilder: MathTermExpressionBuilder;
   groupCallModifier: GroupCallModifierTerm | undefined;
 
-  ifFunctionNames: string[];
-  ifOperators: string[];
   constructor(table: TSTable) {
     this.table = table;
     this.parserStack = new ParserStack();
     this.mathBuilder = new MathTermExpressionBuilder();
-    this.ifOperators = [];
-    this.ifFunctionNames = [];
   }
 
   /**
@@ -88,16 +83,34 @@ class TSParserFactory {
     this.groupBuilder.toggleVariableAssigment();
   }
 
-  /**
-   * Stacks given operator to If operator stack.
-   * @param operator to stack in context for later retrieval.
-   */
-  stackIfOperator(operator: string) {
-    this.ifOperators.push(operator);
+  startIf(functionName: string) {
+    if (!this.groupBuilder) throw `Cannot start If without defined Group!`;
+    this.groupBuilder.startIf(functionName);
   }
 
-  stackIfFuntionName(functionName: string) {
-    this.ifFunctionNames.push(functionName);
+  /**
+   * Sets the operator used in boolean expression of If.
+   * @param operator to set for if boolean expression.
+   */
+  setIfOperator(operator: string): void {
+    if (!this.groupBuilder) throw `Cannot add If Operator, no Group set!`;
+    this.groupBuilder.setIfOperator(operator);
+  }
+
+  /**
+   * Starts the true value Expressions for the if.
+   */
+  startIfTrueValue(): void {
+    if (!this.groupBuilder) throw `Cannot parse if, no Group set!`;
+    this.groupBuilder.startIfTrueValue();
+  }
+
+  /**
+   * Starts the false value Expressions for the if.
+   */
+  startIfFalseValue(): void {
+    if (!this.groupBuilder) throw `Cannot parse if, no Group set!`;
+    this.groupBuilder.startIfFalseValue();
   }
 
   /**
@@ -124,20 +137,10 @@ class TSParserFactory {
    * @param functionName the Tablesmith function the created term represents.
    * @returns TSExpresion for current math term.
    */
-  private createIf(): TSExpression | undefined {
-    return undefined;
-    // let result;
-    // const falseVal = this.context;
-    // this.unstackExpressionContext();
-    // const trueVal = this.context;
-    // this.unstackExpressionContext();
-    // const ifExpression2 = this.context;
-    // this.unstackExpressionContext();
-    // const ifExpression1 = this.context;
-    // this.unstackExpressionContext();
-    // const operator = this.ifOperators.pop();
-    // const functionName = this.ifFunctionNames.pop();
-    //return new TSIfExpression(functionName, ifExpression1, operator, ifExpression2, trueVal, falseVal);
+  private createIf(): void {
+    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
+    const ifExpression = this.groupBuilder.createIf();
+    this.groupBuilder.addExpression(ifExpression);
   }
 
   /**
