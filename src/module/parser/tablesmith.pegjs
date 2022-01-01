@@ -148,6 +148,7 @@ TSConditionalFunctions
   / IfColon _ BooleanExpression _ IfQuestionmark _ IfExpressionTextColon _ (IfColonSeparator _ IfExpressionTextColon? _)? IfEnd
   / WhileStart _ WhileExpression _ BlockSeparator _ Expression _ WhileEnd
   / LoopStart _ LoopExpression _ BlockSeparator _ Expression _ LoopEnd
+  / SelectStart _ SelectExpression _ (BlockSeparator _ SelectExpressionTextComma _)+ SelectExpressionTextComma? _ SelectEnd
 
 WhileStart
   = '{While~' { errorHandling(() => {
@@ -178,6 +179,19 @@ LoopExpression
 LoopEnd
   = '}' { errorHandling(() => {
             options.pf.createLoop();
+          }); }
+
+SelectStart
+  = '{Select~' { errorHandling(() => {
+            options.pf.startSelect();
+          }); }
+
+SelectExpression
+  = IfExpressionPart
+
+SelectEnd
+  = '}' { errorHandling(() => {
+            options.pf.createSelect();
           }); }
 
 TSLogicalFunctions
@@ -259,6 +273,13 @@ IfExpressionTextColon
   / VariableGet IfExpressionTextColon*
   / ValueIfColon IfExpressionTextColon*
 
+/* Expressions that are allowed as value in a Select. */
+SelectExpressionTextComma
+  = GroupFunction SelectExpressionTextComma*
+  / TsFunction SelectExpressionTextComma*
+  / VariableGet SelectExpressionTextComma*
+  / ValueSelect SelectExpressionTextComma*
+
 ValueIfPart
   = text:PlainTextIfPart { errorHandling(() => {
             options.pf.createText(text);
@@ -271,6 +292,11 @@ ValueIfSlash
 
 ValueIfColon
   = text:PlainTextIfColon { errorHandling(() => {
+            options.pf.createText(text);
+          }); }
+
+ValueSelect
+  = text:PlainTextSelect { errorHandling(() => {
             options.pf.createText(text);
           }); }
 
@@ -363,6 +389,10 @@ PlainTextIfSlash
 /** Text that is allowed within an If with colon ":" {IIf~}. */
  PlainTextIfColon
  = $[^:{}[\]%|\n]+
+
+ /** Text that is allowed within an Select. */
+ PlainTextSelect
+ = $[^,{}[\]%|\n]+
 
 Align
  = $'center' / $'left' / $'right'

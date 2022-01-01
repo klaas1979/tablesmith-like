@@ -8,6 +8,8 @@ import TSLogicalExpression from '../expressions/tslogicalexpression';
 import BooleanComparison from '../expressions/booleancomparison';
 import TSWhileExpression from '../expressions/tswhileexpression';
 import TSLoopExpression from '../expressions/tsloopexpression';
+import TSSelectExpression from '../expressions/tsselectexpression';
+import SelectTuple from '../expressions/selecttuple';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -85,7 +87,7 @@ class TSTableGroupBuilder {
    * Starts an while expression.
    */
   startWhile() {
-    this.stack.stackWhileState();
+    this.stack.stackConditionalState();
     this.stack.stack();
   }
 
@@ -93,6 +95,14 @@ class TSTableGroupBuilder {
    * Starts a Loop expression.
    */
   startLoop() {
+    this.stack.stack();
+  }
+
+  /**
+   * Starts a select expression.
+   */
+  startSelect() {
+    this.stack.stackConditionalState();
     this.stack.stack();
   }
 
@@ -140,7 +150,7 @@ class TSTableGroupBuilder {
   createWhile(): TSWhileExpression {
     const block = this.stack.getCurrentExpressions();
     let checkExpression: TSExpression;
-    const stackedContexts = this.stack.unstackWhileState();
+    const stackedContexts = this.stack.unstackConditionalState();
     // number of stacked states can be 3 for BooleanComparison or 2 for a single Expression
     if (stackedContexts == 3) {
       const ifExpression2 = this.stack.unstack();
@@ -157,7 +167,7 @@ class TSTableGroupBuilder {
   }
 
   /**
-   * Creates while Expression from last stacked values and returns it.
+   * Creates loop Expression from last stacked values and returns it.
    * @returns TSLoopExpression from top of stack.
    */
   createLoop(): TSLoopExpression {
@@ -165,6 +175,33 @@ class TSTableGroupBuilder {
     const counterExpression = this.stack.unstack();
     this.stack.unstack(); // pop out the last if, to be back to previous context
     return new TSLoopExpression(counterExpression, block);
+  }
+
+  /**
+   * Creates select Expression from last stacked values and returns it.
+   * @returns TSLoopExpression from top of stack.
+   */
+  createSelect(): TSSelectExpression {
+    let stackedContexts = this.stack.unstackConditionalState();
+    // 1 depth for select + 2 for each key/value pair + 1 if default -> default is even
+    let defaultValue = new TSExpressions();
+    if (stackedContexts % 2 == 0) {
+      defaultValue = this.stack.getCurrentExpressions();
+      this.stack.unstack();
+      stackedContexts -= 1;
+    }
+    const tuples: SelectTuple[] = [];
+    while (stackedContexts > 2) {
+      const value = this.stack.getCurrentExpressions();
+      const key = this.stack.unstack();
+      tuples.push(new SelectTuple(key, value));
+      this.stack.unstack();
+      stackedContexts -= 2;
+    }
+    tuples.reverse();
+    const selector = this.stack.getCurrentExpressions();
+    this.stack.unstack(); // pop out the last if, to be back to previous context
+    return new TSSelectExpression(selector, tuples, defaultValue);
   }
 
   /**

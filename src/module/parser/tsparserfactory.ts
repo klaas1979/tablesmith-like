@@ -109,6 +109,14 @@ class TSParserFactory {
   }
 
   /**
+   * Starts a TS-Selecg Function.
+   */
+  startSelect() {
+    if (!this.groupBuilder) throw `Cannot start select without defined Group!`;
+    this.groupBuilder.startSelect();
+  }
+
+  /**
    * Starts the block to evaluate for while or loop functions.
    */
   startIteratorBlock() {
@@ -182,8 +190,17 @@ class TSParserFactory {
    */
   createLoop(): void {
     if (!this.groupBuilder) throw `Cannot create Loop without defined Group!`;
-    const loopExpression = this.groupBuilder.createLoop();
-    this.groupBuilder.addExpression(loopExpression);
+    const loop = this.groupBuilder.createLoop();
+    this.groupBuilder.addExpression(loop);
+  }
+
+  /**
+   * Creates select expressions adds to current group.
+   */
+  createSelect(): void {
+    if (!this.groupBuilder) throw `Cannot create Select without defined Group!`;
+    const select = this.groupBuilder.createSelect();
+    this.groupBuilder.addExpression(select);
   }
 
   /**

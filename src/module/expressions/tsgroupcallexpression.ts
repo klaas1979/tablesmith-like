@@ -38,7 +38,9 @@ class TSGroupCallExpression implements TSExpression {
   }
 
   getExpression(): string {
-    return `[${this.table}.${this.group}${this.groupCallModifier.getTerm()}]`;
+    let tablePrefix = '';
+    if (this.table != null) tablePrefix = `${this.table}.`;
+    return `[${tablePrefix}${this.group}${this.groupCallModifier.getTerm()}]`;
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setGroup(group: TSGroup): void {

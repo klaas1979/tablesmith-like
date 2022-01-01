@@ -15,7 +15,7 @@ class ParserStack {
   logicalFunctionNames: string[];
   booleanOperators: string[];
   ifFalseValuesAdded: boolean[];
-  whileDepths: number[];
+  conditionalDepths: number[];
 
   constructor() {
     this.stacked = [];
@@ -23,7 +23,7 @@ class ParserStack {
     this.ifFunctionNames = [];
     this.logicalFunctionNames = [];
     this.ifFalseValuesAdded = [];
-    this.whileDepths = [];
+    this.conditionalDepths = [];
   }
 
   /**
@@ -178,16 +178,16 @@ class ParserStack {
   /**
    * Stacks current depth of stacked context to later get number of stacked contexts.
    */
-  stackWhileState(): void {
-    this.whileDepths.push(this.stacked.length);
+  stackConditionalState(): void {
+    this.conditionalDepths.push(this.stacked.length);
   }
 
   /**
    * Unstacks depth of while state and returns number of stacked contexts.
    */
-  unstackWhileState(): number {
-    const stored = this.whileDepths.pop();
-    if (stored == undefined) throw 'Could not unstack while state, nothing stacked before!';
+  unstackConditionalState(): number {
+    const stored = this.conditionalDepths.pop();
+    if (stored == undefined) throw 'Could not unstack conditional state, nothing stacked before!';
     return this.stacked.length - stored;
   }
 }

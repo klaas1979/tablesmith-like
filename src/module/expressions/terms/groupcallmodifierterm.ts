@@ -22,6 +22,7 @@ class GroupCallModifierTerm implements Term {
    * @returns The expression this Group call modifier translates to.
    */
   getTerm(): string {
+    if (this.modifierType == 'unmodified') return '';
     return `${this.modifierType}${this.modifierTerm.getTerm()}`;
   }
 
