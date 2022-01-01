@@ -89,7 +89,50 @@ describe('Parsing {Or~', () => {
   });
 });
 
-describe('{Or~/And~ operators', () => {
+describe('Parsing {Xor~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('expression representation uses correct function name Xor', () => {
+    simpleTable = ':Start\n1,{Xor~1=1,2=2}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Xor~1=1,2=2}');
+  });
+
+  it('sub expression error => -1', () => {
+    simpleTable = ':Start\n1,{Xor~[missingGroup]=1,2=2}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('-1');
+  });
+
+  it('true, true => 1', () => {
+    simpleTable = ':Start\n1,{Xor~1=1,2=2}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('0');
+  });
+
+  it('true, false => 1', () => {
+    simpleTable = ':Start\n1,{Xor~1=1,2=3}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
+  });
+
+  it('false, true => 1', () => {
+    simpleTable = ':Start\n1,{Xor~1=2,2=2}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
+  });
+
+  it('false, false => 0', () => {
+    simpleTable = ':Start\n1,{Xor~1=2,2=3}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('0');
+  });
+});
+
+describe('{Or~/And…/Xor~ operators', () => {
   beforeEach(() => {
     tablesmith.reset();
     filename = 'simpletable';

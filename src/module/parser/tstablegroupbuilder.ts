@@ -4,7 +4,7 @@ import TSExpression from '../expressions/tsexpression';
 import ParserStack from './parserstack';
 import TSIfExpression from '../expressions/tsifexpression';
 import TSExpressions from '../expressions/tsexpressions';
-import TSBooleanExpression from '../expressions/tsbooleanexpression';
+import TSLogicalExpression from '../expressions/tslogicalexpression';
 import BooleanComparison from '../expressions/booleancomparison';
 
 /**
@@ -68,8 +68,8 @@ class TSTableGroupBuilder {
    * Starts boolean expression with given type.
    * @param type can be "And" or "Or".
    */
-  startBooleanExpression(type: string) {
-    this.stack.stackBoolean(type);
+  startLogicalExpression(type: string) {
+    this.stack.stackLogical(type);
   }
 
   /**
@@ -132,10 +132,10 @@ class TSTableGroupBuilder {
   }
 
   /**
-   * Creates Boolean Expression "Or" or "And" from last stacked values and returns it.
-   * @returns TSIfExpression If Expression on top of stack.
+   * Creates Logical Expression "Or", "And" or "Xor" from last stacked values and returns it.
+   * @returns TSLogicalExpression that is on top of stack.
    */
-  createBooleanExpression(): TSBooleanExpression {
+  createLogicalExpression(): TSLogicalExpression {
     let ifExpression2 = this.stack.getCurrentExpressions();
     let ifExpression1 = this.stack.unstack();
     let operator = this.stack.unstackBooleanOperator();
@@ -144,9 +144,9 @@ class TSTableGroupBuilder {
     ifExpression1 = this.stack.unstack();
     operator = this.stack.unstackBooleanOperator();
     const booleanComparison1 = new BooleanComparison(ifExpression1, operator, ifExpression2);
-    const functionName = this.stack.unstackBoolean();
+    const functionName = this.stack.unstackLogical();
     this.stack.unstack(); // pop out the last if, to be back to previous context
-    return new TSBooleanExpression(functionName, booleanComparison1, booleanComparison2);
+    return new TSLogicalExpression(functionName, booleanComparison1, booleanComparison2);
   }
 }
 

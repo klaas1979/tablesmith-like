@@ -5,7 +5,7 @@ import TSGroup from '../tsgroup';
 /**
  * TS Function for chaining boolean expressions "And" or "Or".
  */
-class TSBooleanExpression implements TSExpression {
+class TSLogicalExpression implements TSExpression {
   functionName: string;
   booleanComparison1: BooleanComparison;
   booleanComparison2: BooleanComparison;
@@ -25,6 +25,8 @@ class TSBooleanExpression implements TSExpression {
       result = be1 == '1' || be2 == '1' ? '1' : '0';
     } else if (this.functionName == 'And') {
       result = be1 == '1' && be2 == '1' ? '1' : '0';
+    } else if (this.functionName == 'Xor') {
+      result = (be1 == '1' && be2 == '0') || (be1 == '0' && be2 == '1') ? '1' : '0';
     }
     return result;
   }
@@ -41,4 +43,4 @@ class TSBooleanExpression implements TSExpression {
   }
 }
 
-export default TSBooleanExpression;
+export default TSLogicalExpression;

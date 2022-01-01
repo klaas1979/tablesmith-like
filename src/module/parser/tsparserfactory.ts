@@ -84,12 +84,12 @@ class TSParserFactory {
   }
 
   /**
-   * Starts boolean expression with given type.
-   * @param type can be "And" or "Or".
+   * Starts logical expression with given type.
+   * @param type can be "And", "Or" or "Xor".
    */
-  startBooleanExpression(type: string) {
+  startLogicalExpression(type: string) {
     if (!this.groupBuilder) throw `Cannot start if expression, no Group set!`;
-    this.groupBuilder.startBooleanExpression(type);
+    this.groupBuilder.startLogicalExpression(type);
   }
 
   /**
@@ -157,14 +157,14 @@ class TSParserFactory {
   }
 
   /**
-   * Creates result for math expressions when parser finds ending of a Dice or Calc, pops current expression context.
+   * Creates logical expression for "Or", "And" or "Xor".
    * @param functionName the Tablesmith function the created term represents.
    * @returns TSExpresion for current math term.
    */
-  createBooleanExpression(): void {
+  createLogicalExpression(): void {
     if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
-    const booleanExpression = this.groupBuilder.createBooleanExpression();
-    this.groupBuilder.addExpression(booleanExpression);
+    const logical = this.groupBuilder.createLogicalExpression();
+    this.groupBuilder.addExpression(logical);
   }
 
   /**

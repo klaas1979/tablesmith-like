@@ -145,21 +145,21 @@ TsFunction
 TSBooleanFunctions
   = IfSlash _ BooleanExpression _ IfQuestionmark _ IfExpressionTextSlash _ (IfSlashSeparator _ IfExpressionTextSlash? _)? IfEnd
   / IfColon _ BooleanExpression _ IfQuestionmark _ IfExpressionTextColon _ (IfColonSeparator _ IfExpressionTextColon? _)? IfEnd
-  / StartBooleanExpression _ BooleanExpression _ BooleanExpressionSeparator _ BooleanExpression _ EndBooleanExpression
+  / StartLogicalExpression _ BooleanExpression _ LogicalExpressionSeparator _ BooleanExpression _ EndLogicalExpression
 
-StartBooleanExpression
-  = '{' name:('Or' / 'And') '~' { errorHandling(() => {
-            options.pf.startBooleanExpression(name);
+StartLogicalExpression
+  = '{' name:('Or' / 'And' / 'Xor') '~' { errorHandling(() => {
+            options.pf.startLogicalExpression(name);
           }); }
 
-BooleanExpressionSeparator
+LogicalExpressionSeparator
   = ',' { errorHandling(() => {
             options.pf.startNextBooleanExpression();
           }); }
 
-EndBooleanExpression
+EndLogicalExpression
   = '}' { errorHandling(() => {
-            options.pf.createBooleanExpression();
+            options.pf.createLogicalExpression();
           }); }
 
 IfSlash

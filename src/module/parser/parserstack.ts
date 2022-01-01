@@ -12,7 +12,7 @@ class ParserStack {
   assignment: TSExpressions | undefined;
   stacked: TSExpressions[];
   ifFunctionNames: string[];
-  booleanFunctionNames: string[];
+  logicalFunctionNames: string[];
   booleanOperators: string[];
   ifFalseValuesAdded: boolean[];
 
@@ -20,7 +20,7 @@ class ParserStack {
     this.stacked = [];
     this.booleanOperators = [];
     this.ifFunctionNames = [];
-    this.booleanFunctionNames = [];
+    this.logicalFunctionNames = [];
     this.ifFalseValuesAdded = [];
   }
 
@@ -101,21 +101,21 @@ class ParserStack {
   }
 
   /**
-   * Stacks context for an if expression.
-   * @param type the name of the If expression to stack.
+   * Stacks context for an logical expression.
+   * @param type the name of the logical expression to stack.
    */
-  stackBoolean(type: string): void {
-    this.booleanFunctionNames.push(type);
+  stackLogical(type: string): void {
+    this.logicalFunctionNames.push(type);
     this.stack();
   }
 
   /**
-   * Unstacks boolean function name and returns it.
-   * @returns boolean function name from stack.
+   * Unstacks logical function name and returns it.
+   * @returns logical function name from stack.
    */
-  unstackBoolean(): string {
-    const functionname = this.booleanFunctionNames.pop();
-    if (!functionname) throw 'No boolean function to unstack!';
+  unstackLogical(): string {
+    const functionname = this.logicalFunctionNames.pop();
+    if (!functionname) throw 'No logical function to unstack!';
     return functionname;
   }
 
