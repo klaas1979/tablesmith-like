@@ -138,18 +138,13 @@ ModifierType
 
 /* This are all supported functions from Tablesmith */
 TsFunction
+  = TSBooleanFunctions
+  / TSMathFunction
+  / TSFormatFunctions
+
+TSBooleanFunctions
   = IfSlash _ BooleanExpression _ IfQuestionmark _ IfExpressionTextSlash _ (IfSlashSeparator _ IfExpressionTextSlash? _)? IfEnd
   / IfColon _ BooleanExpression _ IfQuestionmark _ IfExpressionTextColon _ (IfColonSeparator _ IfExpressionTextColon? _)? IfEnd
-  / TSMathFunction
-  / _ '{Bold~' text:PlainText '}'  { errorHandling(() => { 
-            options.pf.createBold(text);
-          }); }
-  / _ '{Line~' _ align:Align _ ',' _ width:(@int _ '%')? _ '}' { errorHandling(() => {
-            options.pf.createLine(align, width);
-          }); }
-  / _ '{CR~' _ '}' { errorHandling(() => {
-            options.pf.createNewline();
-          }); }
 
 IfSlash
   = '{' name:'If' '~' { errorHandling(() => {
@@ -289,6 +284,17 @@ OpenBracket
 CloseBracket
   = ')' { errorHandling(() => {
             options.pf.mathBuilder.closeBracket();
+          }); }
+
+TSFormatFunctions
+  = _ '{Bold~' text:PlainText '}'  { errorHandling(() => { 
+            options.pf.createBold(text);
+          }); }
+  / _ '{Line~' _ align:Align _ ',' _ width:(@int _ '%')? _ '}' { errorHandling(() => {
+            options.pf.createLine(align, width);
+          }); }
+  / _ '{CR~' _ '}' { errorHandling(() => {
+            options.pf.createNewline();
           }); }
 
 /** Matches all text that is printed verbose, without special chars that are key chars for the DSL. */
