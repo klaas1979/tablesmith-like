@@ -15,7 +15,8 @@ describe('ToAD Villian Plan.tab', () => {
     expect(tablesmith.getTSTables().length).toBe(1);
     expect(tablesmith.getLastTSTable().getName()).toBe(tablename);
     expect(tablesmith.tableForName(tablename)?.getGroups().length).toEqual(50);
-    expect(tablesmith.tableForName(tablename)?.getCurrentGroup().getName()).toEqual('Reason_Why_in_Service');
+    const lastGroup = tablesmith.tableForName(tablename)?.getGroups()[50 - 1];
+    expect(lastGroup?.getName()).toEqual('Reason_Why_in_Service');
   });
 
   it('[ToAD Villian Plan] generates a plan', () => {

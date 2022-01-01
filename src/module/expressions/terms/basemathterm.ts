@@ -1,4 +1,4 @@
-import Roller from './roller';
+import Roller from '../roller';
 import Term from './term';
 import TermCalc from './termcalc';
 import TermResult from './termresult';

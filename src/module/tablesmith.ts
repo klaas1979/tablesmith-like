@@ -1,13 +1,13 @@
 import * as peggy from 'peggy';
 import fs from 'fs';
 import TSTable from './tstable';
-import TSExpressionFactory from './expressions/tsexpressionsfactory';
+import TSParserFactory from './parser/tsparserfactory';
 import RollResult from './expressions/rollresult';
 import { roller } from './expressions/rollerinstance';
 import path from 'path';
 
-const parserFilePath = 'src/module/tablesmith.pegjs';
-const callParserFilePath = 'src/module/tablesmithcall.pegjs';
+const parserFilePath = 'src/module/parser/tablesmith.pegjs';
+const callParserFilePath = 'src/module/parser/tablesmithcall.pegjs';
 
 /**
  * The Tablesmith class to setup the Tablesmith environment, contains all parsed tables and provides needed functionality
@@ -77,7 +77,7 @@ class Tablesmith {
     try {
       const options = this._parseOptions(tstable);
       this.parser.parse(fileContent, options);
-      this.debugText = options.expressionFactory.getDebugText();
+      this.debugText = options.pf.getDebugText();
     } catch (error) {
       const syntaxError = error as peggy.parser.SyntaxError;
       if (typeof syntaxError.format === 'function') {
@@ -90,12 +90,10 @@ class Tablesmith {
   }
 
   _parseOptions(table: TSTable): {
-    table: TSTable;
-    expressionFactory: TSExpressionFactory;
+    pf: TSParserFactory; // pf= ParserFactory
   } {
     return {
-      table: table,
-      expressionFactory: new TSExpressionFactory(),
+      pf: new TSParserFactory(table),
     };
   }
 

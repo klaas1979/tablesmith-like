@@ -1,10 +1,10 @@
 import { tablesmith } from '../tablesmithinstance';
 import TSGroup from '../tsgroup';
-import InnerDiceTerm from './innerdiceterm';
-import GroupCallModifier from './groupcallmodifierterm';
-import IntTerm from './intterm';
 import { roller } from './rollerinstance';
 import RollResult from './rollresult';
+import GroupCallModifierTerm from './terms/groupcallmodifierterm';
+import InnerDiceTerm from './terms/innerdiceterm';
+import IntTerm from './terms/intterm';
 import TSExpression from './tsexpression';
 
 /**
@@ -15,11 +15,11 @@ import TSExpression from './tsexpression';
 class TSGroupCallExpression implements TSExpression {
   table: string | undefined;
   group: string;
-  groupCallModifier: GroupCallModifier;
-  constructor(table: string | undefined, group: string, groupCallModifier: GroupCallModifier | undefined) {
+  groupCallModifier: GroupCallModifierTerm;
+  constructor(table: string | undefined, group: string, groupCallModifier: GroupCallModifierTerm | undefined) {
     this.table = table;
     this.group = group;
-    this.groupCallModifier = groupCallModifier ? groupCallModifier : GroupCallModifier.createUnmodified();
+    this.groupCallModifier = groupCallModifier ? groupCallModifier : GroupCallModifierTerm.createUnmodified();
   }
 
   evaluate(): string {

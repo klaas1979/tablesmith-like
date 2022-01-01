@@ -1,8 +1,8 @@
 import TSGroup from '../tsgroup';
 import Roller from './roller';
 import { roller } from './rollerinstance';
-import Term from './term';
-import TermResult from './termresult';
+import Term from './terms/term';
+import TermResult from './terms/termresult';
 import TSExpression from './tsexpression';
 
 /**

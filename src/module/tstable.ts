@@ -1,5 +1,4 @@
 import { roller } from './expressions/rollerinstance';
-import TSExpression from './expressions/tsexpression';
 import TSGroup from './tsgroup';
 
 /**
@@ -40,14 +39,6 @@ class TSTable {
   }
 
   /**
-   * Helper function to setup table while parsing.
-   * @returns Returns the last added group of this table.
-   */
-  getCurrentGroup(): TSGroup {
-    return this.groups[this.groups.length - 1];
-  }
-
-  /**
    * Declares a variale in this table with optional default value.
    * @param variablename to add to this table.
    * @param value default value to initialize the variable with.
@@ -59,51 +50,13 @@ class TSTable {
   /**
    * Adds empty Group with given name.
    * @param name of new group, must be unique or throws.
+   * @returns TSGroup the newly created and added group.
    */
-  addGroup(name: string): void {
+  addGroup(name: string): TSGroup {
     if (this.groupForName(name)) throw `Group name already defined got '${name}'`;
-    this.groups.push(new TSGroup(name));
-  }
-
-  /**
-   * Adds Range with upper bound to current Group.
-   * @param upper upper value for new range.
-   */
-  addRange(upper: number): void {
-    if (!this.getCurrentGroup()) throw `Group not initialized got upper='${upper}'`;
-    this.getCurrentGroup().addRange(upper);
-  }
-
-  /**
-   * Toggles between variable assignment on/off.
-   */
-  toggleVariableAssigment(): void {
-    if (!this.getCurrentGroup()) throw `Group not initialized got addBefore`;
-    this.getCurrentGroup().toggleVariableAssigment();
-  }
-
-  /**
-   * Sets up group before range, that is always added to each table result before other text.
-   */
-  addBefore(): void {
-    if (!this.getCurrentGroup()) throw `Group not initialized got addBefore`;
-    this.getCurrentGroup().addBefore();
-  }
-
-  /**
-   * Sets up group after range, that is always added to each table result after all other text.
-   */
-  addAfter(): void {
-    if (!this.getCurrentGroup()) throw `Group not initialized got addAfter`;
-    this.getCurrentGroup().addAfter();
-  }
-
-  /**
-   * Adds given expression to last range of current group or the before or after part.
-   * @param expression to add to currently setup expressions, if undefined it is ignored.
-   */
-  addExpression(expression: TSExpression | undefined): void {
-    if (expression) this.getCurrentGroup().addExpression(expression);
+    const tsGroup = new TSGroup(name);
+    this.groups.push(tsGroup);
+    return tsGroup;
   }
 }
 

@@ -1,23 +1,25 @@
-import Term from './term';
-import IntTerm from './intterm';
-import TSExpression from './tsexpression';
-import TSTextExpression from './tstextexpression';
-import PlusTerm from './plusterm';
-import InnerDiceTerm from './innerdiceterm';
-import DiceCalcTerm from './dicecalcterm';
-import MinusTerm from './minusterm';
-import TSTermExpression from './tstermexpression';
-import MultTerm from './multterm';
-import DivTerm from './divterm';
-import BracketTerm from './bracketterm';
-import GroupCallModifierTerm from './groupcallmodifierterm';
-import TSGroupCallExpression from './tsgroupcallexpression';
-import TSNewlineExpression from './tsnewlineexpression';
-import TSBoldExpression from './tsboldexpression';
-import TSLineExpression from './tslineexpression';
-import TSLastRollExpression from './tslastrollexpression';
-import TSVariableGetExpression from './tsvariablegetexpression';
-import TSVariableSetExpression from './tsvariablesetexpression';
+import Term from '../expressions/terms/term';
+import IntTerm from '../expressions/terms/intterm';
+import TSExpression from '../expressions/tsexpression';
+import TSTextExpression from '../expressions/tstextexpression';
+import PlusTerm from '../expressions/terms/plusterm';
+import InnerDiceTerm from '../expressions/terms/innerdiceterm';
+import DiceCalcTerm from '../expressions/terms/dicecalcterm';
+import MinusTerm from '../expressions/terms/minusterm';
+import TSTermExpression from '../expressions/tstermexpression';
+import MultTerm from '../expressions/terms/multterm';
+import DivTerm from '../expressions/terms/divterm';
+import BracketTerm from '../expressions/terms/bracketterm';
+import GroupCallModifierTerm from '../expressions/terms/groupcallmodifierterm';
+import TSGroupCallExpression from '../expressions/tsgroupcallexpression';
+import TSNewlineExpression from '../expressions/tsnewlineexpression';
+import TSBoldExpression from '../expressions/tsboldexpression';
+import TSLineExpression from '../expressions/tslineexpression';
+import TSLastRollExpression from '../expressions/tslastrollexpression';
+import TSVariableGetExpression from '../expressions/tsvariablegetexpression';
+import TSVariableSetExpression from '../expressions/tsvariablesetexpression';
+import TSTable from '../tstable';
+import TSTableGroupBuilder from './tstablegroupbuilder';
 type TermCreator = (a: Term, b: Term) => Term;
 
 let debugParsing = '';
@@ -26,9 +28,9 @@ function debugText(text: string) {
 }
 
 /**
- * Context for Expression parsing collecting data.
+ * Context for colleting parsing data of Math Terms, to create the resulting Expression from.
  */
-class ExpressionContext {
+class MathTermContext {
   terms: Array<Term | undefined>;
   termCreators: Array<TermCreator | undefined>;
   groupCallModifier: GroupCallModifierTerm | undefined;
@@ -41,12 +43,20 @@ class ExpressionContext {
 /**
  * Factory used by the Peggy Parser to create the in memory representaion of a Tablesmith Table file.
  */
-class TSExpressionFactory {
-  expressionContexts: ExpressionContext[];
-  context: ExpressionContext;
-  constructor() {
-    this.expressionContexts = [];
-    this.context = new ExpressionContext();
+class TSParserFactory {
+  table: TSTable;
+  groupBuilder: TSTableGroupBuilder | undefined;
+  mathTermContexts: MathTermContext[];
+  context: MathTermContext;
+
+  ifFunctionNames: string[];
+  ifOperators: string[];
+  constructor(table: TSTable) {
+    this.table = table;
+    this.mathTermContexts = [];
+    this.context = new MathTermContext();
+    this.ifOperators = [];
+    this.ifFunctionNames = [];
   }
 
   getDebugText(): string {
@@ -54,13 +64,80 @@ class TSExpressionFactory {
   }
 
   /**
+   * Declares a variale in the currently parsed table with optional default value.
+   * @param variablename to add to the table.
+   * @param value default value to initialize the variable with.
+   */
+  declareVariable(variablename: string, value: string | undefined) {
+    this.table.declareVariable(variablename, value);
+  }
+
+  /**
+   * Adds empty Group with given name to table and sets it to the currently parsed group.
+   * @param name of new group, must be unique or throws.
+   */
+  addGroup(name: string): void {
+    const group = this.table.addGroup(name);
+    this.groupBuilder = new TSTableGroupBuilder(group);
+  }
+
+  /**
+   * Adds a new Range to Group starting after last range or 1 if it is the first and going up to given value and
+   * sets this Range up as current expressions to add to.
+   * @param upper the number donating the new ranges max value.
+   */
+  addRange(upper: number): void {
+    if (!this.groupBuilder) throw `Cannot add Range without prior defined Group!`;
+    this.groupBuilder.addRange(upper);
+  }
+
+  /**
+   * Setup builder to add before expressions to the current group.
+   */
+  addBefore(): void {
+    if (!this.groupBuilder) throw `Cannot add Before Expressions without prior defined Group!`;
+    this.groupBuilder.addBefore();
+  }
+
+  /**
+   * Setup builder to add after expressions to the current group.
+   */
+  addAfter(): void {
+    if (!this.groupBuilder) throw `Cannot add Before Expressions without prior defined Group!`;
+    this.groupBuilder.addAfter();
+  }
+
+  /**
+   * Toggles variable assignment Context on and off. If toggled on the Expressions are collected
+   * for the variable assignment and the current expressions stacked away. If toggled of the old expression stack
+   * is restored to save Expressions following variable assignment.
+   */
+  toggleVariableAssigment(): void {
+    if (!this.groupBuilder) throw `Cannot toggle a Variable assignment, no Group set!`;
+    this.groupBuilder.toggleVariableAssigment();
+  }
+
+  /**
+   * Stacks given operator to If operator stack.
+   * @param operator to stack in context for later retrieval.
+   */
+  stackIfOperator(operator: string) {
+    debugText('stackIfOperator');
+    this.ifOperators.push(operator);
+  }
+
+  stackIfFuntionName(functionName: string) {
+    debugText('stackIfFuntionName');
+    this.ifFunctionNames.push(functionName);
+  }
+  /**
    * Adds a new expression context to stack for nested expressions. The expression context is popped, whenever create
    * is called.
    */
   stackExpressionContext() {
     debugText('stackExpressionContext');
-    this.expressionContexts.push(this.context);
-    this.context = new ExpressionContext();
+    this.mathTermContexts.push(this.context);
+    this.context = new MathTermContext();
   }
 
   /**
@@ -68,7 +145,7 @@ class TSExpressionFactory {
    */
   unstackExpressionContext() {
     debugText('unstackExpressionContext');
-    const lastContext = this.expressionContexts.pop();
+    const lastContext = this.mathTermContexts.pop();
     if (!lastContext) throw 'Unstacked ExpressionContext is undefined, cannot unstack!';
     this.context = lastContext;
   }
@@ -78,23 +155,26 @@ class TSExpressionFactory {
    * @returns boolean true if at least one context is stacked, false if no stacked context exists.
    */
   isExpressionContextStacked(): boolean {
-    return this.expressionContexts.length > 0;
+    return this.mathTermContexts.length > 0;
+  }
+
+  /**
+   * Creates result for math expressions when parser finds ending of a Dice function.
+   */
+  createDice(): void {
+    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
+    const dice = this.create('Dice');
+    if (dice) this.groupBuilder.addExpression(dice);
   }
 
   /**
    * Creates result for math expressions when parser finds ending of a Dice function.
    * @returns TSExpression for current math term Dice.
    */
-  private createDice(): TSExpression | undefined {
-    return this.create('Dice');
-  }
-
-  /**
-   * Creates result for math expressions when parser finds ending of a Dice function.
-   * @returns TSExpression for current math term Dice.
-   */
-  private createCalc(): TSExpression | undefined {
-    return this.create('Calc');
+  createCalc(): void {
+    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
+    const calc = this.create('Calc');
+    if (calc) this.groupBuilder.addExpression(calc);
   }
 
   /**
@@ -113,6 +193,28 @@ class TSExpressionFactory {
       result = new TSTermExpression(term);
     }
     return result;
+  }
+
+  /**
+   * Creates result for math expressions when parser finds ending of a Dice or Calc, pops current expression context.
+   * @param functionName the Tablesmith function the created term represents.
+   * @returns TSExpresion for current math term.
+   */
+  private createIf(): TSExpression | undefined {
+    debugText('createIf');
+    return undefined;
+    // let result;
+    // const falseVal = this.context;
+    // this.unstackExpressionContext();
+    // const trueVal = this.context;
+    // this.unstackExpressionContext();
+    // const ifExpression2 = this.context;
+    // this.unstackExpressionContext();
+    // const ifExpression1 = this.context;
+    // this.unstackExpressionContext();
+    // const operator = this.ifOperators.pop();
+    // const functionName = this.ifFunctionNames.pop();
+    //return new TSIfExpression(functionName, ifExpression1, operator, ifExpression2, trueVal, falseVal);
   }
 
   /**
@@ -243,15 +345,15 @@ class TSExpressionFactory {
    * Creates a new Group Call Expression that takes a defined GroupCallModifier into account.
    * @param table to create a Group call for, may be undefined, then this table is used.
    * @param group to call.
-   * @returns GroupCallExpression for provided values and posible modifier.
    */
-  groupCall(table: string, group: string): TSGroupCallExpression {
+  createGroupCall(table: string, group: string): void {
     debugText('groupCall');
     const modifier = this.context.groupCallModifier
       ? this.context.groupCallModifier
       : GroupCallModifierTerm.createUnmodified();
     this.context.groupCallModifier = undefined;
-    return new TSGroupCallExpression(table, group, modifier);
+    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
+    this.groupBuilder.addExpression(new TSGroupCallExpression(table, group, modifier));
   }
 
   /**
@@ -282,11 +384,11 @@ class TSExpressionFactory {
    * Creates a new TSExpression to get value for variable.
    * @param tablename the tablename to get variable from or undefined if it was not provided.
    * @param variablename to get from expression.
-   * @returns Variable Get Expression for this table.
    */
-  createVariableGet(tablename: string | undefined, variablename: string): TSVariableGetExpression {
+  createVariableGet(tablename: string | undefined, variablename: string) {
     debugText('createVariableGet');
-    return new TSVariableGetExpression(tablename, variablename);
+    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
+    this.groupBuilder.addExpression(new TSVariableGetExpression(tablename, variablename));
   }
 
   /**
@@ -294,21 +396,21 @@ class TSExpressionFactory {
    * @param tablename the tablename to set variable to or undefined if it was not provided.
    * @param variablename to set from expression.
    * @param type the type of the set operation.
-   * @returns Variable Set expression for this table.
    */
-  createVariableSet(tablename: string | undefined, variablename: string, type: string): TSVariableSetExpression {
+  createVariableSet(tablename: string | undefined, variablename: string, type: string) {
     debugText('createVariableGet');
-    return new TSVariableSetExpression(tablename, variablename, type);
+    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
+    this.groupBuilder.addExpression(new TSVariableSetExpression(tablename, variablename, type));
   }
 
   /**
    * Creates a new TSExpression for given text.
    * @param text to create simple TSExpression for.
-   * @returns TSTextExpression for given text.
    */
-  createText(text: string): TSTextExpression {
+  createText(text: string): void {
     debugText('createText');
-    return new TSTextExpression(text);
+    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
+    this.groupBuilder.addExpression(new TSTextExpression(text));
   }
 
   /**
@@ -316,41 +418,42 @@ class TSExpressionFactory {
    * @param text to create bold TSExpression for.
    * @returns TSTextExpression for given text.
    */
-  createBold(text: string): TSBoldExpression {
+  createBold(text: string): void {
     debugText('createBold');
-    return new TSBoldExpression(text);
+    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
+    this.groupBuilder.addExpression(new TSBoldExpression(text));
   }
 
   /**
    * Creates a Line separator for values.
    * @param align of separator, should be "left", "center" or "right"
    * @param width in percent, int between 1-100
-   * @returns TSLineExpression for given values.
    */
-  createLastRoll(): TSLastRollExpression {
+  createLastRoll(): void {
     debugText('createLastRoll');
-    return new TSLastRollExpression();
+    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
+    this.groupBuilder.addExpression(new TSLastRollExpression());
   }
 
   /**
    * Creates a Line separator for values.
    * @param align of separator, should be "left", "center" or "right"
    * @param width in percent, int between 1-100
-   * @returns TSLineExpression for given values.
    */
-  createLine(align: 'left' | 'center' | 'right', width = 100): TSLineExpression {
+  createLine(align: 'left' | 'center' | 'right', width = 100): void {
     debugText('createLine');
-    return new TSLineExpression(align, width);
+    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
+    this.groupBuilder.addExpression(new TSLineExpression(align, width));
   }
 
   /**
    * Creates a new line expression.
-   * @returns An expression evaluating to a new line.
    */
-  createNewline(): TSExpression {
+  createNewline(): void {
     debugText('createNewline');
-    return new TSNewlineExpression();
+    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
+    this.groupBuilder.addExpression(new TSNewlineExpression());
   }
 }
 
-export default TSExpressionFactory;
+export default TSParserFactory;

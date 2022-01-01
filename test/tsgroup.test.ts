@@ -12,8 +12,8 @@ let range: TSRange;
 describe('TSGroup', () => {
   beforeEach(() => {
     group = new TSGroup(name);
-    group.addRange(1);
-    range = group.getRanges()[0];
+    range = new TSRange(1, 1);
+    group.addRange(range);
     rangeExpression = new TSTextExpression('One');
     range.add(rangeExpression);
   });

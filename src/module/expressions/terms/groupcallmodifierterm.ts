@@ -1,7 +1,7 @@
 import IntTerm from './intterm';
 import MinusTerm from './minusterm';
 import PlusTerm from './plusterm';
-import Roller from './roller';
+import Roller from '../roller';
 import Term from './term';
 import TermResult from './termresult';
 

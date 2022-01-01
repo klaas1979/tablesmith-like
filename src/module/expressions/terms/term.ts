@@ -1,4 +1,4 @@
-import Roller from './roller';
+import Roller from '../roller';
 import TermResult from './termresult';
 
 interface Term {

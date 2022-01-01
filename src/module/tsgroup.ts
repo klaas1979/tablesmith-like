@@ -1,7 +1,5 @@
 import RollResult from './expressions/rollresult';
-import TSExpression from './expressions/tsexpression';
 import TSExpressions from './expressions/tsexpressions';
-import TSVariableSetExpression from './expressions/tsvariablesetexpression';
 import TSRange from './tsrange';
 /**
  * TSGroup is a Group within a Table. In Tablesmith it looks like:
@@ -19,16 +17,12 @@ class TSGroup {
   ranges: TSRange[];
   before: TSExpressions;
   after: TSExpressions;
-  current: TSExpressions | undefined;
-  assignment: TSExpressions | undefined;
-  stacked: TSExpressions | undefined;
   lastRoll: RollResult | undefined;
   constructor(name: string) {
     this.name = name;
     this.ranges = [];
     this.before = new TSExpressions();
     this.after = new TSExpressions();
-    this.current = undefined;
   }
 
   /**
@@ -64,15 +58,6 @@ class TSGroup {
   }
 
   /**
-   * The currently edited expressions collection to add expressions to, can be from before, after or group.
-   * @returns Returns the currently added TSExpression to add expressions to.
-   */
-  getCurrentExpressions(): TSExpressions {
-    if (!this.current) throw `No range nor a before '<' or after '>' setup for group '${this.name}'`;
-    return this.current;
-  }
-
-  /**
    * Returns the last roll made on this group, or throws if not rolled and called.
    * @returns RollResult that represents the LastRoll on this group.
    */
@@ -86,7 +71,7 @@ class TSGroup {
    * @returns max value that is contained in the ranges.
    */
   getMaxValue(): number {
-    return this._lastRange().getUpper();
+    return this.lastRange().getUpper();
   }
 
   /**
@@ -100,9 +85,9 @@ class TSGroup {
     this.lastRoll = rollResult;
     let result;
     if (rollResult.total < 1) {
-      result = this._firstRange();
+      result = this.firstRange();
     } else if (rollResult.total > this.getMaxValue()) {
-      result = this._lastRange();
+      result = this.lastRange();
     } else {
       result = this._rangeFor(rollResult.total);
     }
@@ -112,73 +97,15 @@ class TSGroup {
   }
 
   /**
-   * Adds a new Range to Group starting after last range or 1 if it is the first and going up to given value and
+   * Adds a new Range to Group starting after last range or with 1 if it is the first and going up to given value and
    * sets this Range up as current expressions to add to.
-   * @param upper the number donating the new ranges max value.
+   * @param range the range to add to this group.
    */
-  addRange(upper: number): void {
-    const lower = this.ranges.length > 0 ? this._lastRange().upper + 1 : 1;
-    const range = new TSRange(lower, upper);
+  addRange(range: TSRange): void {
+    const minLower = this.ranges.length > 0 ? this.lastRange().upper + 1 : 1;
+    if (range.lower != minLower)
+      throw `Could not add range with gap or overlap in bounds got '${range.lower}-${range.upper}' minimum lower '${minLower}'`;
     this.ranges.push(range);
-    this.current = range.getExpressions();
-  }
-
-  /**
-   * Helper setting up the current expressions to add to, to before.
-   */
-  addBefore(): void {
-    this.current = this.before;
-  }
-
-  /**
-   * Helper setting up the current expressions to add to, to after.
-   */
-  addAfter(): void {
-    this.current = this.after;
-  }
-
-  /**
-   * Toggles variable assignment Context on and off. If toggled on the Expressions are collected
-   * for the variable assignment and the current expressions stacked away. If toggled of the old expression stack
-   * is restored to save Expressions following variable assignment.
-   */
-  toggleVariableAssigment(): void {
-    if (!this.assignment) this.startVariableAssignment();
-    else this.endVariableAssignment();
-  }
-
-  private startVariableAssignment(): void {
-    this.stacked = this.current;
-    this.assignment = new TSExpressions();
-    this.current = this.assignment;
-  }
-
-  private endVariableAssignment(): void {
-    this.current = this.stacked;
-  }
-
-  /**
-   * Adds expression to currently setup expressions, that can be a Range or a before or after part.
-   * @param expression to add to this group.
-   */
-  addExpression(expression: TSExpression): void {
-    expression.setGroup(this);
-    this.addAssignmentExpressionsIfExists(expression);
-    this.getCurrentExpressions().add(expression);
-  }
-
-  /**
-   * If assignment expressions exists, adds them to the given expression.
-   * @param expression to existing assignment expressions to.
-   */
-  private addAssignmentExpressionsIfExists(expression: TSExpression) {
-    if (this.assignment) {
-      const setExpression = expression as TSVariableSetExpression;
-      if (typeof setExpression.setValueExpressions === 'function') {
-        setExpression.setValueExpressions(this.assignment);
-        this.assignment = undefined;
-      }
-    }
   }
 
   private _rangeFor(total: number): TSRange {
@@ -195,11 +122,18 @@ class TSGroup {
     return result;
   }
 
-  private _firstRange(): TSRange {
+  /**
+   * Returns first Range of this group.
+   * @returns the first range of this Group.
+   */
+  firstRange(): TSRange {
     return this.ranges[0];
   }
-
-  private _lastRange(): TSRange {
+  /**
+   * Returns the last range of this group.
+   * @returns the last Range of this group.
+   */
+  lastRange(): TSRange {
     return this.ranges[this.ranges.length - 1];
   }
 }
