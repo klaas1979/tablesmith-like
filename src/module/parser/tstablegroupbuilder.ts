@@ -19,6 +19,7 @@ import TSMathTruncExpression from '../expressions/tstmathtruncexpression';
 import TSMathMinExpression from '../expressions/tstmathminexpression';
 import TSMathMaxExpression from '../expressions/tstmathmaxexpression';
 import TSMathPowerExpression from '../expressions/tstmathpowerexpression';
+import TSMathModExpression from '../expressions/tstmathmodexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -315,6 +316,10 @@ class TSTableGroupBuilder {
       case 'Max':
         param1 = this.stack.unstack();
         result = new TSMathMaxExpression(param1, param);
+        break;
+      case 'Mod':
+        param1 = this.stack.unstack();
+        result = new TSMathModExpression(param1, param);
         break;
       case 'Power':
         param1 = this.stack.unstack();

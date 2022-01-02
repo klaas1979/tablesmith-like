@@ -330,6 +330,32 @@ describe('Max~', () => {
   });
 });
 
+describe('Mod~ (modulo or remainder)', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('correct max expression', () => {
+    simpleTable = ':Start\n1,{Mod~3,2}\n';
+    tablesmith.addTable(filename, simpleTable);
+    const expression = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    expect(expression).toBe('{Mod~3,2}');
+  });
+
+  it('3 / 2 remainder = 1', () => {
+    simpleTable = ':Start\n1,{Mod~3,2}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
+  });
+
+  it('2 / 2 remainder = 0', () => {
+    simpleTable = ':Start\n1,{Mod~2,2}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('0');
+  });
+});
+
 describe('Power~', () => {
   beforeEach(() => {
     tablesmith.reset();
