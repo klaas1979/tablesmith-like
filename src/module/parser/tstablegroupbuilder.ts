@@ -12,6 +12,7 @@ import TSSelectExpression from '../expressions/tsselectexpression';
 import SelectTuple from '../expressions/selecttuple';
 import TSBoldExpression from '../expressions/tsboldexpression';
 import TSMathAbsExpression from '../expressions/tstmathabsexpression';
+import TSMathCeilExpression from '../expressions/tstmathceilexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -279,6 +280,9 @@ class TSTableGroupBuilder {
     switch (name) {
       case 'Abs':
         result = new TSMathAbsExpression(param1);
+        break;
+      case 'Ceil':
+        result = new TSMathCeilExpression(param1);
         break;
       default:
         throw `Math function for name '${name}' not implemented!`;

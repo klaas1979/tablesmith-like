@@ -125,27 +125,65 @@ describe('Abs~', () => {
     expect(expression).toBe('{Abs~-10}');
   });
 
-  it('abs for negative integer', () => {
+  it('negative integer', () => {
     simpleTable = ':Start\n1,{Abs~-10}\n';
     tablesmith.addTable(filename, simpleTable);
     expect(tablesmith.evaluate(`[${filename}]`)).toBe('10');
   });
 
-  it('abs for positive integer', () => {
+  it('positive integer', () => {
     simpleTable = ':Start\n1,{Abs~10}\n';
     tablesmith.addTable(filename, simpleTable);
     expect(tablesmith.evaluate(`[${filename}]`)).toBe('10');
   });
 
-  it('abs for negative float', () => {
+  it('negative float', () => {
     simpleTable = ':Start\n1,{Abs~-10.101}\n';
     tablesmith.addTable(filename, simpleTable);
     expect(tablesmith.evaluate(`[${filename}]`)).toBe('10.101');
   });
 
-  it('abs for positive float', () => {
+  it('positive float', () => {
     simpleTable = ':Start\n1,{Abs~10.101}\n';
     tablesmith.addTable(filename, simpleTable);
     expect(tablesmith.evaluate(`[${filename}]`)).toBe('10.101');
+  });
+});
+
+describe('Ceil~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('correct abs expression', () => {
+    simpleTable = ':Start\n1,{Ceil~1.5}\n';
+    tablesmith.addTable(filename, simpleTable);
+    const expression = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    expect(expression).toBe('{Ceil~1.5}');
+  });
+
+  it('negative integer', () => {
+    simpleTable = ':Start\n1,{Ceil~-1}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('-1');
+  });
+
+  it('positive integer', () => {
+    simpleTable = ':Start\n1,{Ceil~10}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('10');
+  });
+
+  it('negative float', () => {
+    simpleTable = ':Start\n1,{Ceil~-10.101}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('-10');
+  });
+
+  it('positive float', () => {
+    simpleTable = ':Start\n1,{Ceil~10.101}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('11');
   });
 });
