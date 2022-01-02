@@ -125,14 +125,26 @@ describe('Abs~', () => {
     expect(expression).toBe('{Abs~-10}');
   });
 
-  it('abs for integer', () => {
+  it('abs for negative integer', () => {
     simpleTable = ':Start\n1,{Abs~-10}\n';
     tablesmith.addTable(filename, simpleTable);
     expect(tablesmith.evaluate(`[${filename}]`)).toBe('10');
   });
 
-  it('abs for float', () => {
+  it('abs for positive integer', () => {
+    simpleTable = ':Start\n1,{Abs~10}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('10');
+  });
+
+  it('abs for negative float', () => {
     simpleTable = ':Start\n1,{Abs~-10.101}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('10.101');
+  });
+
+  it('abs for positive float', () => {
+    simpleTable = ':Start\n1,{Abs~10.101}\n';
     tablesmith.addTable(filename, simpleTable);
     expect(tablesmith.evaluate(`[${filename}]`)).toBe('10.101');
   });
