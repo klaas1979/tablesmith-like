@@ -336,6 +336,19 @@ class TSParserFactory {
     if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
     this.groupBuilder.addExpression(new TSNewlineExpression());
   }
+
+  startMath(functionname: string): void {
+    if (!this.groupBuilder) throw `Cannot start Expression without defined Group!`;
+    this.groupBuilder.startMath(functionname);
+  }
+
+  /**
+   * Creates and adds math function on stack.
+   */
+  createMathFunction(): void {
+    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
+    this.groupBuilder.addExpression(this.groupBuilder.createMathFunction());
+  }
 }
 
 export default TSParserFactory;

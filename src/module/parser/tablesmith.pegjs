@@ -292,7 +292,7 @@ TSMathFunction
   / Calc _ MathExpression _ '}' { errorHandling(() => { 
             options.pf.createCalc();
           }); }
-//  / SingleParamMath
+  / SingleParamMath
 
 Dice = '{' _ 'Dice~'  { errorHandling(() => {
             options.pf.mathBuilder.stackExpressionContext();
@@ -300,6 +300,22 @@ Dice = '{' _ 'Dice~'  { errorHandling(() => {
 
 Calc = '{' _ 'Calc~'  { errorHandling(() => {
             options.pf.mathBuilder.stackExpressionContext();
+          }); }
+
+SingleParamMath
+  = '{' _ SingleParamMathFunctions _ Expression _ '}' { errorHandling(() => {
+            options.pf.createMathFunction();
+          }); }
+
+SingleParamMathFunctions
+  = 'Abs~' { errorHandling(() => {
+            options.pf.startMath('Abs');
+          }); }
+  / 'Ceil~' { errorHandling(() => {
+            options.pf.startMath('Ceil');
+          }); }
+  / 'Floor~' { errorHandling(() => {
+            options.pf.startMath('Floor');
           }); }
 
 MathExpression

@@ -11,6 +11,7 @@ import TSLoopExpression from '../expressions/tsloopexpression';
 import TSSelectExpression from '../expressions/tsselectexpression';
 import SelectTuple from '../expressions/selecttuple';
 import TSBoldExpression from '../expressions/tsboldexpression';
+import TSMathAbsExpression from '../expressions/tstmathabsexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -259,6 +260,31 @@ class TSTableGroupBuilder {
     const result = this.stack.getCurrentExpressions();
     this.stack.unstack();
     return new TSBoldExpression(result);
+  }
+
+  /**
+   * Starts a bold expression.
+   */
+  startMath(functionname: string) {
+    this.stack.stackMath(functionname);
+  }
+
+  /**
+   * Creates TSBoldExpression for data collected.
+   */
+  createMathFunction(): TSExpression {
+    const name = this.stack.unstackMath();
+    const param1 = this.stack.getCurrentExpressions();
+    let result;
+    switch (name) {
+      case 'Abs':
+        result = new TSMathAbsExpression(param1);
+        break;
+      default:
+        throw `Math function for name '${name}' not implemented!`;
+    }
+    this.stack.unstack(); // unstack back
+    return result;
   }
 }
 

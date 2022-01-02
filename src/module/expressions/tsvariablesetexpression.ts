@@ -66,38 +66,38 @@ class TSVariableSetExpression implements TSExpression {
   }
 
   private evaluateSet(currentValue: string | number | undefined, value: string) {
-    this.assign(Number.parseInt(value));
+    this.assign(Number.parseFloat(value));
   }
 
   private evaluatePlus(currentValue: string | number | undefined, value: string) {
-    this.assign(Number.parseInt(`${currentValue}`) + Number.parseInt(value));
+    this.assign(Number.parseFloat(`${currentValue}`) + Number.parseFloat(value));
   }
 
   private evaluateMinus(currentValue: string | number | undefined, value: string) {
-    this.assign(Number.parseInt(`${currentValue}`) - Number.parseInt(value));
+    this.assign(Number.parseFloat(`${currentValue}`) - Number.parseFloat(value));
   }
 
   private evaluateMult(currentValue: string | number | undefined, value: string) {
-    this.assign(Number.parseInt(`${currentValue}`) * Number.parseInt(value));
+    this.assign(Number.parseFloat(`${currentValue}`) * Number.parseFloat(value));
   }
 
   private evaluateDiv(currentValue: string | number | undefined, value: string) {
-    this.assign(Number.parseInt(`${currentValue}`) / Number.parseInt(value));
+    this.assign(Number.parseFloat(`${currentValue}`) / Number.parseFloat(value));
   }
 
   private evaluateDivRound(currentValue: string | number | undefined, value: string) {
-    this.assign(Math.round(Number.parseInt(`${currentValue}`) / Number.parseInt(value)));
+    this.assign(Math.round(Number.parseFloat(`${currentValue}`) / Number.parseFloat(value)));
   }
 
   private evaluateMinimumBoundary(currentValue: string | number | undefined, value: string) {
-    const currentInt = Number.parseInt(`${currentValue}`);
-    const newInt = Number.parseInt(value);
+    const currentInt = Number.parseFloat(`${currentValue}`);
+    const newInt = Number.parseFloat(value);
     if (Number.isNaN(currentInt) || currentInt < newInt) this.assign(newInt);
   }
 
   private evaluateMaximumBoundary(currentValue: string | number | undefined, value: string) {
-    const currentInt = Number.parseInt(`${currentValue}`);
-    const newInt = Number.parseInt(value);
+    const currentInt = Number.parseFloat(`${currentValue}`);
+    const newInt = Number.parseFloat(value);
     if (Number.isNaN(currentInt) || currentInt > newInt) this.assign(newInt);
   }
 

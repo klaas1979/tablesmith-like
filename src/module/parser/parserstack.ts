@@ -12,6 +12,7 @@ class ParserStack {
   assignment: TSExpressions | undefined;
   stacked: TSExpressions[];
   ifFunctionNames: string[];
+  mathFunctionNames: string[];
   logicalFunctionNames: string[];
   booleanOperators: string[];
   ifFalseValuesAdded: boolean[];
@@ -21,6 +22,7 @@ class ParserStack {
     this.stacked = [];
     this.booleanOperators = [];
     this.ifFunctionNames = [];
+    this.mathFunctionNames = [];
     this.logicalFunctionNames = [];
     this.ifFalseValuesAdded = [];
     this.conditionalDepths = [];
@@ -138,6 +140,25 @@ class ParserStack {
   unstackIf(): string {
     const functionname = this.ifFunctionNames.pop();
     if (!functionname) throw 'No if functionname to unstack!';
+    return functionname;
+  }
+
+  /**
+   * Stacks context for math expressions.
+   * @param mathfunction the name of the function expression to stack.
+   */
+  stackMath(mathfunction: string): void {
+    this.mathFunctionNames.push(mathfunction);
+    this.stack();
+  }
+
+  /**
+   * Unstacks math functionand returns it.
+   * @returns math function from stack.
+   */
+  unstackMath(): string {
+    const functionname = this.mathFunctionNames.pop();
+    if (!functionname) throw 'No math functionname to unstack!';
     return functionname;
   }
 

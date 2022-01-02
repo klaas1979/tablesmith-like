@@ -111,3 +111,29 @@ describe('Parsing nested Math in Dice~ or Calc~', () => {
     expect(total).toBe('3');
   });
 });
+
+describe('Abs~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('correct abs expression', () => {
+    simpleTable = ':Start\n1,{Abs~-10}\n';
+    tablesmith.addTable(filename, simpleTable);
+    const expression = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    expect(expression).toBe('{Abs~-10}');
+  });
+
+  it('abs for integer', () => {
+    simpleTable = ':Start\n1,{Abs~-10}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('10');
+  });
+
+  it('abs for float', () => {
+    simpleTable = ':Start\n1,{Abs~-10.101}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('10.101');
+  });
+});
