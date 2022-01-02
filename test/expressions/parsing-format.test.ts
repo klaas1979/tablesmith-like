@@ -41,15 +41,22 @@ describe('Parsing {Line~', () => {
     filename = 'simpletable';
   });
 
+  it('can be split over many lines', () => {
+    simpleTable = ':Start\n1,One{ \n_ Line~ \n_ center \n_ , \n_ 100 \n_ } \n_ Two\n';
+    tablesmith.addTable(filename, simpleTable);
+    const result = tablesmith.evaluate(`[${filename}]`);
+    expect(result).toBe('One<br/> Two');
+  });
+
   it('Line expression format correct', () => {
-    simpleTable = ':Start\n1,One{Line~center,100%}Two\n';
+    simpleTable = ':Start\n1,One{Line~center,100}Two\n';
     tablesmith.addTable(filename, simpleTable);
     expect(tablesmith.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe(
       'One{Line~center,100%}Two',
     );
   });
   it('for Group with Line formats html', () => {
-    simpleTable = ':Start\n1,One{Line~center,100%}Two\n';
+    simpleTable = ':Start\n1,One{Line~center,100}Two\n';
     tablesmith.addTable(filename, simpleTable);
     const result = tablesmith.evaluate(`[${filename}]`);
     expect(result).toBe('One<br/>Two');

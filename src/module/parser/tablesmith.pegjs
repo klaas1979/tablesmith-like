@@ -56,13 +56,13 @@ GroupName
 
 /* Range is a single line in a group donating the lower and upper end for the result, i.e. 1-2,Result */
 GroupContent
-  = RangeValue line:Line EmptyLine?
-  / BeforeValue  line:Line EmptyLine?
-  / AfterValue  line:Line EmptyLine?
+  = RangeValue Expression+ EmptyLine?
+  / BeforeValue Expression+ EmptyLine?
+  / AfterValue Expression+ EmptyLine?
 
 /* Only the range expression with the colon ',' */
 RangeValue
-  = (int _ '-' _)? up:int Colen { errorHandling(() => {
+  = (int __ '-' __)? up:int __ [,] { errorHandling(() => {
             options.pf.addRange(toInt(up));
           }); }
 
@@ -77,14 +77,6 @@ AfterValue
   = '>' _ { errorHandling(() => {
             options.pf.addAfter();
           }); }
-
-/* Separates the range lower-upper value from it's Expression */
-Colen
-  = _ [,]
-
-/* Lines are contained in groups, Tablesmith allows lines to be split by starting the next line with an underscore '_' */
-Line
-  = head:Expression tail:(EmptyLine '_' @Expression)*
 
 VariableGet
   = '%' tablename:(@Name '.')? varname:VariableName '%' { errorHandling(() => {
@@ -109,7 +101,7 @@ Value
 
 /* Call of another group within this Table or within another. Table */
 GroupFunction
-  = '[' table:(@Name '.')? group:Name Modifier? ']' { errorHandling(() => {
+  = '[' _ table:(@Name '.')? group:Name _ Modifier? _ ']' { errorHandling(() => {
             options.pf.createGroupCall(table, group);
           }); }
   
@@ -154,7 +146,7 @@ WhileEnd
           }); }
 
 LoopStart
-  = '{Loop~' { errorHandling(() => {
+  = '{' _ 'Loop~' { errorHandling(() => {
             options.pf.startLoop();
           }); }
 
@@ -167,7 +159,7 @@ LoopEnd
           }); }
 
 SelectStart
-  = '{Select~' { errorHandling(() => {
+  = '{' _ 'Select~' { errorHandling(() => {
             options.pf.startSelect();
           }); }
 
@@ -236,10 +228,10 @@ IfEnd
 
 /* Expressions are all supported values or results for a Range. The Tablesmith functions are defined here. */
 Expression
-  = GroupFunction Expression*
-  / TsFunction Expression*
-  / VariableGet Expression*
-  / VariableSet Expression*
+  = GroupFunction Value? _ Expression*
+  / TsFunction Value? _ Expression*
+  / VariableGet Value? _ Expression*
+  / VariableSet Value? _ Expression*
   / Value Expression*
 
 /* Expressions that are allowed in a set Variable expression. */
@@ -301,21 +293,21 @@ ValueSelect
           }); }
 
 TSMathFunction
-  = _ Dice _ MathExpression _ '}' { errorHandling(() => {
+  = Dice _ MathExpression _ '}' { errorHandling(() => {
             options.pf.createDice();
           }); }
-  / _ Calc _ MathExpression _ '}' { errorHandling(() => { 
+  / Calc _ MathExpression _ '}' { errorHandling(() => { 
             options.pf.createCalc();
           }); }
-  / _ '{LastRoll~' _ '}' { errorHandling(() => {
+  / '{' _ 'LastRoll~' _ '}' { errorHandling(() => {
             options.pf.createLastRoll();
           }); }
 
-Dice = '{Dice~'  { errorHandling(() => {
+Dice = '{' _ 'Dice~'  { errorHandling(() => {
             options.pf.mathBuilder.stackExpressionContext();
           }); }
 
-Calc = '{Calc~'  { errorHandling(() => {
+Calc = '{' _ 'Calc~'  { errorHandling(() => {
             options.pf.mathBuilder.stackExpressionContext();
           }); }
 
@@ -347,7 +339,7 @@ MathMult
 MathFactor
   = TSMathFunction
   / OpenBracket _ MathExpression _ CloseBracket
-  / _ number:int { errorHandling(() => {
+  / number:int { errorHandling(() => {
             options.pf.mathBuilder.addNumber(toInt(number));
           }); }
   / '%' tablename:(@Name '.')? varname:Name '%'{ errorHandling(() => {
@@ -366,7 +358,7 @@ CloseBracket
 
 TSFormatFunctions
   = _ StartBold Expression EndBold
-  / _ '{Line~' _ align:Align _ ',' _ width:(@int _ '%')? _ '}' { errorHandling(() => {
+  / _ '{' _ 'Line~' _ align:Align _ ',' _ width:int? _ '}' { errorHandling(() => {
             options.pf.createLine(align, width);
           }); }
   / _ '{CR~' _ '}' { errorHandling(() => {
@@ -374,7 +366,7 @@ TSFormatFunctions
           }); }
 
 StartBold
-  = '{Bold~' { errorHandling(() => { 
+  = '{' _ 'Bold~' { errorHandling(() => { 
             options.pf.startBold();
           }); }
 
@@ -416,7 +408,11 @@ Name
 int
  = $([0-9]+)
 
-_ 'Whitspace'
+/** A break within a before, after or Range of a group to make the table more human readable. */
+_ 'Multi Line Whitespace with _'
+= __ ([\n] '_' __)?
+
+__ 'Whitspace'
   = [\t ]*
 
 /* Stuff to ignore within a Table file. */
