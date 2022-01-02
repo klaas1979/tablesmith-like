@@ -21,7 +21,7 @@ class TSMathPowerExpression implements TSExpression {
     return `${Math.pow(value1, value2)}`;
   }
   getExpression(): string {
-    return `{Power~${this.param1.getExpression()},${this.param2.getExpression()}}`;
+    return `{Power~${this.param1.getExpression()}^${this.param2.getExpression()}}`;
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setGroup(group: TSGroup): void {

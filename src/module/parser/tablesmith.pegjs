@@ -258,7 +258,15 @@ ExpressionTextNoComma
   = GroupFunction ExpressionTextNoComma*
   / TsFunction ExpressionTextNoComma*
   / VariableGet ExpressionTextNoComma*
-  / ValueSelect ExpressionTextNoComma*
+  / ValueNoComma ExpressionTextNoComma*
+
+/* Expressions where text is not matching "," that are allowed as value in a Select. */
+ExpressionTextNoCommaNorPower
+  = GroupFunction ExpressionTextNoCommaNorPower*
+  / TsFunction ExpressionTextNoCommaNorPower*
+  / VariableGet ExpressionTextNoCommaNorPower*
+  / ValueNoCommaNorPower ExpressionTextNoCommaNorPower*
+
 
 ValueIfPart
   = text:PlainTextIfPart { errorHandling(() => {
@@ -275,8 +283,13 @@ ValueIfColon
             options.pf.createText(text);
           }); }
 
-ValueSelect
+ValueNoComma
   = text:PlainTextNoComma { errorHandling(() => {
+            options.pf.createText(text);
+          }); }
+
+ValueNoCommaNorPower
+  = text:PlainTextNoCommaNorPower { errorHandling(() => {
             options.pf.createText(text);
           }); }
 
@@ -294,6 +307,7 @@ TSMathFunction
           }); }
   / MathOneParamFunctions
   / MathTwoParamFunctions
+  / MathPowerFunction // has '^' as separator in TS definition
 
 Dice = '{' _ 'Dice~'  { errorHandling(() => {
             options.pf.mathBuilder.stackExpressionContext();
@@ -326,6 +340,9 @@ MathOneParamFunctionsNames
   / 'Trunc~' { errorHandling(() => {
             options.pf.startMath('Trunc');
           }); }
+  / 'Sqrt~' { errorHandling(() => {
+            options.pf.startMath('Sqrt');
+          }); }
 
 MathTwoParamFunctionsNames
   = 'Round~' { errorHandling(() => {
@@ -340,13 +357,20 @@ MathTwoParamFunctionsNames
   / 'Mod~' { errorHandling(() => {
             options.pf.startMath('Mod');
           }); }
-  / 'Power~' { errorHandling(() => {
+
+MathPowerFunction
+  = '{' _ MathPower _ ValueNoCommaNorPower _ MathPowerSeparator _ Expression _ '}' { errorHandling(() => {
+            options.pf.createMathFunction();
+          }); }
+
+MathPower = 'Power~' { errorHandling(() => {
             options.pf.startMath('Power');
           }); }
-  / 'Sqrt~' { errorHandling(() => {
-            options.pf.startMath('Sqrt');
+
+MathPowerSeparator = [,^] { errorHandling(() => { // has only '^' in definition but use both for convenience
+            options.pf.startNextMathParameter();
           }); }
-  
+
 MathParamSeparator
   = ','  { errorHandling(() => {
             options.pf.startNextMathParameter();
@@ -425,9 +449,13 @@ PlainTextIfSlash
  PlainTextIfColon
  = $[^:{}[\]%|\n]+
 
- /** Text that is allowed within an Select. */
+ /** Text that is allowed within an selections where a comma ',' happens. */
  PlainTextNoComma
  = $[^,{}[\]%|\n]+
+
+ /** Text that is allowed within an selections where a comma ',' or power '^' happens. */
+PlainTextNoCommaNorPower
+ = $[^^,{}[\]%|\n]+
 
 Align
  = $'center' / $'left' / $'right'
