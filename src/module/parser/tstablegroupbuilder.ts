@@ -10,6 +10,7 @@ import TSWhileExpression from '../expressions/tswhileexpression';
 import TSLoopExpression from '../expressions/tsloopexpression';
 import TSSelectExpression from '../expressions/tsselectexpression';
 import SelectTuple from '../expressions/selecttuple';
+import TSBoldExpression from '../expressions/tsboldexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -242,6 +243,22 @@ class TSTableGroupBuilder {
     const functionName = this.stack.unstackLogical();
     this.stack.unstack(); // pop out the last if, to be back to previous context
     return new TSLogicalExpression(functionName, booleanComparison1, booleanComparison2);
+  }
+
+  /**
+   * Starts a bold expression.
+   */
+  startBold() {
+    this.stack.stack();
+  }
+
+  /**
+   * Creates TSBoldExpression for data collected.
+   */
+  createBold(): TSBoldExpression {
+    const result = this.stack.getCurrentExpressions();
+    this.stack.unstack();
+    return new TSBoldExpression(result);
   }
 }
 

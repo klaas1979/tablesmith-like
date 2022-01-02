@@ -72,20 +72,6 @@ describe('Tablesmith#evaluate', () => {
     expect(result).toBe('BeforeOneAfter');
   });
 
-  it('for Group with Bold formats in html', () => {
-    simpleTable = ':Start\n1,{Bold~One}\n';
-    tablesmith.addTable(filename, simpleTable);
-    const result = tablesmith.evaluate(`[${filename}]`);
-    expect(result).toBe('<b>One</b>');
-  });
-
-  it('for Group with Line formats htm', () => {
-    simpleTable = ':Start\n1,One{Line~center,100%}Two\n';
-    tablesmith.addTable(filename, simpleTable);
-    const result = tablesmith.evaluate(`[${filename}]`);
-    expect(result).toBe('One<br/>Two');
-  });
-
   it('LastRoll returns roll for last Group to be rolled upon', () => {
     simpleTable = ':Start\n1,One{LastRoll~}[Other=2]\n:Other\n1,notused\n2,Two{LastRoll~}';
     tablesmith.addTable(filename, simpleTable);

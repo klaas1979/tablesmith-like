@@ -86,14 +86,6 @@ Colen
 Line
   = head:Expression tail:(EmptyLine '_' @Expression)*
 
-/* Expressions are all supported values or results for a Range. The Tablesmith functions are defined here. */
-Expression
-  = GroupFunction Expression*
-  / TsFunction Expression*
-  / VariableGet Expression*
-  / VariableSet Expression*
-  / Value Expression*
-
 VariableGet
   = '%' tablename:(@Name '.')? varname:VariableName '%' { errorHandling(() => {
             options.pf.createVariableGet(tablename, varname);
@@ -103,13 +95,6 @@ VariableSet
   = VariableSetIdentifier tablename:(@Name '.')? varname:VariableName type:$[-+=*/\\<>&] VariableSetExpressions VariableSetIdentifier { errorHandling(() => {
             options.pf.createVariableSet(tablename, varname, type);
           }); }
-
-/* Expressions that are allowed in a set Variable expression. */
-VariableSetExpressions
-  = GroupFunction VariableSetExpressions*
-  / TsFunction VariableSetExpressions*
-  / VariableGet VariableSetExpressions*
-  / Value VariableSetExpressions*
 
 VariableSetIdentifier
   = '|' { errorHandling(() => {
@@ -224,9 +209,6 @@ IfColon
 
           }); }
 
-BooleanExpression
-  = IfExpressionPart _ BooleanOperator _ IfExpressionPart
-
 BooleanOperator
   = op:(@'!=' / @'<=' / @'>=' / @[=<>]) { errorHandling(() => {
             options.pf.setBooleanComparisonOperator(op);
@@ -251,6 +233,24 @@ IfEnd
   = '}' { errorHandling(() => {
             options.pf.createIf();
           }); }
+
+/* Expressions are all supported values or results for a Range. The Tablesmith functions are defined here. */
+Expression
+  = GroupFunction Expression*
+  / TsFunction Expression*
+  / VariableGet Expression*
+  / VariableSet Expression*
+  / Value Expression*
+
+/* Expressions that are allowed in a set Variable expression. */
+VariableSetExpressions
+  = GroupFunction VariableSetExpressions*
+  / TsFunction VariableSetExpressions*
+  / VariableGet VariableSetExpressions*
+  / Value VariableSetExpressions*
+
+BooleanExpression
+  = IfExpressionPart _ BooleanOperator _ IfExpressionPart
 
 /* Expressions that are allowed in the boolean part before the "?". */
 IfExpressionPart
@@ -365,14 +365,22 @@ CloseBracket
           }); }
 
 TSFormatFunctions
-  = _ '{Bold~' text:PlainText '}'  { errorHandling(() => { 
-            options.pf.createBold(text);
-          }); }
+  = _ StartBold Expression EndBold
   / _ '{Line~' _ align:Align _ ',' _ width:(@int _ '%')? _ '}' { errorHandling(() => {
             options.pf.createLine(align, width);
           }); }
   / _ '{CR~' _ '}' { errorHandling(() => {
             options.pf.createNewline();
+          }); }
+
+StartBold
+  = '{Bold~' { errorHandling(() => { 
+            options.pf.startBold();
+          }); }
+
+EndBold
+  = '}' { errorHandling(() => { 
+            options.pf.createBold();
           }); }
 
 /** Matches all text that is printed verbose, without special chars that are key chars for the DSL. */

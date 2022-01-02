@@ -3,7 +3,6 @@ import TSTextExpression from '../expressions/tstextexpression';
 import GroupCallModifierTerm from '../expressions/terms/groupcallmodifierterm';
 import TSGroupCallExpression from '../expressions/tsgroupcallexpression';
 import TSNewlineExpression from '../expressions/tsnewlineexpression';
-import TSBoldExpression from '../expressions/tsboldexpression';
 import TSLineExpression from '../expressions/tslineexpression';
 import TSLastRollExpression from '../expressions/tslastrollexpression';
 import TSVariableGetExpression from '../expressions/tsvariablegetexpression';
@@ -295,13 +294,19 @@ class TSParserFactory {
   }
 
   /**
-   * Creates a new TSExpression for bold text.
-   * @param text to create bold TSExpression for.
-   * @returns TSTextExpression for given text.
+   * Start parsing context for a new TSExpression for bold text.
    */
-  createBold(text: string): void {
+  startBold(): void {
     if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
-    this.groupBuilder.addExpression(new TSBoldExpression(text));
+    this.groupBuilder.startBold();
+  }
+
+  /**
+   * Creates a new TSExpression for bold test
+   */
+  createBold(): void {
+    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
+    this.groupBuilder.addExpression(this.groupBuilder.createBold());
   }
 
   /**
