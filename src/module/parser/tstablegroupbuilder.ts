@@ -20,6 +20,7 @@ import TSMathMinExpression from '../expressions/tstmathminexpression';
 import TSMathMaxExpression from '../expressions/tstmathmaxexpression';
 import TSMathPowerExpression from '../expressions/tstmathpowerexpression';
 import TSMathModExpression from '../expressions/tstmathmodexpression';
+import TSMathSqrtExpression from '../expressions/tstmathsqrtexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -304,6 +305,9 @@ class TSTableGroupBuilder {
         break;
       case 'Trunc':
         result = new TSMathTruncExpression(param);
+        break;
+      case 'Sqrt':
+        result = new TSMathSqrtExpression(param);
         break;
       case 'Round':
         const places = this.stack.unstack();

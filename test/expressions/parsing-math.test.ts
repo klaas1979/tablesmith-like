@@ -252,6 +252,26 @@ describe('Trunc~', () => {
   });
 });
 
+describe('Sqrt~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('correct trunc expression', () => {
+    simpleTable = ':Start\n1,{Sqrt~9}\n';
+    tablesmith.addTable(filename, simpleTable);
+    const expression = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    expect(expression).toBe('{Sqrt~9}');
+  });
+
+  it('integer', () => {
+    simpleTable = ':Start\n1,{Sqrt~9}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('3');
+  });
+});
+
 describe('Round~', () => {
   beforeEach(() => {
     tablesmith.reset();
