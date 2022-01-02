@@ -29,3 +29,6 @@ junit.xml
 
 # Tables that are not free to use for bigger tests
 test/tables/*.tab
+
+# Coverage of tests
+coverage
