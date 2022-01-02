@@ -2,9 +2,9 @@ import TSGroup from '../tsgroup';
 import TSExpression from './tsexpression';
 
 /**
- * Math max function to get bigger of the two values.
+ * Math power function.
  */
-class TSMathMaxExpression implements TSExpression {
+class TSMathPowerExpression implements TSExpression {
   param1: TSExpression;
   param2: TSExpression;
   constructor(param1: TSExpression, param2: TSExpression) {
@@ -18,10 +18,10 @@ class TSMathMaxExpression implements TSExpression {
     const p2string = this.param2.evaluate();
     const value2 = Number.parseFloat(p2string);
     if (Number.isNaN(value2)) throw `Could not get Min for non number value '${p2string}'!`;
-    return `${Math.max(value1, value2)}`;
+    return `${Math.pow(value1, value2)}`;
   }
   getExpression(): string {
-    return `{Max~${this.param1.getExpression()},${this.param2.getExpression()}}`;
+    return `{Power~${this.param1.getExpression()},${this.param2.getExpression()}}`;
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setGroup(group: TSGroup): void {
@@ -29,4 +29,4 @@ class TSMathMaxExpression implements TSExpression {
   }
 }
 
-export default TSMathMaxExpression;
+export default TSMathPowerExpression;

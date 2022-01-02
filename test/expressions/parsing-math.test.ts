@@ -329,3 +329,23 @@ describe('Max~', () => {
     expect(tablesmith.evaluate(`[${filename}]`)).toBe('3');
   });
 });
+
+describe('Power~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('correct power expression', () => {
+    simpleTable = ':Start\n1,{Power~2,4}\n';
+    tablesmith.addTable(filename, simpleTable);
+    const expression = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    expect(expression).toBe('{Power~2,4}');
+  });
+
+  it('2 power 4', () => {
+    simpleTable = ':Start\n1,{Power~2,4}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('16');
+  });
+});
