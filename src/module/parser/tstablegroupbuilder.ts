@@ -15,6 +15,8 @@ import TSMathAbsExpression from '../expressions/tstmathabsexpression';
 import TSMathCeilExpression from '../expressions/tstmathceilexpression';
 import TSMathFloorExpression from '../expressions/tstmathfloorexpression';
 import TSMathRoundExpression from '../expressions/tstmathroundexpression';
+import TSMathTruncExpression from '../expressions/tstmathtruncexpression';
+import TSMathMinExpression from '../expressions/tstmathminexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -284,21 +286,28 @@ class TSTableGroupBuilder {
    */
   createMathFunction(): TSExpression {
     const name = this.stack.unstackMath();
-    const param1 = this.stack.getCurrentExpressions();
+    const param = this.stack.getCurrentExpressions();
     let result;
     switch (name) {
       case 'Abs':
-        result = new TSMathAbsExpression(param1);
+        result = new TSMathAbsExpression(param);
         break;
       case 'Ceil':
-        result = new TSMathCeilExpression(param1);
+        result = new TSMathCeilExpression(param);
         break;
       case 'Floor':
-        result = new TSMathFloorExpression(param1);
+        result = new TSMathFloorExpression(param);
+        break;
+      case 'Trunc':
+        result = new TSMathTruncExpression(param);
         break;
       case 'Round':
         const places = this.stack.unstack();
-        result = new TSMathRoundExpression(param1, places);
+        result = new TSMathRoundExpression(param, places);
+        break;
+      case 'Min':
+        const param1 = this.stack.unstack();
+        result = new TSMathMinExpression(param1, param);
         break;
       default:
         throw `Math function for name '${name}' not implemented!`;

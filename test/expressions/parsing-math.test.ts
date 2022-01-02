@@ -226,6 +226,32 @@ describe('Floor~', () => {
   });
 });
 
+describe('Trunc~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('correct trunc expression', () => {
+    simpleTable = ':Start\n1,{Trunc~1.5}\n';
+    tablesmith.addTable(filename, simpleTable);
+    const expression = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    expect(expression).toBe('{Trunc~1.5}');
+  });
+
+  it('negative float', () => {
+    simpleTable = ':Start\n1,{Trunc~-10.101}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('-10');
+  });
+
+  it('positive float', () => {
+    simpleTable = ':Start\n1,{Trunc~10.101}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('10');
+  });
+});
+
 describe('Round~', () => {
   beforeEach(() => {
     tablesmith.reset();
@@ -239,15 +265,41 @@ describe('Round~', () => {
     expect(expression).toBe('{Round~2,2.1234}');
   });
 
-  it('zero places', () => {
-    simpleTable = ':Start\n1,{Round~0,2.123456}\n';
+  it('zero places and rounding up', () => {
+    simpleTable = ':Start\n1,{Round~0,2.923456}\n';
     tablesmith.addTable(filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('2');
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('3');
   });
 
-  it('3 places', () => {
+  it('3 places and rounding down', () => {
     simpleTable = ':Start\n1,{Round~3,2.123456}\n';
     tablesmith.addTable(filename, simpleTable);
     expect(tablesmith.evaluate(`[${filename}]`)).toBe('2.123');
+  });
+});
+
+describe('Min~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('correct min expression', () => {
+    simpleTable = ':Start\n1,{Min~2,2.1234}\n';
+    tablesmith.addTable(filename, simpleTable);
+    const expression = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    expect(expression).toBe('{Min~2,2.1234}');
+  });
+
+  it('first smaller returns', () => {
+    simpleTable = ':Start\n1,{Min~0,2.923456}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('0');
+  });
+
+  it('second smaller returns', () => {
+    simpleTable = ':Start\n1,{Min~3,2.123456}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('2.123456');
   });
 });

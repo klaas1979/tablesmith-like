@@ -323,12 +323,30 @@ MathOneParamFunctionsNames
   / 'Floor~' { errorHandling(() => {
             options.pf.startMath('Floor');
           }); }
+  / 'Trunc~' { errorHandling(() => {
+            options.pf.startMath('Trunc');
+          }); }
 
 MathTwoParamFunctionsNames
   = 'Round~' { errorHandling(() => {
             options.pf.startMath('Round');
           }); }
-
+  / 'Min~' { errorHandling(() => {
+            options.pf.startMath('Min');
+          }); }
+  / 'Max~' { errorHandling(() => {
+            options.pf.startMath('Round');
+          }); }
+  / 'Mod~' { errorHandling(() => {
+            options.pf.startMath('Round');
+          }); }
+  / 'Power~' { errorHandling(() => {
+            options.pf.startMath('Round');
+          }); }
+  / 'Sqrt~' { errorHandling(() => {
+            options.pf.startMath('Round');
+          }); }
+  
 MathParamSeparator
   = ','  { errorHandling(() => {
             options.pf.startNextMathParameter();
