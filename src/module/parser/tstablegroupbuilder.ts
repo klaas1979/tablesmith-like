@@ -13,6 +13,7 @@ import SelectTuple from '../expressions/selecttuple';
 import TSBoldExpression from '../expressions/tsboldexpression';
 import TSMathAbsExpression from '../expressions/tstmathabsexpression';
 import TSMathCeilExpression from '../expressions/tstmathceilexpression';
+import TSMathFloorExpression from '../expressions/tstmathfloorexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -283,6 +284,9 @@ class TSTableGroupBuilder {
         break;
       case 'Ceil':
         result = new TSMathCeilExpression(param1);
+        break;
+      case 'Floor':
+        result = new TSMathFloorExpression(param1);
         break;
       default:
         throw `Math function for name '${name}' not implemented!`;

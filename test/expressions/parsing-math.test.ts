@@ -187,3 +187,41 @@ describe('Ceil~', () => {
     expect(tablesmith.evaluate(`[${filename}]`)).toBe('11');
   });
 });
+
+describe('Floor~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('correct abs expression', () => {
+    simpleTable = ':Start\n1,{Floor~1.5}\n';
+    tablesmith.addTable(filename, simpleTable);
+    const expression = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    expect(expression).toBe('{Floor~1.5}');
+  });
+
+  it('negative integer', () => {
+    simpleTable = ':Start\n1,{Floor~-1}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('-1');
+  });
+
+  it('positive integer', () => {
+    simpleTable = ':Start\n1,{Floor~10}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('10');
+  });
+
+  it('negative float', () => {
+    simpleTable = ':Start\n1,{Floor~-10.101}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('-11');
+  });
+
+  it('positive float', () => {
+    simpleTable = ':Start\n1,{Floor~10.101}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('10');
+  });
+});
