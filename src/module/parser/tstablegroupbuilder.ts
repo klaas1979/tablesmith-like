@@ -17,6 +17,7 @@ import TSMathFloorExpression from '../expressions/tstmathfloorexpression';
 import TSMathRoundExpression from '../expressions/tstmathroundexpression';
 import TSMathTruncExpression from '../expressions/tstmathtruncexpression';
 import TSMathMinExpression from '../expressions/tstmathminexpression';
+import TSMathMaxExpression from '../expressions/tstmathmaxexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -288,6 +289,7 @@ class TSTableGroupBuilder {
     const name = this.stack.unstackMath();
     const param = this.stack.getCurrentExpressions();
     let result;
+    let param1;
     switch (name) {
       case 'Abs':
         result = new TSMathAbsExpression(param);
@@ -306,8 +308,12 @@ class TSTableGroupBuilder {
         result = new TSMathRoundExpression(param, places);
         break;
       case 'Min':
-        const param1 = this.stack.unstack();
+        param1 = this.stack.unstack();
         result = new TSMathMinExpression(param1, param);
+        break;
+      case 'Max':
+        param1 = this.stack.unstack();
+        result = new TSMathMaxExpression(param1, param);
         break;
       default:
         throw `Math function for name '${name}' not implemented!`;

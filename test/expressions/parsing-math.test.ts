@@ -303,3 +303,29 @@ describe('Min~', () => {
     expect(tablesmith.evaluate(`[${filename}]`)).toBe('2.123456');
   });
 });
+
+describe('Max~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('correct max expression', () => {
+    simpleTable = ':Start\n1,{Max~2,2.1234}\n';
+    tablesmith.addTable(filename, simpleTable);
+    const expression = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    expect(expression).toBe('{Max~2,2.1234}');
+  });
+
+  it('second bigger returns', () => {
+    simpleTable = ':Start\n1,{Max~0,2.923456}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('2.923456');
+  });
+
+  it('first bigger returns', () => {
+    simpleTable = ':Start\n1,{Max~3,2.123456}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('3');
+  });
+});

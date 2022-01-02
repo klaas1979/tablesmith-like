@@ -335,16 +335,16 @@ MathTwoParamFunctionsNames
             options.pf.startMath('Min');
           }); }
   / 'Max~' { errorHandling(() => {
-            options.pf.startMath('Round');
+            options.pf.startMath('Max');
           }); }
   / 'Mod~' { errorHandling(() => {
-            options.pf.startMath('Round');
+            options.pf.startMath('Mod');
           }); }
   / 'Power~' { errorHandling(() => {
-            options.pf.startMath('Round');
+            options.pf.startMath('Power');
           }); }
   / 'Sqrt~' { errorHandling(() => {
-            options.pf.startMath('Round');
+            options.pf.startMath('Sqrt');
           }); }
   
 MathParamSeparator
