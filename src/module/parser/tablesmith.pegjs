@@ -118,14 +118,25 @@ TsFunction
   = TSConditionalFunctions
   / TSLogicalFunctions
   / TSMathFunction
+  / GroupAndTableFunctions
   / TSFormatFunctions
 
 TSConditionalFunctions
-  = IfSlash _ BooleanExpression _ IfQuestionmark _ IfExpressionTextSlash _ (IfSlashSeparator _ IfExpressionTextSlash? _)? IfEnd
-  / IfColon _ BooleanExpression _ IfQuestionmark _ IfExpressionTextColon _ (IfColonSeparator _ IfExpressionTextColon? _)? IfEnd
-  / WhileStart _ WhileExpression _ BlockSeparator _ Expression _ WhileEnd
-  / LoopStart _ LoopExpression _ BlockSeparator _ Expression _ LoopEnd
-  / SelectStart _ SelectExpression _ (BlockSeparator _ SelectExpressionTextComma _)+ SelectExpressionTextComma? _ SelectEnd
+  = IfSlash _ BooleanExpression _ IfQuestionmark _ IfExpressionTextSlash _ (IfSlashSeparator _ IfExpressionTextSlash? _)? '}' { errorHandling(() => {
+            options.pf.createIf();
+          }); }
+  / IfColon _ BooleanExpression _ IfQuestionmark _ IfExpressionTextColon _ (IfColonSeparator _ IfExpressionTextColon? _)?'}' { errorHandling(() => {
+            options.pf.createIf();
+          }); }
+  / WhileStart _ WhileExpression _ BlockSeparator _ Expression _ '}' { errorHandling(() => {
+            options.pf.createWhile();
+          }); }
+  / LoopStart _ LoopExpression _ BlockSeparator _ Expression _ '}' { errorHandling(() => {
+            options.pf.createLoop();
+          }); }
+  / SelectStart _ SelectExpression _ (BlockSeparator _ SelectExpressionTextComma _)+ SelectExpressionTextComma? _ '}' { errorHandling(() => {
+            options.pf.createSelect();
+          }); }
 
 WhileStart
   = '{While~' { errorHandling(() => {
@@ -140,11 +151,6 @@ BlockSeparator
             options.pf.startIteratorBlock();
           }); }
 
-WhileEnd
-  = '}' { errorHandling(() => {
-            options.pf.createWhile();
-          }); }
-
 LoopStart
   = '{' _ 'Loop~' { errorHandling(() => {
             options.pf.startLoop();
@@ -152,11 +158,6 @@ LoopStart
 
 LoopExpression
   = IfExpressionPart
-
-LoopEnd
-  = '}' { errorHandling(() => {
-            options.pf.createLoop();
-          }); }
 
 SelectStart
   = '{' _ 'Select~' { errorHandling(() => {
@@ -166,13 +167,10 @@ SelectStart
 SelectExpression
   = IfExpressionPart
 
-SelectEnd
-  = '}' { errorHandling(() => {
-            options.pf.createSelect();
-          }); }
-
 TSLogicalFunctions
-  = StartLogicalExpression _ BooleanExpression _ LogicalExpressionSeparator _ BooleanExpression _ EndLogicalExpression
+  = StartLogicalExpression _ BooleanExpression _ LogicalExpressionSeparator _ BooleanExpression _ '}' { errorHandling(() => {
+            options.pf.createLogicalExpression();
+          }); }
 
 StartLogicalExpression
   = '{' name:('Or' / 'And' / 'Xor') '~' { errorHandling(() => {
@@ -182,11 +180,6 @@ StartLogicalExpression
 LogicalExpressionSeparator
   = ',' { errorHandling(() => {
             options.pf.startNextBooleanExpression();
-          }); }
-
-EndLogicalExpression
-  = '}' { errorHandling(() => {
-            options.pf.createLogicalExpression();
           }); }
 
 IfSlash
@@ -219,11 +212,6 @@ IfSlashSeparator
 IfColonSeparator
   = ':' { errorHandling(() => {
             options.pf.startIfFalseValue();
-          }); }
-
-IfEnd
-  = '}' { errorHandling(() => {
-            options.pf.createIf();
           }); }
 
 /* Expressions are all supported values or results for a Range. The Tablesmith functions are defined here. */
@@ -292,6 +280,11 @@ ValueSelect
             options.pf.createText(text);
           }); }
 
+GroupAndTableFunctions
+  = '{' _ 'LastRoll~' _ '}' { errorHandling(() => {
+            options.pf.createLastRoll();
+          }); }
+
 TSMathFunction
   = Dice _ MathExpression _ '}' { errorHandling(() => {
             options.pf.createDice();
@@ -299,9 +292,7 @@ TSMathFunction
   / Calc _ MathExpression _ '}' { errorHandling(() => { 
             options.pf.createCalc();
           }); }
-  / '{' _ 'LastRoll~' _ '}' { errorHandling(() => {
-            options.pf.createLastRoll();
-          }); }
+//  / SingleParamMath
 
 Dice = '{' _ 'Dice~'  { errorHandling(() => {
             options.pf.mathBuilder.stackExpressionContext();
@@ -338,7 +329,9 @@ MathMult
 
 MathFactor
   = TSMathFunction
-  / OpenBracket _ MathExpression _ CloseBracket
+  / OpenBracket _ MathExpression _ ')' { errorHandling(() => {
+            options.pf.mathBuilder.closeBracket();
+          }); }
   / number:int { errorHandling(() => {
             options.pf.mathBuilder.addNumber(toInt(number));
           }); }
@@ -351,13 +344,10 @@ OpenBracket
             options.pf.mathBuilder.openBracket();
           }); }
 
-CloseBracket
-  = ')' { errorHandling(() => {
-            options.pf.mathBuilder.closeBracket();
-          }); }
-
 TSFormatFunctions
-  = _ StartBold Expression EndBold
+  = _ StartBold Expression  '}' { errorHandling(() => { 
+            options.pf.createBold();
+          }); }
   / _ '{' _ 'Line~' _ align:Align _ ',' _ width:int? _ '}' { errorHandling(() => {
             options.pf.createLine(align, width);
           }); }
@@ -368,11 +358,6 @@ TSFormatFunctions
 StartBold
   = '{' _ 'Bold~' { errorHandling(() => { 
             options.pf.startBold();
-          }); }
-
-EndBold
-  = '}' { errorHandling(() => { 
-            options.pf.createBold();
           }); }
 
 /** Matches all text that is printed verbose, without special chars that are key chars for the DSL. */
