@@ -225,3 +225,29 @@ describe('Floor~', () => {
     expect(tablesmith.evaluate(`[${filename}]`)).toBe('10');
   });
 });
+
+describe('Round~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('correct round expression', () => {
+    simpleTable = ':Start\n1,{Round~2,2.1234}\n';
+    tablesmith.addTable(filename, simpleTable);
+    const expression = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    expect(expression).toBe('{Round~2,2.1234}');
+  });
+
+  it('zero places', () => {
+    simpleTable = ':Start\n1,{Round~0,2.123456}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('2');
+  });
+
+  it('3 places', () => {
+    simpleTable = ':Start\n1,{Round~3,2.123456}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('2.123');
+  });
+});

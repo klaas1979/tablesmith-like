@@ -134,7 +134,7 @@ TSConditionalFunctions
   / LoopStart _ LoopExpression _ BlockSeparator _ Expression _ '}' { errorHandling(() => {
             options.pf.createLoop();
           }); }
-  / SelectStart _ SelectExpression _ (BlockSeparator _ SelectExpressionTextComma _)+ SelectExpressionTextComma? _ '}' { errorHandling(() => {
+  / SelectStart _ SelectExpression _ (BlockSeparator _ ExpressionTextNoComma _)+ ExpressionTextNoComma? _ '}' { errorHandling(() => {
             options.pf.createSelect();
           }); }
 
@@ -253,12 +253,12 @@ IfExpressionTextColon
   / VariableGet IfExpressionTextColon*
   / ValueIfColon IfExpressionTextColon*
 
-/* Expressions that are allowed as value in a Select. */
-SelectExpressionTextComma
-  = GroupFunction SelectExpressionTextComma*
-  / TsFunction SelectExpressionTextComma*
-  / VariableGet SelectExpressionTextComma*
-  / ValueSelect SelectExpressionTextComma*
+/* Expressions where text is not matching "," that are allowed as value in a Select. */
+ExpressionTextNoComma
+  = GroupFunction ExpressionTextNoComma*
+  / TsFunction ExpressionTextNoComma*
+  / VariableGet ExpressionTextNoComma*
+  / ValueSelect ExpressionTextNoComma*
 
 ValueIfPart
   = text:PlainTextIfPart { errorHandling(() => {
@@ -276,7 +276,7 @@ ValueIfColon
           }); }
 
 ValueSelect
-  = text:PlainTextSelect { errorHandling(() => {
+  = text:PlainTextNoComma { errorHandling(() => {
             options.pf.createText(text);
           }); }
 
@@ -292,7 +292,8 @@ TSMathFunction
   / Calc _ MathExpression _ '}' { errorHandling(() => { 
             options.pf.createCalc();
           }); }
-  / SingleParamMath
+  / MathOneParamFunctions
+  / MathTwoParamFunctions
 
 Dice = '{' _ 'Dice~'  { errorHandling(() => {
             options.pf.mathBuilder.stackExpressionContext();
@@ -302,12 +303,17 @@ Calc = '{' _ 'Calc~'  { errorHandling(() => {
             options.pf.mathBuilder.stackExpressionContext();
           }); }
 
-SingleParamMath
-  = '{' _ SingleParamMathFunctions _ Expression _ '}' { errorHandling(() => {
+MathOneParamFunctions
+  = '{' _ MathOneParamFunctionsNames _ Expression _ '}' { errorHandling(() => {
             options.pf.createMathFunction();
           }); }
 
-SingleParamMathFunctions
+MathTwoParamFunctions
+  = '{' _ MathTwoParamFunctionsNames _ ExpressionTextNoComma _ MathParamSeparator _ Expression _ '}' { errorHandling(() => {
+            options.pf.createMathFunction();
+          }); }
+
+MathOneParamFunctionsNames
   = 'Abs~' { errorHandling(() => {
             options.pf.startMath('Abs');
           }); }
@@ -316,6 +322,16 @@ SingleParamMathFunctions
           }); }
   / 'Floor~' { errorHandling(() => {
             options.pf.startMath('Floor');
+          }); }
+
+MathTwoParamFunctionsNames
+  = 'Round~' { errorHandling(() => {
+            options.pf.startMath('Round');
+          }); }
+
+MathParamSeparator
+  = ','  { errorHandling(() => {
+            options.pf.startNextMathParameter();
           }); }
 
 MathExpression
@@ -392,7 +408,7 @@ PlainTextIfSlash
  = $[^:{}[\]%|\n]+
 
  /** Text that is allowed within an Select. */
- PlainTextSelect
+ PlainTextNoComma
  = $[^,{}[\]%|\n]+
 
 Align

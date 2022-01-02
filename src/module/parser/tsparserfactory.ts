@@ -343,6 +343,13 @@ class TSParserFactory {
   }
 
   /**
+   * Starts next parameter, separator found.
+   */
+  startNextMathParameter(): void {
+    if (!this.groupBuilder) throw `Cannot start Expression without defined Group!`;
+    this.groupBuilder.startNextMathParameter();
+  }
+  /**
    * Creates and adds math function on stack.
    */
   createMathFunction(): void {

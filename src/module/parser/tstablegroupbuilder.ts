@@ -14,6 +14,7 @@ import TSBoldExpression from '../expressions/tsboldexpression';
 import TSMathAbsExpression from '../expressions/tstmathabsexpression';
 import TSMathCeilExpression from '../expressions/tstmathceilexpression';
 import TSMathFloorExpression from '../expressions/tstmathfloorexpression';
+import TSMathRoundExpression from '../expressions/tstmathroundexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -272,6 +273,13 @@ class TSTableGroupBuilder {
   }
 
   /**
+   * Starts next math parameter, for multi param functions.
+   */
+  startNextMathParameter(): void {
+    this.stack.stack();
+  }
+
+  /**
    * Creates TSBoldExpression for data collected.
    */
   createMathFunction(): TSExpression {
@@ -287,6 +295,10 @@ class TSTableGroupBuilder {
         break;
       case 'Floor':
         result = new TSMathFloorExpression(param1);
+        break;
+      case 'Round':
+        const places = this.stack.unstack();
+        result = new TSMathRoundExpression(param1, places);
         break;
       default:
         throw `Math function for name '${name}' not implemented!`;
