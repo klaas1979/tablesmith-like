@@ -4,13 +4,13 @@ import GroupCallModifierTerm from '../expressions/terms/groupcallmodifierterm';
 import TSGroupCallExpression from '../expressions/tsgroupcallexpression';
 import TSNewlineExpression from '../expressions/tsnewlineexpression';
 import TSLineExpression from '../expressions/tslineexpression';
-import TSLastRollExpression from '../expressions/tslastrollexpression';
 import TSVariableGetExpression from '../expressions/tsvariablegetexpression';
 import TSVariableSetExpression from '../expressions/tsvariablesetexpression';
 import TSTable from '../tstable';
 import TSTableGroupBuilder from './tstablegroupbuilder';
 import MathTermExpressionBuilder from './mathtermexpressionbuilder';
 import ParserStack from './parserstack';
+import TSGroupExpression from '../expressions/tsgroupexpression';
 
 /**
  * Factory used by the Peggy Parser to create the in memory representaion of a Tablesmith Table file.
@@ -326,13 +326,12 @@ class TSParserFactory {
   }
 
   /**
-   * Creates a Line separator for values.
-   * @param align of separator, should be "left", "center" or "right"
-   * @param width in percent, int between 1-100
+   * Creates new Table Group expression.
+   * @param functionname of Group Expression to create.
    */
-  createLastRoll(): void {
+  createGroupExpression(functionname: string): void {
     if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
-    this.groupBuilder.addExpression(new TSLastRollExpression());
+    this.groupBuilder.addExpression(new TSGroupExpression(functionname));
   }
 
   /**

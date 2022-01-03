@@ -303,7 +303,13 @@ ValueNoCommaNorPower
 
 GroupAndTableFunctions
   = '{' _ 'LastRoll~' _ '}' { errorHandling(() => {
-            options.pf.createLastRoll();
+            options.pf.createGroupExpression('LastRoll');
+          }); }
+  / '{' _ 'MaxVal~' _ '}' { errorHandling(() => {
+            options.pf.createGroupExpression('MaxVal');
+          }); }
+  / '{' _ 'MinVal~' _ '}' { errorHandling(() => {
+            options.pf.createGroupExpression('MinVal');
           }); }
 
 TSMathFunction

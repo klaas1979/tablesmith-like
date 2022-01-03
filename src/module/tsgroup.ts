@@ -67,6 +67,14 @@ class TSGroup {
   }
 
   /**
+   * Returns the minimum value of this Group, i.e. the lower bound for the first range.
+   * @returns min value that is contained in the ranges.
+   */
+  getMinValue(): number {
+    return this.firstRange().getLower();
+  }
+
+  /**
    * Returns the maximum value of this Group, i.e. the upper bound for the last range.
    * @returns max value that is contained in the ranges.
    */
