@@ -21,6 +21,7 @@ import TSMathMaxExpression from '../expressions/tstmathmaxexpression';
 import TSMathPowerExpression from '../expressions/tstmathpowerexpression';
 import TSMathModExpression from '../expressions/tstmathmodexpression';
 import TSMathSqrtExpression from '../expressions/tstmathsqrtexpression';
+import TSIsNumberExpression from '../expressions/tsisnumberexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -85,6 +86,13 @@ class TSTableGroupBuilder {
    */
   startLogicalExpression(type: string) {
     this.stack.stackLogical(type);
+  }
+
+  /**
+   * Starts boolean expression IsNumber.
+   */
+  startIsNumber() {
+    this.stack.stack();
   }
 
   /**
@@ -253,6 +261,16 @@ class TSTableGroupBuilder {
     const functionName = this.stack.unstackLogical();
     this.stack.unstack(); // pop out the last if, to be back to previous context
     return new TSLogicalExpression(functionName, booleanComparison1, booleanComparison2);
+  }
+
+  /**
+   * Creates Logical check for IsNumber.
+   * @returns TSLogicalExpression that is on top of stack.
+   */
+  createIsNumber(): TSIsNumberExpression {
+    const expression = this.stack.getCurrentExpressions();
+    this.stack.unstack(); // pop out the last if, to be back to previous context
+    return new TSIsNumberExpression(expression);
   }
 
   /**

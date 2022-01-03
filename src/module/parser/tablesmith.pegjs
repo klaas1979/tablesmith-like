@@ -171,6 +171,9 @@ TSLogicalFunctions
   = StartLogicalExpression _ BooleanExpression _ LogicalExpressionSeparator _ BooleanExpression _ '}' { errorHandling(() => {
             options.pf.createLogicalExpression();
           }); }
+  / IsNumber _ Expression _ '}' { errorHandling(() => {
+            options.pf.createIsNumber();
+          }); }
 
 StartLogicalExpression
   = '{' name:('Or' / 'And' / 'Xor') '~' { errorHandling(() => {
@@ -212,6 +215,11 @@ IfSlashSeparator
 IfColonSeparator
   = ':' { errorHandling(() => {
             options.pf.startIfFalseValue();
+          }); }
+
+IsNumber
+  = '{' _ 'IsNumber~'{ errorHandling(() => {
+            options.pf.startIsNumber();
           }); }
 
 /* Expressions are all supported values or results for a Range. The Tablesmith functions are defined here. */

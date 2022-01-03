@@ -132,7 +132,7 @@ describe('Parsing {Xor~', () => {
   });
 });
 
-describe('{Or~/And…/Xor~ operators', () => {
+describe('{Or~/And~/Xor~ comparison operator test', () => {
   beforeEach(() => {
     tablesmith.reset();
     filename = 'simpletable';
@@ -182,5 +182,36 @@ describe('{Or~/And…/Xor~ operators', () => {
     simpleTable = ':Start\n1,{Or~1<=1,1=2}\n';
     tablesmith.addTable(filename, simpleTable);
     expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
+  });
+});
+
+describe('Parsing {IsNumber~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('expression representation uses correct function name IsNumber', () => {
+    simpleTable = ':Start\n1,{IsNumber~20}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{IsNumber~20}');
+  });
+
+  it('integer => 1', () => {
+    simpleTable = ':Start\n1,{IsNumber~20}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
+  });
+
+  it('float => 1', () => {
+    simpleTable = ':Start\n1,{IsNumber~20.212}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
+  });
+
+  it('text => 0', () => {
+    simpleTable = ':Start\n1,{IsNumber~nonumber}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('0');
   });
 });

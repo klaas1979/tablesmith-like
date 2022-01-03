@@ -92,6 +92,14 @@ class TSParserFactory {
   }
 
   /**
+   * Starts boolean test for number.
+   */
+  startIsNumber() {
+    if (!this.groupBuilder) throw `Cannot start IsNumber expression, no Group set!`;
+    this.groupBuilder.startIsNumber();
+  }
+
+  /**
    * Starts a TS-While Function.
    */
   startWhile() {
@@ -218,6 +226,14 @@ class TSParserFactory {
     if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
     const logical = this.groupBuilder.createLogicalExpression();
     this.groupBuilder.addExpression(logical);
+  }
+
+  /**
+   * Creates logical expression for IsNumber.
+   */
+  createIsNumber(): void {
+    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
+    this.groupBuilder.addExpression(this.groupBuilder.createIsNumber());
   }
 
   /**
