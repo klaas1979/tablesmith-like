@@ -1,4 +1,4 @@
-import Roller from '../roller';
+import Evalcontext from '../evaluationcontext';
 import Term from './term';
 import TermResult from './termresult';
 
@@ -16,8 +16,8 @@ class BracketTerm implements Term {
     return `(${this.term.getTerm()})`;
   }
 
-  roll(roller: Roller): TermResult {
-    return this.term.roll(roller);
+  roll(evalcontext: Evalcontext): TermResult {
+    return this.term.roll(evalcontext);
   }
 }
 

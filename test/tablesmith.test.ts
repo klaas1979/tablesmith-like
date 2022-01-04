@@ -15,6 +15,33 @@ describe('Tablesmith#addTable', () => {
     expect(tablesmith.getTSTables().length).toBe(1);
     expect(tablesmith.tableForName(filename)?.name).toEqual(filename);
   });
+
+  it('Group format with ";" range values are parsed as probability', () => {
+    simpleTable = ';name\n1,One\n2,Two\n2,Three\n1,Four\n';
+    tablesmith.addTable(filename, simpleTable);
+    const ranges = tablesmith.tableForName(filename)?.getGroups()[0]?.getRanges();
+    if (!ranges) throw 'Not parsed!';
+    expect(ranges[0]?.getLower()).toBe(1);
+    expect(ranges[0]?.getUpper()).toBe(1);
+    expect(ranges[1]?.getLower()).toBe(2);
+    expect(ranges[1]?.getUpper()).toBe(3);
+    expect(ranges[2]?.getLower()).toBe(4);
+    expect(ranges[2]?.getUpper()).toBe(5);
+    expect(ranges[3]?.getLower()).toBe(6);
+    expect(ranges[3]?.getUpper()).toBe(6);
+  });
+
+  it('non repeating Group is set via "!"', () => {
+    simpleTable = ':!name\n1,One\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.tableForName(filename)?.getGroups()[0]?.isNonRepeating()).toBe(true);
+  });
+
+  it('non repeating Group omitted not set', () => {
+    simpleTable = ':name\n1,One\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.tableForName(filename)?.getGroups()[0]?.isNonRepeating()).toBe(false);
+  });
 });
 
 describe('Tablesmith#evaluate default values and modifiers', () => {
@@ -70,13 +97,6 @@ describe('Tablesmith#evaluate', () => {
     tablesmith.addTable(filename, simpleTable);
     const result = tablesmith.evaluate(`[${filename}]`);
     expect(result).toBe('BeforeOneAfter');
-  });
-
-  it('LastRoll returns roll for last Group to be rolled upon', () => {
-    simpleTable = ':Start\n1,One{LastRoll~}[Other=2]\n:Other\n1,notused\n2,Two{LastRoll~}';
-    tablesmith.addTable(filename, simpleTable);
-    const result = tablesmith.evaluate(`[${filename}]`);
-    expect(result).toBe('One1Two2');
   });
 });
 

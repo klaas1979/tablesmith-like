@@ -15,7 +15,7 @@ class TSGroupExpression implements TSExpression {
     let result;
     switch (this.functionname) {
       case 'LastRoll':
-        result = this.group.getLastRoll().total;
+        result = this.group.getLastRoll();
         break;
       case 'MinVal':
         result = this.group.getMinValue();

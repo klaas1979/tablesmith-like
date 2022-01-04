@@ -1,4 +1,8 @@
-import RollResult from './expressions/rollresult';
+import { evalcontext } from './expressions/evaluationcontextinstance';
+import GroupCallModifierTerm from './expressions/terms/groupcallmodifierterm';
+import InnerDiceTerm from './expressions/terms/innerdiceterm';
+import IntTerm from './expressions/terms/intterm';
+import Term from './expressions/terms/term';
 import TSExpressions from './expressions/tsexpressions';
 import TSRange from './tsrange';
 /**
@@ -14,12 +18,16 @@ import TSRange from './tsrange';
  */
 class TSGroup {
   name: string;
+  rangeAsProbabilty: boolean;
+  nonRepeating: boolean;
   ranges: TSRange[];
   before: TSExpressions;
   after: TSExpressions;
-  lastRoll: RollResult | undefined;
-  constructor(name: string) {
+  lastRollTotal: number | undefined;
+  constructor(name: string, rangeAsProbability: boolean, nonRepeating: boolean) {
     this.name = name;
+    this.rangeAsProbabilty = rangeAsProbability;
+    this.nonRepeating = nonRepeating;
     this.ranges = [];
     this.before = new TSExpressions();
     this.after = new TSExpressions();
@@ -59,13 +67,20 @@ class TSGroup {
 
   /**
    * Returns the last roll made on this group, or throws if not rolled and called.
-   * @returns RollResult that represents the LastRoll on this group.
+   * @returns number that represents the LastRoll on this group.
    */
-  getLastRoll(): RollResult {
-    if (!this.lastRoll) throw `LastRoll not set for Group '${this.name}'`;
-    return this.lastRoll;
+  getLastRoll(): number {
+    if (!this.lastRollTotal) throw `LastRoll not set for Group '${this.name}'`;
+    return this.lastRollTotal;
   }
 
+  /**
+   * Checks if this group does return any result only once 'non repeating' or many teams 'normal' or 'repeating'.
+   * @returns true if group is non repeating false otherwise.
+   */
+  isNonRepeating(): boolean {
+    return this.nonRepeating;
+  }
   /**
    * Returns the minimum value of this Group, i.e. the lower bound for the first range.
    * @returns min value that is contained in the ranges.
@@ -83,24 +98,40 @@ class TSGroup {
   }
 
   /**
+   * Rolls on this group using the provided modifier and returns the result.
+   * @param groupCallModifier to modify rolls with.
+   */
+  roll(groupCallModifier: GroupCallModifierTerm): string {
+    const roll = groupCallModifier.modify(this.rollTerm()).roll(evalcontext);
+    return this.result(roll.total);
+  }
+
+  /**
+   * Creates a Term that can be rolled upon in this table with current state of non Repeating ranges.
+   * @returns Term for roll on this group.
+   */
+  private rollTerm(): Term {
+    return new InnerDiceTerm(new IntTerm(1), new IntTerm(this.getMaxValue()));
+  }
+
+  /**
    * Returns text result for given roll including any defined before are afters in the group.
    * If result is below min range value returns first range, if above max returns
    * last ranges text.
    * @param rollResult The RollResult to lockup the groups text with.
    * @returns evaluated expression for Range donating result.
    */
-  result(rollResult: RollResult): string {
-    this.lastRoll = rollResult;
+  result(total: number): string {
     let result;
-    if (rollResult.total < 1) {
+    this.lastRollTotal = total;
+    if (total < 1) {
       result = this.firstRange();
-    } else if (rollResult.total > this.getMaxValue()) {
+    } else if (total > this.getMaxValue()) {
       result = this.lastRange();
     } else {
-      result = this._rangeFor(rollResult.total);
+      result = this._rangeFor(total);
     }
-    if (!result)
-      throw `Could not get result for Group '${this.name}' roll='${rollResult.total}' maxValue=${this.getMaxValue()}`;
+    if (!result) throw `Could not get result for Group '${this.name}' roll='${total}'`;
     return `${this.before.evaluate()}${result.evaluate()}${this.after.evaluate()}`;
   }
 
@@ -108,12 +139,16 @@ class TSGroup {
    * Adds a new Range to Group starting after last range or with 1 if it is the first and going up to given value and
    * sets this Range up as current expressions to add to.
    * @param range the range to add to this group.
+   * @returns the newly created range.
    */
-  addRange(range: TSRange): void {
-    const minLower = this.ranges.length > 0 ? this.lastRange().upper + 1 : 1;
-    if (range.lower != minLower)
-      throw `Could not add range with gap or overlap in bounds got '${range.lower}-${range.upper}' minimum lower '${minLower}'`;
+  addRange(value: number): TSRange {
+    const lower = this.lastRange() ? this.lastRange().upper + 1 : 1;
+    const upper = this.rangeAsProbabilty ? lower + value - 1 : value;
+    if (upper < lower)
+      throw `Cannot add range to Group '${this.name}' value '${value}' results in range that is smaller than last range!`;
+    const range = new TSRange(lower, upper);
     this.ranges.push(range);
+    return range;
   }
 
   private _rangeFor(total: number): TSRange {

@@ -1,7 +1,6 @@
 import { tablesmith } from '../tablesmithinstance';
 import TSGroup from '../tsgroup';
-import { roller } from './rollerinstance';
-import RollResult from './rollresult';
+import { evalcontext } from './evaluationcontextinstance';
 import GroupCallModifierTerm from './terms/groupcallmodifierterm';
 import InnerDiceTerm from './terms/innerdiceterm';
 import IntTerm from './terms/intterm';
@@ -23,17 +22,17 @@ class TSGroupCallExpression implements TSExpression {
   }
 
   evaluate(): string {
-    const tsTable = tablesmith.tableForName(this.table ? this.table : roller.getCurrentCallTablename());
+    const tsTable = tablesmith.tableForName(this.table ? this.table : evalcontext.getCurrentCallTablename());
     if (!tsTable) throw `Table '${this.table}' is not defined cannot evaluate!`;
     const tsGroup = tsTable.groupForName(this.group);
     if (!tsGroup) throw `Group '${this.group}' is not defined cannot evaluate!`;
     const maxValue = tsGroup.getMaxValue();
     const innerDiceTerm = new InnerDiceTerm(new IntTerm(1), new IntTerm(maxValue));
-    const termResult = this.groupCallModifier.modify(innerDiceTerm).roll(roller);
+    const termResult = this.groupCallModifier.modify(innerDiceTerm).roll(evalcontext);
 
-    roller.pushCurrentCallTablename(tsTable.name);
-    const result = tsGroup.result(new RollResult(maxValue, termResult.total));
-    roller.popCurrentCallTablename();
+    evalcontext.pushCurrentCallTablename(tsTable.name);
+    const result = tsGroup.result(termResult.total);
+    evalcontext.popCurrentCallTablename();
     return result;
   }
 

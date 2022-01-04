@@ -1,10 +1,10 @@
-import Roller from '../roller';
+import Evalcontext from '../evaluationcontext';
 import TermResult from './termresult';
 
 interface Term {
   getTerm(): string;
 
-  roll(roller: Roller): TermResult;
+  roll(evalcontext: Evalcontext): TermResult;
 }
 
 export default Term;

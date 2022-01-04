@@ -2,9 +2,9 @@ import * as peggy from 'peggy';
 import fs from 'fs';
 import TSTable from './tstable';
 import TSParserFactory from './parser/tsparserfactory';
-import RollResult from './expressions/rollresult';
-import { roller } from './expressions/rollerinstance';
+import { evalcontext } from './expressions/evaluationcontextinstance';
 import path from 'path';
+import GroupCallModifierTerm from './expressions/terms/groupcallmodifierterm';
 
 const parserFilePath = 'src/module/parser/tablesmith.pegjs';
 const callParserFilePath = 'src/module/parser/tablesmithcall.pegjs';
@@ -51,19 +51,18 @@ class Tablesmith {
    * @returns result from Table as text.
    */
   evaluate(expression: string): string {
-    const options = { table: '', group: '', fixedResult: false, modifier: 0 };
+    const options = { table: '', group: '', modType: 'unmodified', modNumber: 0 };
     this.callParser.parse(expression, options);
     const evaluateTable = this.tableForName(options.table);
     if (!evaluateTable) throw `TSTable for name='${options.table}' not defined! Expression was '${expression}'`;
-    roller.pushCurrentCallTablename(options.table);
+    evalcontext.pushCurrentCallTablename(options.table);
     _setDefaultGroup(options);
     const group = evaluateTable.groupForName(options.group);
     if (!group)
       throw `TSTable for name='${options.table}' does not contain Group='${options.group}'! Expression was '${expression}'`;
-    const rollResult = _createRollResult(group.getMaxValue(), options.fixedResult, options.modifier);
-
-    const result = group.result(rollResult);
-    roller.popCurrentCallTablename();
+    const modifier = GroupCallModifierTerm.create(options.modType, options.modNumber);
+    const result = group.roll(modifier);
+    evalcontext.popCurrentCallTablename();
     return result;
   }
 
@@ -142,23 +141,6 @@ function _callParser(): peggy.Parser {
  */
 function _setDefaultGroup(options: { group: string }): void {
   if (!options.group || options.group.length == 0) options.group = 'Start';
-}
-
-/**
- * Creates RollResult to be used for table evaluation.
- * @param maxValue if roll is needed this is the max value for the die.
- * @param fixedResult is result fixed? If true uses modifier to set the fixed result.
- * @param modifier modifier for roll or the fixed result if it is preset.
- * @returns RollResult for given values.
- */
-function _createRollResult(maxValue: number, fixedResult: boolean, modifier: number): RollResult {
-  let result;
-  if (!fixedResult) {
-    result = roller.roll(maxValue, modifier);
-  } else {
-    result = new RollResult(maxValue, modifier);
-  }
-  return result;
 }
 
 export default Tablesmith;

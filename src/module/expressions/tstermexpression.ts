@@ -1,5 +1,5 @@
 import TSGroup from '../tsgroup';
-import { roller } from './rollerinstance';
+import { evalcontext } from './evaluationcontextinstance';
 import Term from './terms/term';
 import TSExpression from './tsexpression';
 
@@ -14,7 +14,7 @@ class TSTermExpression implements TSExpression {
     this.term = term;
   }
   evaluate(): string {
-    const rollResult = this.term.roll(roller);
+    const rollResult = this.term.roll(evalcontext);
     return `${rollResult.total}`;
   }
   getExpression(): string {

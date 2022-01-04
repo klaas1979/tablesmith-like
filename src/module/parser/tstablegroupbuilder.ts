@@ -42,10 +42,8 @@ class TSTableGroupBuilder {
    * @param upper the number donating the new ranges max value.
    */
   addRange(upper: number): void {
-    const lower = this.tsGroup.lastRange() ? this.tsGroup.lastRange().upper + 1 : 1;
-    this.range = new TSRange(lower, upper);
-    this.stack.current = this.range.getExpressions();
-    this.tsGroup.addRange(this.range);
+    const newRange = this.tsGroup.addRange(upper);
+    this.stack.current = newRange.getExpressions();
   }
 
   /**

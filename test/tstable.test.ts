@@ -7,8 +7,8 @@ describe('TSTable', () => {
   });
 
   it('#addGroup with same name throws', () => {
-    tstable.addGroup('groupName');
-    expect(() => tstable.addGroup('groupName')).toThrow("Group name already defined got 'groupName'");
+    tstable.addGroup('groupName', false, false);
+    expect(() => tstable.addGroup('groupName', false, false)).toThrow("Group name already defined got 'groupName'");
   });
 });
 describe('Tablesmith#groupForName', () => {
@@ -17,7 +17,7 @@ describe('Tablesmith#groupForName', () => {
   });
 
   it('returns group with name', () => {
-    tstable.addGroup('name');
+    tstable.addGroup('name', false, false);
     expect(tstable.groupForName('name')?.name).toEqual('name');
   });
 });

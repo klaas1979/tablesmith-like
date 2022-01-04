@@ -1,15 +1,13 @@
-import RollResult from './rollresult';
 import twist from './mersennetwister';
 
 /**
- * Random number roll helper for all type of rolls on Groups or in functions.
+ * Class providing all needed context for an evaluation, including rolling results, Variables and Parameters
+ * from tables.
  */
-class Roller {
-  rolls: RollResult[];
+class EvaluationContext {
   variables: Map<string, Map<string, undefined | string | number>>;
   callTables: string[];
   constructor() {
-    this.rolls = [];
     this.variables = new Map();
     this.callTables = [];
   }
@@ -70,15 +68,12 @@ class Roller {
   /**
    * Rolls as defined and returns result.
    * @param sides number of sides for die to roll.
-   * @param modifier optional, modifier to add/subtract from roll.
-   * @returns RollResult for roll.
+   * @returns total of roll.
    */
-  roll(sides: number, modifier = 0): RollResult {
+  roll(sides: number): number {
     const random = twist.random();
-    const result = new RollResult(sides, Math.ceil(random * sides), modifier);
-    this.rolls.push(result);
-    return result;
+    return Math.ceil(random * sides);
   }
 }
 
-export default Roller;
+export default EvaluationContext;

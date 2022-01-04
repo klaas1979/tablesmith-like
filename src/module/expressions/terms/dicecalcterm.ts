@@ -1,4 +1,4 @@
-import Roller from '../roller';
+import Evalcontext from '../evaluationcontext';
 import Term from './term';
 import TermResult from './termresult';
 
@@ -12,8 +12,8 @@ class DiceCalcTerm implements Term {
   getTerm(): string {
     return `{${this.functionName}~${this.innerTerm.getTerm()}}`;
   }
-  roll(roller: Roller): TermResult {
-    return this.innerTerm.roll(roller);
+  roll(evalcontext: Evalcontext): TermResult {
+    return this.innerTerm.roll(evalcontext);
   }
 }
 

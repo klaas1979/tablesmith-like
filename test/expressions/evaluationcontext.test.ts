@@ -1,6 +1,6 @@
-import { roller } from '../../src/module/expressions/rollerinstance';
+import { evalcontext } from '../../src/module/expressions/evaluationcontextinstance';
 
-describe('Roller#roll', () => {
+describe('Evalcontext#roll', () => {
   let resultCount: Array<number>;
   let sides: number;
   beforeEach(() => {
@@ -13,7 +13,7 @@ describe('Roller#roll', () => {
 
   it('simple text is returned as is', () => {
     for (let i = 0; i < 1000; i++) {
-      const roll = roller.roll(sides).total;
+      const roll = evalcontext.roll(sides);
       resultCount[roll - 1] = resultCount[roll - 1] + 1;
     }
     for (let i = 0; i < resultCount.length; i++) {

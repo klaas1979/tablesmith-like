@@ -1,4 +1,3 @@
-import IntTerm from '../expressions/terms/intterm';
 import TSTextExpression from '../expressions/tstextexpression';
 import GroupCallModifierTerm from '../expressions/terms/groupcallmodifierterm';
 import TSGroupCallExpression from '../expressions/tsgroupcallexpression';
@@ -40,9 +39,11 @@ class TSParserFactory {
   /**
    * Adds empty Group with given name to table and sets it to the currently parsed group.
    * @param name of new group, must be unique or throws.
+   * @param rangeAsProbabilty should the range values be interpreted as a probability distribution, or as fixed ranges.
+   * @param nonRepeating should results on this group be only be drawn once, in multiply evaluatios.
    */
-  addGroup(name: string): void {
-    const group = this.table.addGroup(name);
+  addGroup(name: string, rangeAsProbabilty: boolean, nonRepeating: boolean): void {
+    const group = this.table.addGroup(name, rangeAsProbabilty, nonRepeating);
     this.groupBuilder = new TSTableGroupBuilder(group, this.parserStack);
   }
 
@@ -262,21 +263,7 @@ class TSParserFactory {
    * @param modifier to add to roll, or if fixed result the result to use.
    */
   addGroupCallModifier(modifierType: string, modifier: number): void {
-    let result;
-    switch (modifierType) {
-      case '=':
-        result = GroupCallModifierTerm.createFixedValue(new IntTerm(modifier));
-        break;
-      case '+':
-        result = GroupCallModifierTerm.createPlus(new IntTerm(modifier));
-        break;
-      case '-':
-        result = GroupCallModifierTerm.createMinus(new IntTerm(modifier));
-        break;
-      default:
-        throw `Unknown modifier type '${modifierType}'`;
-    }
-    this.groupCallModifier = result;
+    this.groupCallModifier = GroupCallModifierTerm.create(modifierType, modifier);
   }
 
   /**

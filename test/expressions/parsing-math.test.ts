@@ -36,7 +36,7 @@ describe('Parsing {Dice~}', () => {
     tablesmith.addTable(filename, simpleTable);
     const result = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
     expect(result).toBe('{Dice~2-1}');
-    expect(tablesmith.evaluate(`[${filename}.]`)).toBe('1');
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
   });
 
   it('3*6 multiplication', () => {

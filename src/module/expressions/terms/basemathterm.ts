@@ -1,4 +1,4 @@
-import Roller from '../roller';
+import Evalcontext from '../evaluationcontext';
 import Term from './term';
 import TermCalc from './termcalc';
 import TermResult from './termresult';
@@ -25,14 +25,14 @@ class BaseMathTerm implements Term {
   }
 
   /**
-   * Rolls this term with given roller.
-   * @param roller Roll support class to get random results.
+   * Rolls this term with given evalcontext.
+   * @param evalcontext Roll support class to get random results.
    * @returns TermResult with math value and representation of calculation.
    */
-  roll(roller: Roller): TermResult {
+  roll(evalcontext: Evalcontext): TermResult {
     if (!this.termCalc) throw 'TermCalc not defined, cannot roll for result!';
-    const aResult = this.termA.roll(roller),
-      bResult = this.termB.roll(roller);
+    const aResult = this.termA.roll(evalcontext),
+      bResult = this.termB.roll(evalcontext);
     return new TermResult(
       this.termCalc.calc(aResult.total, bResult.total),
       `${aResult.result}${this.termCalc.operator()}${bResult.result}`,

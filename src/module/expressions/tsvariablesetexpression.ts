@@ -1,5 +1,5 @@
 import TSGroup from '../tsgroup';
-import { roller } from './rollerinstance';
+import { evalcontext } from './evaluationcontextinstance';
 import TSExpression from './tsexpression';
 import TSExpressions from './tsexpressions';
 
@@ -30,7 +30,7 @@ class TSVariableSetExpression implements TSExpression {
     if (!this.valueExpressions)
       throw `No TSExpressions set for Variable set expression table '${this.tablename}', variable '${this.variablename}'`;
     const value = this.valueExpressions.evaluate();
-    const currentValue = roller.getVar(this.tablename, this.variablename);
+    const currentValue = evalcontext.getVar(this.tablename, this.variablename);
     switch (this.type) {
       case '=':
         this.evaluateSet(currentValue, value);
@@ -107,7 +107,7 @@ class TSVariableSetExpression implements TSExpression {
   }
 
   private assign(value: string | number) {
-    roller.assignVar(this.tablename, this.variablename, value);
+    evalcontext.assignVar(this.tablename, this.variablename, value);
   }
 
   getExpression(): string {

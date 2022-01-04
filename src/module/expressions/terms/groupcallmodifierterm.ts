@@ -1,7 +1,7 @@
 import IntTerm from './intterm';
 import MinusTerm from './minusterm';
 import PlusTerm from './plusterm';
-import Roller from '../roller';
+import Evalcontext from '../evaluationcontext';
 import Term from './term';
 import TermResult from './termresult';
 
@@ -27,7 +27,7 @@ class GroupCallModifierTerm implements Term {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  roll(roller: Roller): TermResult {
+  roll(evalcontext: Evalcontext): TermResult {
     throw 'Cannot roll this term Group Calls need runtime information about rolled upon Group to get maxValue for range';
   }
 
@@ -47,6 +47,33 @@ class GroupCallModifierTerm implements Term {
       return this.modifierTerm;
     }
     throw `Modfier Type '${this.modifierType}' unknown cannot create Term!`;
+  }
+
+  /**
+   * Creates a new modifier for given values.
+   * @param modifierType to create for can be '=', '-' or '+' for changes or 'unmodified'.
+   * @param modifier the number to modify with.
+   * @returns GroupCallModifierTerm to modify rolls with.
+   */
+  static create(modifierType: string, modifier: number): GroupCallModifierTerm {
+    let result;
+    switch (modifierType) {
+      case 'unmodified':
+        result = GroupCallModifierTerm.createUnmodified();
+        break;
+      case '=':
+        result = GroupCallModifierTerm.createFixedValue(new IntTerm(modifier));
+        break;
+      case '+':
+        result = GroupCallModifierTerm.createPlus(new IntTerm(modifier));
+        break;
+      case '-':
+        result = GroupCallModifierTerm.createMinus(new IntTerm(modifier));
+        break;
+      default:
+        throw `Unknown modifier type '${modifierType}'`;
+    }
+    return result;
   }
 
   /**
@@ -77,9 +104,8 @@ class GroupCallModifierTerm implements Term {
   }
 
   /**
-   * Creates a modifier for addition.
-   * @param modifierTerm to add to Roll.
-   * @returns Plus Groupcall modifier.
+   * Creates a modifier for unmodified roles.
+   * @returns Modifier to leave roll as is.
    */
   static createUnmodified(): GroupCallModifierTerm {
     return new GroupCallModifierTerm('unmodified', new IntTerm(0));

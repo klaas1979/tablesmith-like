@@ -1,4 +1,4 @@
-import { roller } from './expressions/rollerinstance';
+import { evalcontext } from './expressions/evaluationcontextinstance';
 import TSGroup from './tsgroup';
 
 /**
@@ -44,17 +44,19 @@ class TSTable {
    * @param value default value to initialize the variable with.
    */
   declareVariable(variablename: string, value: string | undefined) {
-    roller.assignVar(this.name, variablename, value);
+    evalcontext.assignVar(this.name, variablename, value);
   }
 
   /**
    * Adds empty Group with given name.
    * @param name of new group, must be unique or throws.
+   * @param rangeAsProbabilty should range values added to the group by interpreted as probability values 'true' for yes.
    * @returns TSGroup the newly created and added group.
+   * @param nonRepeating should results on this group be only be drawn once, in multiply evaluatios.
    */
-  addGroup(name: string): TSGroup {
+  addGroup(name: string, rangeAsProbabilty: boolean, nonRepeating: boolean): TSGroup {
     if (this.groupForName(name)) throw `Group name already defined got '${name}'`;
-    const tsGroup = new TSGroup(name);
+    const tsGroup = new TSGroup(name, rangeAsProbabilty, nonRepeating);
     this.groups.push(tsGroup);
     return tsGroup;
   }

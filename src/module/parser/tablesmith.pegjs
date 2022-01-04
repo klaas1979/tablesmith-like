@@ -50,8 +50,10 @@ Group
 
 /* The name for a group, this is the name without dot. */
 GroupName
-  = [:]name:Name EmptyLine { errorHandling(() => {
-            options.pf.addGroup(name);
+  = type:[:;] repeat:'!'? name:Name EmptyLine { errorHandling(() => {
+            let rangeAsProbability = type === ';';
+            let nonRepeating = repeat === '!';
+            options.pf.addGroup(name, rangeAsProbability, nonRepeating);
           }); }
 
 /* Range is a single line in a group donating the lower and upper end for the result, i.e. 1-2,Result */

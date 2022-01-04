@@ -1,4 +1,4 @@
-import Roller from '../roller';
+import Evalcontext from '../evaluationcontext';
 import Term from './term';
 import TermResult from './termresult';
 
@@ -14,13 +14,13 @@ class InnerDiceTerm implements Term {
     this.sides = sides;
   }
 
-  roll(roller: Roller): TermResult {
+  roll(evalcontext: Evalcontext): TermResult {
     let result = '';
     let total = 0;
-    const concreteDices = this.dice.roll(roller);
-    const concreteSides = this.sides.roll(roller);
+    const concreteDices = this.dice.roll(evalcontext);
+    const concreteSides = this.sides.roll(evalcontext);
     for (let i = 0; i < concreteDices.total; i++) {
-      const roll = roller.roll(concreteSides.total).total;
+      const roll = evalcontext.roll(concreteSides.total);
       result += i == 0 ? roll : `+${roll}`;
       total += roll;
     }

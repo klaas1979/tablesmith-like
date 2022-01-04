@@ -1,6 +1,6 @@
 import TSGroup from '../tsgroup';
-import Roller from './roller';
-import { roller } from './rollerinstance';
+import Evalcontext from './evaluationcontext';
+import { evalcontext } from './evaluationcontextinstance';
 import Term from './terms/term';
 import TermResult from './terms/termresult';
 import TSExpression from './tsexpression';
@@ -22,13 +22,13 @@ class TSVariableGetExpression implements TSExpression, Term {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  roll(roller: Roller): TermResult {
+  roll(evalcontext: Evalcontext): TermResult {
     const value = this.evaluate();
     return new TermResult(Number.parseInt(value), value);
   }
 
   evaluate(): string {
-    return `${roller.getVar(this.tablename, this.variablename)}`;
+    return `${evalcontext.getVar(this.tablename, this.variablename)}`;
   }
 
   getExpression(): string {

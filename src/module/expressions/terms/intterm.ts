@@ -1,4 +1,4 @@
-import Roller from '../roller';
+import Evalcontext from '../evaluationcontext';
 import Term from './term';
 import TermResult from './termresult';
 
@@ -14,7 +14,7 @@ class IntTerm implements Term {
     return `${this.int}`;
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  roll(roller: Roller): TermResult {
+  roll(evalcontext: Evalcontext): TermResult {
     return new TermResult(this.int, this.getTerm());
   }
 }
