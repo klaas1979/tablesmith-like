@@ -5,6 +5,7 @@ import TSParserFactory from './parser/tsparserfactory';
 import { evalcontext } from './expressions/evaluationcontextinstance';
 import path from 'path';
 import GroupCallModifierTerm from './expressions/terms/groupcallmodifierterm';
+import TSGroup from './tsgroup';
 
 const parserFilePath = 'src/module/parser/tablesmith.pegjs';
 const callParserFilePath = 'src/module/parser/tablesmithcall.pegjs';
@@ -52,20 +53,44 @@ class Tablesmith {
    */
   evaluate(expression: string): string {
     const options = { table: '', group: '', modType: 'unmodified', modNumber: 0 };
+    const group = this.parseEvaluateExpression(expression, options);
+    if (!group)
+      throw `TSTable for name='${options.table}' does not contain Group='${options.group}'! Expression was '${expression}'`;
+    const modifier = GroupCallModifierTerm.create(options.modType, options.modNumber);
+    this.resetEvaluationContext();
+    const result = group.roll(modifier);
+    evalcontext.popCurrentCallTablename();
+    return result;
+  }
+
+  /**
+   * Parses an evaluate expressions for Tablesmith.
+   * @param expression to parse.
+   * @param options given to the parser, where results are added to.
+   * @returns TSGroup to evaluate or undefined, if it does not exists.
+   */
+  private parseEvaluateExpression(
+    expression: string,
+    options: { table: string; group: string; modType: string; modNumber: number },
+  ): TSGroup | undefined {
     this.callParser.parse(expression, options);
     const evaluateTable = this.tableForName(options.table);
     if (!evaluateTable) throw `TSTable for name='${options.table}' not defined! Expression was '${expression}'`;
     evalcontext.pushCurrentCallTablename(options.table);
     _setDefaultGroup(options);
     const group = evaluateTable.groupForName(options.group);
-    if (!group)
-      throw `TSTable for name='${options.table}' does not contain Group='${options.group}'! Expression was '${expression}'`;
-    const modifier = GroupCallModifierTerm.create(options.modType, options.modNumber);
-    const result = group.roll(modifier);
-    evalcontext.popCurrentCallTablename();
-    return result;
+    return group;
   }
 
+  /**
+   * Resets the EvaluationContext back to ensure that no Groups have locked entries and to set back variables
+   * in tables to their default declaration.
+   */
+  resetEvaluationContext() {
+    this.tstables.forEach((table) => {
+      table.resetEvaluationContext();
+    });
+  }
   /**
    * Parses table and stores it with given filename as Tablename.
    * @param filename name of file, used as Table name for evaluation.

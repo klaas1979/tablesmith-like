@@ -102,8 +102,30 @@ class TSGroup {
    * @param groupCallModifier to modify rolls with.
    */
   roll(groupCallModifier: GroupCallModifierTerm): string {
-    const roll = groupCallModifier.modify(this.rollTerm()).roll(evalcontext);
-    return this.result(roll.total);
+    let result = undefined;
+    const roller = groupCallModifier.modify(this.rollTerm());
+    for (let i = 0; result === undefined && i < this.ranges.length * 10; i++) {
+      const roll = roller.roll(evalcontext);
+      let range: TSRange | undefined = this._rangeFor(roll.total);
+      if (this.isNonRepeating()) {
+        if (!range.isTaken()) range.lockout();
+        else range = undefined;
+      }
+      if (range) {
+        result = this.result(roll.total);
+      }
+    }
+    // check if group is really maxed out or the 10*ranges sets have not found a match
+    if (result == undefined) {
+      const range = this.ranges.find((range) => {
+        return !range.isTaken();
+      });
+      if (range) {
+        range.lockout();
+        result = this.result(range.getLower());
+      }
+    }
+    return result != undefined ? result : '<Non repeating Group maxed out!>';
   }
 
   /**
@@ -122,17 +144,20 @@ class TSGroup {
    * @returns evaluated expression for Range donating result.
    */
   result(total: number): string {
-    let result;
+    const result = this._rangeFor(total);
     this.lastRollTotal = total;
-    if (total < 1) {
-      result = this.firstRange();
-    } else if (total > this.getMaxValue()) {
-      result = this.lastRange();
-    } else {
-      result = this._rangeFor(total);
-    }
-    if (!result) throw `Could not get result for Group '${this.name}' roll='${total}'`;
     return `${this.before.evaluate()}${result.evaluate()}${this.after.evaluate()}`;
+  }
+
+  /**
+   * Unlocks all locked ranges for a non repeating group, normally used to set up context for next evaluation.
+   */
+  unlock(): void {
+    if (this.isNonRepeating()) {
+      this.ranges.forEach((range) => {
+        range.unlock();
+      });
+    }
   }
 
   /**
@@ -151,13 +176,24 @@ class TSGroup {
     return range;
   }
 
+  /**
+   * Gets range for total results smaller than first range give first range and results large than last range
+   * give the last range.
+   * @param total to get range for.
+   * @returns Range for total.
+   */
   private _rangeFor(total: number): TSRange {
     let result;
-    // eslint-disable-next-line prefer-const
-    for (let range of this.ranges) {
-      if (range.covers(total)) {
-        result = range;
-        break;
+    if (total < 1) {
+      result = this.firstRange();
+    } else if (total > this.getMaxValue()) {
+      result = this.lastRange();
+    } else {
+      for (const range of this.ranges) {
+        if (range.covers(total)) {
+          result = range;
+          break;
+        }
       }
     }
     if (!result) throw `Group='${this.name}' could not get TSRange for value=${total}`;

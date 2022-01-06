@@ -4,10 +4,12 @@ import TSExpressions from './expressions/tsexpressions';
 class TSRange {
   lower: number;
   upper: number;
+  lockedOut: boolean;
   expressions: TSExpressions;
   constructor(lower: number, upper: number) {
     this.lower = lower;
     this.upper = upper;
+    this.lockedOut = false;
     this.expressions = new TSExpressions();
   }
 
@@ -65,6 +67,28 @@ class TSRange {
    */
   getExpressions(): TSExpressions {
     return this.expressions;
+  }
+
+  /**
+   * Returns if result is blocked or has been taken already.
+   * @returns true if result has been taken or locked out in a  non repeating group.
+   */
+  isTaken(): boolean {
+    return this.lockedOut;
+  }
+
+  /**
+   * Locks out this result as already been taken.
+   */
+  lockout(): void {
+    this.lockedOut = true;
+  }
+
+  /**
+   * Unlocks result, to be available again.
+   */
+  unlock(): void {
+    this.lockedOut = false;
   }
 }
 

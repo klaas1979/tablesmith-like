@@ -7,10 +7,12 @@ import TSGroup from './tsgroup';
 class TSTable {
   groups: TSGroup[];
   name: string;
+  variables: { name: string; value: string | undefined }[];
 
   constructor(name: string) {
     this.groups = [];
     this.name = name;
+    this.variables = [];
   }
 
   /**
@@ -44,6 +46,16 @@ class TSTable {
    * @param value default value to initialize the variable with.
    */
   declareVariable(variablename: string, value: string | undefined) {
+    this.variables.push({ name: variablename, value: value });
+    this.setVariableInEvalContext(variablename, value);
+  }
+
+  /**
+   * Sets variable in Evalcontext to given value.
+   * @param variablename to set for this table.
+   * @param value to set to variable.
+   */
+  private setVariableInEvalContext(variablename: string, value: string | undefined) {
     evalcontext.assignVar(this.name, variablename, value);
   }
 
@@ -59,6 +71,19 @@ class TSTable {
     const tsGroup = new TSGroup(name, rangeAsProbabilty, nonRepeating);
     this.groups.push(tsGroup);
     return tsGroup;
+  }
+
+  /**
+   * Resets the evaluationcontext to be ready for a new evaluation of this table.
+   */
+  resetEvaluationContext(): void {
+    this.variables.forEach((tuple) => {
+      this.setVariableInEvalContext(tuple.name, tuple.value);
+    });
+
+    this.groups.forEach((group) => {
+      group.unlock();
+    });
   }
 }
 
