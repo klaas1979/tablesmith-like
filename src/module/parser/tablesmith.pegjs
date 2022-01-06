@@ -316,6 +316,22 @@ GroupAndTableFunctions
   / '{' _ 'Reset~' _ group:Name _ '}' { errorHandling(() => {
             options.pf.createGroupResetExpression(group);
           }); }
+  / GroupLockFunctions _ ExpressionTextNoComma _ (GroupLockParameter)+ '}' { errorHandling(() => {
+            options.pf.createGroupLockExpression();
+          }); }
+
+GroupLockFunctions
+  = '{' _ name:(@'Unlock' / @'Lockout') '~' { errorHandling(() => {
+            options.pf.startGroupLockExpression(name);
+          }); }
+
+GroupLockParameter
+  = GroupLockParamSeparator _ ExpressionTextNoComma _ 
+
+GroupLockParamSeparator
+  = ',' { errorHandling(() => {
+            options.pf.stackGroupLockParameter();
+          }); }
 
 TSMathFunction
   = Dice _ MathExpression _ '}' { errorHandling(() => {

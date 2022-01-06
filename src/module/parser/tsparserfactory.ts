@@ -45,7 +45,7 @@ class TSParserFactory {
    */
   addGroup(name: string, rangeAsProbabilty: boolean, nonRepeating: boolean): void {
     const group = this.table.addGroup(name, rangeAsProbabilty, nonRepeating);
-    this.groupBuilder = new TSTableGroupBuilder(group, this.parserStack);
+    this.groupBuilder = new TSTableGroupBuilder(this.table, group, this.parserStack);
   }
 
   /**
@@ -329,6 +329,31 @@ class TSParserFactory {
   createGroupResetExpression(group: string): void {
     if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
     this.groupBuilder.addExpression(new TSGroupResetExpression(this.table.getName(), group));
+  }
+
+  /**
+   * Starts a new group lock expression either an Unlock or a Lockout.
+   * @param functionname of Lock expression.
+   */
+  startGroupLockExpression(functionname: string): void {
+    if (!this.groupBuilder) throw `Cannot start Expression without defined Group!`;
+    this.groupBuilder.startGroupLockExpression(functionname);
+  }
+
+  /**
+   * Stacks next Parameter for Group Lock expression.
+   */
+  stackGroupLockParameter(): void {
+    if (!this.groupBuilder) throw `Cannot start Expression without defined Group!`;
+    this.groupBuilder.stackGroupLockParameter();
+  }
+
+  /**
+   * Creates and adds group lock expression on stack.
+   */
+  createGroupLockExpression(): void {
+    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
+    this.groupBuilder.addExpression(this.groupBuilder.createGroupLockExpression());
   }
 
   /**

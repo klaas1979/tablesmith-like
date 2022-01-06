@@ -14,6 +14,8 @@ class ParserStack {
   ifFunctionNames: string[];
   mathFunctionNames: string[];
   logicalFunctionNames: string[];
+  groupLockFunctionNames: string[];
+  groupLockFunctionDepth: number[];
   booleanOperators: string[];
   ifFalseValuesAdded: boolean[];
   conditionalDepths: number[];
@@ -24,6 +26,8 @@ class ParserStack {
     this.ifFunctionNames = [];
     this.mathFunctionNames = [];
     this.logicalFunctionNames = [];
+    this.groupLockFunctionNames = [];
+    this.groupLockFunctionDepth = [];
     this.ifFalseValuesAdded = [];
     this.conditionalDepths = [];
   }
@@ -121,6 +125,35 @@ class ParserStack {
     const functionname = this.logicalFunctionNames.pop();
     if (!functionname) throw 'No logical function to unstack!';
     return functionname;
+  }
+
+  /**
+   * Stacks context for an Group lock/unlock expression including stack depth.
+   * @param name the name of the group expression to stack.
+   */
+  stackGroupLock(name: string): void {
+    this.groupLockFunctionNames.push(name);
+    this.groupLockFunctionDepth.push(this.stacked.length);
+    this.stack();
+  }
+
+  /**
+   * Unstacks group lock function name and returns it.
+   * @returns group lock function name from stack.
+   */
+  unstackGroupLock(): string {
+    const functionname = this.groupLockFunctionNames.pop();
+    if (!functionname) throw 'No group lock function to unstack!';
+    return functionname;
+  }
+  /**
+   * Unstacks group lock stack depth and returns it.
+   * @returns number of stack depth lock function started with.
+   */
+  unstackGroupLockDepth(): number {
+    const depth = this.groupLockFunctionDepth.pop();
+    if (depth == undefined) throw 'No group lock depth to unstack!';
+    return depth;
   }
 
   /**

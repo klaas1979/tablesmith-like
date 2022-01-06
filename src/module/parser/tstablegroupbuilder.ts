@@ -22,16 +22,20 @@ import TSMathPowerExpression from '../expressions/tstmathpowerexpression';
 import TSMathModExpression from '../expressions/tstmathmodexpression';
 import TSMathSqrtExpression from '../expressions/tstmathsqrtexpression';
 import TSIsNumberExpression from '../expressions/tsisnumberexpression';
+import TSTable from '../tstable';
+import TSGroupLockExpression from '../expressions/tsgrouplockexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
  * that belongs to a table. The helper holds all needed state and stacks of contexts for parsing purpose.
  */
 class TSTableGroupBuilder {
+  tsTable: TSTable;
   tsGroup: TSGroup;
   range: TSRange | undefined;
   stack: ParserStack;
-  constructor(group: TSGroup, stack: ParserStack) {
+  constructor(tsTable: TSTable, group: TSGroup, stack: ParserStack) {
+    this.tsTable = tsTable;
     this.tsGroup = group;
     this.stack = stack;
   }
@@ -350,6 +354,41 @@ class TSTableGroupBuilder {
     }
     this.stack.unstack(); // unstack back
     return result;
+  }
+
+  /**
+   * Starts a new group lock expression either an Unlock or a Lockout.
+   * @param functionname of Lock expression.
+   */
+  startGroupLockExpression(functionname: string): void {
+    this.stack.stackGroupLock(functionname);
+  }
+
+  /**
+   * Stacks next Parameter for Group Lock expression.
+   */
+  stackGroupLockParameter(): void {
+    this.stack.stack();
+  }
+
+  /**
+   * Creates and adds group lock expression on stack.
+   */
+  createGroupLockExpression(): TSGroupLockExpression {
+    const functionname = this.stack.unstackGroupLock();
+    const stackDepth = this.stack.unstackGroupLockDepth();
+    const parameters = [];
+    let stackedContexts = this.stack.stacked.length - stackDepth;
+    while (stackedContexts > 1) {
+      const param = this.stack.getCurrentExpressions();
+      parameters.push(param);
+      this.stack.unstack();
+      stackedContexts -= 1;
+    }
+    parameters.reverse();
+    const groupExpression = this.stack.getCurrentExpressions();
+    this.stack.unstack(); // pop out the last if, to be back to previous context
+    return new TSGroupLockExpression(functionname, this.tsTable.getName(), groupExpression, parameters);
   }
 }
 

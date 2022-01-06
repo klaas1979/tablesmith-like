@@ -106,7 +106,7 @@ class TSGroup {
     const roller = groupCallModifier.modify(this.rollTerm());
     for (let i = 0; result === undefined && i < this.ranges.length * 10; i++) {
       const roll = roller.roll(evalcontext);
-      let range: TSRange | undefined = this._rangeFor(roll.total);
+      let range: TSRange | undefined = this.rangeFor(roll.total);
       if (this.isNonRepeating()) {
         if (!range.isTaken()) range.lockout();
         else range = undefined;
@@ -144,7 +144,7 @@ class TSGroup {
    * @returns evaluated expression for Range donating result.
    */
   result(total: number): string {
-    const result = this._rangeFor(total);
+    const result = this.rangeFor(total);
     this.lastRollTotal = total;
     return `${this.before.evaluate()}${result.evaluate()}${this.after.evaluate()}`;
   }
@@ -158,6 +158,22 @@ class TSGroup {
         range.unlock();
       });
     }
+  }
+
+  /**
+   * Unlocks range at given index, may be undefined.
+   * @param index donating range to unlock.
+   */
+  unlock(index: number) {
+    this.rangeFor(index)?.unlock();
+  }
+
+  /**
+   * Lockout range at given index, may be undefined.
+   * @param index donating range to lockout.
+   */
+  lockout(index: number) {
+    this.rangeFor(index)?.lockout();
   }
 
   /**
@@ -182,7 +198,7 @@ class TSGroup {
    * @param total to get range for.
    * @returns Range for total.
    */
-  private _rangeFor(total: number): TSRange {
+  private rangeFor(total: number): TSRange {
     let result;
     if (total < 1) {
       result = this.firstRange();
