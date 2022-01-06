@@ -82,13 +82,13 @@ describe('TSGroup (non repeating)', () => {
     expect(result).toBe('<Non repeating Group maxed out!>');
   });
 
-  it('#unlock on maxed out group, restores entries', () => {
+  it('#reset on maxed out group, restores entries', () => {
     let result = group.roll(modifier);
     group.roll(modifier);
     group.roll(modifier);
     result = group.roll(modifier);
     expect(result).toBe('<Non repeating Group maxed out!>');
-    group.unlock();
+    group.reset();
     result = group.roll(modifier);
     expect(['One', 'Two']).toContain(result);
     result = group.roll(modifier);

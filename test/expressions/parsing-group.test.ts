@@ -44,3 +44,23 @@ describe('Parsing {MaxVal~', () => {
     expect(result).toBe('100');
   });
 });
+
+describe('Parsing {Reset~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('max value from first range', () => {
+    simpleTable = ':Start\n1,{Reset~other}\n:!other\n1,One\n2,One\n';
+    tablesmith.addTable(filename, simpleTable);
+    const group = tablesmith.getLastTSTable().groupForName('other');
+    const firstRange = group?.firstRange();
+    const lastRange = group?.lastRange();
+    firstRange?.lockout();
+    lastRange?.lockout();
+    tablesmith.evaluate(`[${filename}]`);
+    expect(firstRange?.isTaken()).toBeFalsy();
+    expect(lastRange?.isTaken()).toBeFalsy();
+  });
+});

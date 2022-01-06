@@ -82,7 +82,7 @@ class TSTable {
     });
 
     this.groups.forEach((group) => {
-      group.unlock();
+      group.reset();
     });
   }
 }

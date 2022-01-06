@@ -152,7 +152,7 @@ class TSGroup {
   /**
    * Unlocks all locked ranges for a non repeating group, normally used to set up context for next evaluation.
    */
-  unlock(): void {
+  reset(): void {
     if (this.isNonRepeating()) {
       this.ranges.forEach((range) => {
         range.unlock();

@@ -313,6 +313,9 @@ GroupAndTableFunctions
   / '{' _ 'MinVal~' _ '}' { errorHandling(() => {
             options.pf.createGroupExpression('MinVal');
           }); }
+  / '{' _ 'Reset~' _ group:Name _ '}' { errorHandling(() => {
+            options.pf.createGroupResetExpression(group);
+          }); }
 
 TSMathFunction
   = Dice _ MathExpression _ '}' { errorHandling(() => {
