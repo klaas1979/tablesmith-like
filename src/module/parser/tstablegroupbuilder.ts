@@ -24,6 +24,8 @@ import TSMathSqrtExpression from '../expressions/tstmathsqrtexpression';
 import TSIsNumberExpression from '../expressions/tsisnumberexpression';
 import TSTable from '../tstable';
 import TSGroupLockExpression from '../expressions/tsgrouplockexpression';
+import TSGroupCountExpression from '../expressions/tsgroupcountexpression';
+import TSGroupResetExpression from '../expressions/tsgroupresetexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -276,6 +278,36 @@ class TSTableGroupBuilder {
   }
 
   /**
+   * Creates a new Group Count.
+   * @param functionname of named expression.
+   */
+  startGroupNamedExpression(functionname: string) {
+    this.stack.stackGroupFunction(functionname);
+  }
+
+  /**
+   * Creates a new GroupNamed Expression of type Reset or Count.
+   * @returns expression for named Group.
+   */
+  createGroupNamedExpression(tablename: string): TSExpression {
+    const expression = this.stack.getCurrentExpressions();
+    const functionname = this.stack.unstackGroupFunction();
+    let result;
+    switch (functionname) {
+      case 'Reset':
+        result = new TSGroupResetExpression(tablename, expression);
+        break;
+      case 'Count':
+        result = new TSGroupCountExpression(tablename, expression);
+        break;
+      default:
+        throw `Cannot create Group named function for unknown name '${functionname}'`;
+    }
+    this.stack.unstack(); // pop out the last if, to be back to previous context
+    return result;
+  }
+
+  /**
    * Starts a bold expression.
    */
   startBold() {
@@ -375,7 +407,7 @@ class TSTableGroupBuilder {
    * Creates and adds group lock expression on stack.
    */
   createGroupLockExpression(): TSGroupLockExpression {
-    const functionname = this.stack.unstackGroupLock();
+    const functionname = this.stack.unstackGroupFunction();
     const stackDepth = this.stack.unstackGroupLockDepth();
     const parameters = [];
     let stackedContexts = this.stack.stacked.length - stackDepth;

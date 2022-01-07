@@ -10,7 +10,6 @@ import TSTableGroupBuilder from './tstablegroupbuilder';
 import MathTermExpressionBuilder from './mathtermexpressionbuilder';
 import ParserStack from './parserstack';
 import TSGroupExpression from '../expressions/tsgroupexpression';
-import TSGroupResetExpression from '../expressions/tsgroupresetexpression';
 
 /**
  * Factory used by the Peggy Parser to create the in memory representaion of a Tablesmith Table file.
@@ -324,11 +323,20 @@ class TSParserFactory {
 
   /**
    * Creates a new Table Reset expression.
-   * @param group to reset.
+   * @param functionname for Group Function.
    */
-  createGroupResetExpression(group: string): void {
+  startGroupNamedExpression(functionname: string): void {
     if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
-    this.groupBuilder.addExpression(new TSGroupResetExpression(this.table.getName(), group));
+    this.groupBuilder.startGroupNamedExpression(functionname);
+  }
+
+  /**
+   * Creates a new Table Grou Named expression.
+   */
+  createGroupNamedExpression(): void {
+    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
+    const expression = this.groupBuilder.createGroupNamedExpression(this.table.getName());
+    this.groupBuilder.addExpression(expression);
   }
 
   /**

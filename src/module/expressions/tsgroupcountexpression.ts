@@ -5,7 +5,7 @@ import TSExpression from './tsexpression';
 /**
  * Simple Text Expression as value of a Range in a Group or part of the value, i.e. prefix or suffix to a TermExpression.
  */
-class TSGroupResetExpression implements TSExpression {
+class TSGroupCountExpression implements TSExpression {
   tablename: string;
   groupExpression: TSExpression;
   constructor(tablename: string, groupExpression: TSExpression) {
@@ -15,13 +15,12 @@ class TSGroupResetExpression implements TSExpression {
   evaluate(): string {
     const groupname = this.groupExpression.evaluate();
     const group = tablesmith.tableForName(this.tablename)?.groupForName(groupname);
-    if (!group) throw `Cannot reset group '${groupname}' in table '${this.tablename}', not defined!`;
-    group.reset();
-    return '';
+    if (!group) throw `Cannot Count group '${groupname}' in table '${groupname}', not defined!`;
+    return `${group.count()}`;
   }
 
   getExpression(): string {
-    return `{Reset~${this.groupExpression.getExpression()}}`;
+    return `{Count~${this.groupExpression.getExpression()}}`;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -30,4 +29,4 @@ class TSGroupResetExpression implements TSExpression {
   }
 }
 
-export default TSGroupResetExpression;
+export default TSGroupCountExpression;

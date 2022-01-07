@@ -313,11 +313,16 @@ GroupAndTableFunctions
   / '{' _ 'MinVal~' _ '}' { errorHandling(() => {
             options.pf.createGroupExpression('MinVal');
           }); }
-  / '{' _ 'Reset~' _ group:Name _ '}' { errorHandling(() => {
-            options.pf.createGroupResetExpression(group);
+  / GroupNamedFunctions _ Expression _ '}' { errorHandling(() => {
+            options.pf.createGroupNamedExpression();
           }); }
   / GroupLockFunctions _ ExpressionTextNoComma _ (GroupLockParameter)+ '}' { errorHandling(() => {
             options.pf.createGroupLockExpression();
+          }); }
+
+GroupNamedFunctions
+  = '{' _ name:(@'Reset' / @'Count') '~' { errorHandling(() => {
+            options.pf.startGroupNamedExpression(name);
           }); }
 
 GroupLockFunctions

@@ -138,10 +138,19 @@ class ParserStack {
   }
 
   /**
+   * Stacks context for an Group lock/unlock expression including stack depth.
+   * @param name the name of the group expression to stack.
+   */
+  stackGroupFunction(name: string): void {
+    this.groupLockFunctionNames.push(name);
+    this.stack();
+  }
+
+  /**
    * Unstacks group lock function name and returns it.
    * @returns group lock function name from stack.
    */
-  unstackGroupLock(): string {
+  unstackGroupFunction(): string {
     const functionname = this.groupLockFunctionNames.pop();
     if (!functionname) throw 'No group lock function to unstack!';
     return functionname;

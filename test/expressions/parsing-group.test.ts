@@ -69,16 +69,15 @@ describe('Parsing {Reset~', () => {
   it('expression representation uses correct function name', () => {
     simpleTable = ':Start\n1,{Reset~other}\n';
     tablesmith.addTable(filename, simpleTable);
-    expect(tablesmith.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Reset~other}');
+    const result = tablesmith.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression();
+    expect(result).toBe('{Reset~other}');
   });
   it('max value from first range', () => {
-    simpleTable = ':Start\n1,{Reset~other}\n:!other\n1,One\n2,One\n';
+    simpleTable = ':Start\n1,{Lockout~other,1,2}{Reset~other}\n:!other\n1,One\n2,One\n';
     tablesmith.addTable(filename, simpleTable);
     const group = tablesmith.getLastTSTable().groupForName('other');
     const firstRange = group?.firstRange();
     const lastRange = group?.lastRange();
-    firstRange?.lockout();
-    lastRange?.lockout();
     tablesmith.evaluate(`[${filename}]`);
     expect(firstRange?.isTaken()).toBeFalsy();
     expect(lastRange?.isTaken()).toBeFalsy();

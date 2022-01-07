@@ -161,6 +161,14 @@ class TSGroup {
   }
 
   /**
+   * Returns count of ranges for this group.
+   * @returns number count of ranges in this Group.
+   */
+  count(): number {
+    return this.ranges.length;
+  }
+
+  /**
    * Unlocks range at given index, may be undefined.
    * @param index donating range to unlock.
    */
