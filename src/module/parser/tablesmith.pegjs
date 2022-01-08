@@ -322,6 +322,7 @@ TSMathFunction
           }); }
   / MathOneParamFunctions
   / MathTwoParamFunctions
+  / MathManyParamFunctions
   / MathPowerFunction // has '^' as separator in TS definition
 
 Dice = '{' _ 'Dice~'  { errorHandling(() => {
@@ -342,35 +343,42 @@ MathTwoParamFunctions
             options.pf.createFunction();
           }); }
 
+MathManyParamFunctions
+  = '{' _ MathManyParamFunctionsNames _ ExpressionTextNoComma _ (MathParamSeparator _ ExpressionTextNoComma)+ _ '}' { errorHandling(() => {
+            options.pf.createFunction();
+          }); }
+
 MathOneParamFunctionsNames
-  = 'Abs~' { errorHandling(() => {
-            options.pf.startFunction('Abs');
+  = name:'Abs' '~' { errorHandling(() => {
+            options.pf.startFunction(name);
           }); }
-  / 'Ceil~' { errorHandling(() => {
-            options.pf.startFunction('Ceil');
+  / name:'Ceil' '~' { errorHandling(() => {
+            options.pf.startFunction(name);
           }); }
-  / 'Floor~' { errorHandling(() => {
-            options.pf.startFunction('Floor');
+  / name:'Floor' '~' { errorHandling(() => {
+            options.pf.startFunction(name);
           }); }
-  / 'Trunc~' { errorHandling(() => {
-            options.pf.startFunction('Trunc');
+  / name:'Trunc' '~' { errorHandling(() => {
+            options.pf.startFunction(name);
           }); }
-  / 'Sqrt~' { errorHandling(() => {
-            options.pf.startFunction('Sqrt');
+  / name:'Sqrt' '~' { errorHandling(() => {
+            options.pf.startFunction(name);
           }); }
 
 MathTwoParamFunctionsNames
-  = 'Round~' { errorHandling(() => {
-            options.pf.startFunction('Round');
+  = name:'Round' '~' { errorHandling(() => {
+            options.pf.startFunction(name);
           }); }
-  / 'Min~' { errorHandling(() => {
-            options.pf.startFunction('Min');
+  / name:'Mod' '~' { errorHandling(() => {
+            options.pf.startFunction(name);
           }); }
-  / 'Max~' { errorHandling(() => {
-            options.pf.startFunction('Max');
+
+MathManyParamFunctionsNames
+  = name:'Min' '~' { errorHandling(() => {
+            options.pf.startFunction(name);
           }); }
-  / 'Mod~' { errorHandling(() => {
-            options.pf.startFunction('Mod');
+  / name:'Max' '~' { errorHandling(() => {
+            options.pf.startFunction(name);
           }); }
 
 MathPowerFunction
@@ -378,8 +386,8 @@ MathPowerFunction
             options.pf.createFunction();
           }); }
 
-MathPower = 'Power~' { errorHandling(() => {
-            options.pf.startFunction('Power');
+MathPower = name:'Power' '~' { errorHandling(() => {
+            options.pf.startFunction(name);
           }); }
 
 MathPowerSeparator = [,^] { errorHandling(() => { // has only '^' in definition but use both for convenience

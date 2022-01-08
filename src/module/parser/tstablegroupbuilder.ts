@@ -196,10 +196,10 @@ class TSTableGroupBuilder {
         result = this.createMathRound(stacked);
         break;
       case 'Min':
-        result = this.createMathMin(stacked);
+        result = this.createMathMinMax(stacked);
         break;
       case 'Max':
-        result = this.createMathMax(stacked);
+        result = this.createMathMinMax(stacked);
         break;
       case 'Mod':
         result = this.createMathMod(stacked);
@@ -345,16 +345,24 @@ class TSTableGroupBuilder {
     return new TSGroupRangeValueExpression(data.name, this.tsTable.getName(), groupExpression, param);
   }
 
-  private createMathMax(data: StackItem): TSMathMaxExpression {
-    const param2 = data.popExpressions();
-    const param1 = data.popExpressions();
-    return new TSMathMaxExpression(param1, param2);
-  }
-
-  private createMathMin(data: StackItem): TSMathMinExpression {
-    const param2 = data.popExpressions();
-    const param1 = data.popExpressions();
-    return new TSMathMinExpression(param1, param2);
+  private createMathMinMax(data: StackItem): TSMathMinExpression | TSMathMaxExpression {
+    const values: TSExpression[] = [];
+    while (data.stackSize() > 0) {
+      values.push(data.popExpressions());
+    }
+    values.reverse();
+    let result;
+    switch (data.name) {
+      case 'Min':
+        result = new TSMathMinExpression(values);
+        break;
+      case 'Max':
+        result = new TSMathMaxExpression(values);
+        break;
+      default:
+        throw `Cannot create math Min or Max unknown function name '${data.name}'`;
+    }
+    return result;
   }
 
   private createMathMod(data: StackItem): TSMathModExpression {

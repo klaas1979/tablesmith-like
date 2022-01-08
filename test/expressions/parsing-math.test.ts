@@ -322,6 +322,12 @@ describe('Min~', () => {
     tablesmith.addTable(filename, simpleTable);
     expect(tablesmith.evaluate(`[${filename}]`)).toBe('2.123456');
   });
+
+  it('can have 2+ arguments', () => {
+    simpleTable = ':Start\n1,{Min~3,2.123456,1,0,1.5,2.3,100}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('0');
+  });
 });
 
 describe('Max~', () => {
@@ -347,6 +353,12 @@ describe('Max~', () => {
     simpleTable = ':Start\n1,{Max~3,2.123456}\n';
     tablesmith.addTable(filename, simpleTable);
     expect(tablesmith.evaluate(`[${filename}]`)).toBe('3');
+  });
+
+  it('can have 2+ arguments', () => {
+    simpleTable = ':Start\n1,{Max~3,2.123456,1,0,1.5,2.3,100}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('100');
   });
 });
 

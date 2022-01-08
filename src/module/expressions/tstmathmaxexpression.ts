@@ -5,23 +5,22 @@ import TSExpression from './tsexpression';
  * Math max function to get bigger of the two values.
  */
 class TSMathMaxExpression implements TSExpression {
-  param1: TSExpression;
-  param2: TSExpression;
-  constructor(param1: TSExpression, param2: TSExpression) {
-    this.param1 = param1;
-    this.param2 = param2;
+  values: TSExpression[];
+  constructor(values: TSExpression[]) {
+    this.values = values;
   }
   evaluate(): string {
-    const p1String = this.param1.evaluate();
-    const value1 = Number.parseFloat(p1String);
-    if (Number.isNaN(value1)) throw `Could not get Min for non number value '${p1String}'!`;
-    const p2string = this.param2.evaluate();
-    const value2 = Number.parseFloat(p2string);
-    if (Number.isNaN(value2)) throw `Could not get Min for non number value '${p2string}'!`;
-    return `${Math.max(value1, value2)}`;
+    const nums = this.values.map((value) => Number.parseFloat(value.evaluate()));
+    if (nums.find((num) => Number.isNaN(num)) != undefined)
+      throw `Could not evaluate min not all values numbers '${nums.join(',')}'`;
+    return `${Math.max(...nums)}`;
   }
   getExpression(): string {
-    return `{Max~${this.param1.getExpression()},${this.param2.getExpression()}}`;
+    const expressions = this.values.reduce(
+      (all, cur) => (all.length > 0 ? all + ',' + cur.getExpression() : cur.getExpression()),
+      '',
+    );
+    return `{Max~${expressions}}`;
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setGroup(group: TSGroup): void {
