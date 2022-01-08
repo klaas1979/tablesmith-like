@@ -1,7 +1,6 @@
 import TSGroup from '../tsgroup';
 import TSRange from '../tsrange';
 import TSExpression from '../expressions/tsexpression';
-import ParserStack from './parserstack';
 import TSIfExpression from '../expressions/tsifexpression';
 import TSExpressions from '../expressions/tsexpressions';
 import TSLogicalExpression from '../expressions/tslogicalexpression';
@@ -44,12 +43,10 @@ class TSTableGroupBuilder {
   tsTable: TSTable;
   tsGroup: TSGroup;
   range: TSRange | undefined;
-  oldstack: ParserStack;
   stack: Stack;
   constructor(tsTable: TSTable, group: TSGroup) {
     this.tsTable = tsTable;
     this.tsGroup = group;
-    this.oldstack = new ParserStack();
     this.stack = new Stack();
   }
 
@@ -429,13 +426,6 @@ class TSTableGroupBuilder {
   setBooleanComparisonOperator(operator: string) {
     this.stack.stackParameter();
     this.stack.stackString(operator);
-  }
-
-  /**
-   * Starts a bold expression.
-   */
-  startMath(functionname: string) {
-    this.oldstack.stackMath(functionname);
   }
 }
 
