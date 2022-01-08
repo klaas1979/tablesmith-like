@@ -1,6 +1,5 @@
 import TSExpression from '../expressions/tsexpression';
 import TSExpressions from '../expressions/tsexpressions';
-import TSVariableSetExpression from '../expressions/tsvariablesetexpression';
 
 /**
  * The ParserStack holds the current state to add expressions to. It is stacks contexts for nested
@@ -37,23 +36,7 @@ class ParserStack {
    * @param expression to add to this group.
    */
   addExpression(expression: TSExpression): void {
-    this.ifAssignmentExpressionAddSetExpressionsAndUnstack(expression);
     this.getCurrentExpressions().add(expression);
-  }
-
-  /**
-   * If currently parsing an assignment expressions and given expression is the assignment expression
-   * adds collected expressions that make up the assignment to it and resets state.
-   * @param expression to existing assignment expressions to.
-   */
-  private ifAssignmentExpressionAddSetExpressionsAndUnstack(expression: TSExpression) {
-    if (this.assignment) {
-      const setExpression = expression as TSVariableSetExpression;
-      if (typeof setExpression.setValueExpressions === 'function') {
-        setExpression.setValueExpressions(this.assignment);
-        this.assignment = undefined;
-      }
-    }
   }
 
   /**

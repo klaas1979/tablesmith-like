@@ -26,6 +26,15 @@ import TSTable from '../tstable';
 import TSGroupLockExpression from '../expressions/tsgrouplockexpression';
 import TSGroupCountExpression from '../expressions/tsgroupcountexpression';
 import TSGroupResetExpression from '../expressions/tsgroupresetexpression';
+import Stack from './stack';
+import StackItem from './stackitem';
+import STACK_TYPE from './stacktype';
+import TSLastRollExpression from '../expressions/tslastrollexpression';
+import TSGroupRangeValueExpression from '../expressions/tsgrouprangevaluexpression';
+import TSVariableSetExpression from '../expressions/tsvariablesetexpression';
+import TSVariableGetExpression from '../expressions/tsvariablegetexpression';
+import TSLineExpression from '../expressions/tslineexpression';
+import TSNewlineExpression from '../expressions/tsnewlineexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -35,11 +44,13 @@ class TSTableGroupBuilder {
   tsTable: TSTable;
   tsGroup: TSGroup;
   range: TSRange | undefined;
-  stack: ParserStack;
-  constructor(tsTable: TSTable, group: TSGroup, stack: ParserStack) {
+  oldstack: ParserStack;
+  stack: Stack;
+  constructor(tsTable: TSTable, group: TSGroup) {
     this.tsTable = tsTable;
     this.tsGroup = group;
-    this.stack = stack;
+    this.oldstack = new ParserStack();
+    this.stack = new Stack();
   }
 
   /**
@@ -49,7 +60,343 @@ class TSTableGroupBuilder {
    */
   addRange(upper: number): void {
     const newRange = this.tsGroup.addRange(upper);
-    this.stack.current = newRange.getExpressions();
+    this.stack.startGroupLine(newRange.getExpressions());
+  }
+
+  /**
+   * Prepares stack for a Variable.
+   */
+  startVariable(type: 'set' | 'get') {
+    // the parser finds the single % and starts a new variable get, before it backtraces -> need to catch this
+    if (type == 'get' && this.stack.peek().type != STACK_TYPE.VARIABLE_GET) this.stack.startVariable(type);
+    else if (type == 'set') this.stack.startVariable(type);
+  }
+
+  /**
+   * Starts a new function stack.
+   * @param name of the function to start parsing.
+   */
+  startFunction(name: string): void {
+    this.stack.startFunction(name);
+  }
+
+  /**
+   * Stacks next Parameter.
+   */
+  stackParameter(): void {
+    this.stack.stackParameter();
+  }
+
+  /**
+   * Stacks String in current contex.t
+   * @param value string to stack.
+   */
+  stackString(value: string): void {
+    this.stack.stackString(value);
+  }
+
+  /**
+   * Creates Variable Get or Set from stack.
+   */
+  createVariable() {
+    this.addExpression(this.endVariable());
+  }
+
+  private endVariable(): TSExpression {
+    const stacked = this.stack.pop();
+    let result;
+    switch (stacked.type) {
+      case STACK_TYPE.VARIABLE_GET:
+        result = this.createVariableGet(stacked);
+        break;
+      case STACK_TYPE.VARIABLE_SET:
+        result = this.createVariableSet(stacked);
+        break;
+      default:
+        throw `Stacked item is not a Variable Expression but '${stacked.type}'`;
+    }
+    return result;
+  }
+
+  private createVariableGet(stacked: StackItem): TSVariableGetExpression {
+    const varNameExpression = stacked.popExpressions();
+    this.checkExpressionsNotEmpty(varNameExpression);
+    this.checkEmpty(stacked);
+    return new TSVariableGetExpression(varNameExpression);
+  }
+
+  private createVariableSet(stacked: StackItem): TSVariableSetExpression {
+    const valueExpression = stacked.popExpressions();
+    const operator = stacked.popString();
+    const varNameExpression = stacked.popExpressions();
+    this.checkEmpty(stacked);
+    return new TSVariableSetExpression(varNameExpression, operator, valueExpression);
+  }
+
+  /**
+   * Creates function on top of stack and adds it to current expressions.
+   */
+  createFunction(): void {
+    this.addExpression(this.endFunction());
+  }
+
+  /**
+   * Ends collecting data for a function and creates the Expression for the function.
+   * @returns TSExpression for the function on top of stack.
+   */
+  private endFunction(): TSExpression {
+    const stacked = this.stack.pop();
+    if (stacked.type != STACK_TYPE.FUNCTION) throw `Stacked item is not a function but '${stacked.type}'`;
+    let result;
+    switch (stacked.name) {
+      case 'Abs':
+        result = new TSMathAbsExpression(stacked.popExpressions());
+        break;
+      case 'Ceil':
+        result = new TSMathCeilExpression(stacked.popExpressions());
+        break;
+      case 'Floor':
+        result = new TSMathFloorExpression(stacked.popExpressions());
+        break;
+      case 'Trunc':
+        result = new TSMathTruncExpression(stacked.popExpressions());
+        break;
+      case 'Sqrt':
+        result = new TSMathSqrtExpression(stacked.popExpressions());
+        break;
+      case 'Round':
+        result = this.createMathRound(stacked);
+        break;
+      case 'Min':
+        result = this.createMathMin(stacked);
+        break;
+      case 'Max':
+        result = this.createMathMax(stacked);
+        break;
+      case 'Mod':
+        result = this.createMathMod(stacked);
+        break;
+      case 'Power':
+        result = this.createMathPower(stacked);
+        break;
+      case 'And':
+        result = this.createLogicalExpression(stacked);
+        break;
+      case 'Bold':
+        result = this.createBoldExpression(stacked);
+        break;
+      case 'Count':
+        result = this.createCountExpression(stacked);
+        break;
+      case 'CR':
+        stacked.popExpressions();
+        result = new TSNewlineExpression();
+        break;
+      case 'IsNumber':
+        result = this.createIsNumberExpression(stacked);
+        break;
+      case 'If':
+        result = this.createIfExpression(stacked);
+        break;
+      case 'IIf':
+        result = this.createIfExpression(stacked);
+        break;
+      case 'LastRoll':
+        result = this.createLastRollExpression(stacked);
+        break;
+      case 'Line':
+        result = this.createLineExpression(stacked);
+        break;
+      case 'Lockout':
+        result = this.createGroupLockExpression(stacked);
+        break;
+      case 'Loop':
+        result = this.createLoopExpression(stacked);
+        break;
+      case 'MinVal':
+        result = this.createGroupRangeValueExpression(stacked);
+        break;
+      case 'MaxVal':
+        result = this.createGroupRangeValueExpression(stacked);
+        break;
+      case 'Or':
+        result = this.createLogicalExpression(stacked);
+        break;
+      case 'Reset':
+        result = this.createResetExpression(stacked);
+        break;
+      case 'Select':
+        result = this.createSelectExpression(stacked);
+        break;
+      case 'Unlock':
+        result = this.createGroupLockExpression(stacked);
+        break;
+      case 'While':
+        result = this.createWhileExpression(stacked);
+        break;
+      case 'Xor':
+        result = this.createLogicalExpression(stacked);
+        break;
+      default:
+        throw `Expression Factory for function '${stacked.name}' not defined!`;
+    }
+    this.checkEmpty(stacked);
+    return result;
+  }
+
+  private createBoldExpression(data: StackItem): TSBoldExpression {
+    const result = data.popExpressions();
+    return new TSBoldExpression(result);
+  }
+
+  private createCountExpression(data: StackItem): TSGroupCountExpression {
+    const expression = data.popExpressions();
+    return new TSGroupCountExpression(this.tsTable.name, expression);
+  }
+
+  private createIfExpression(data: StackItem): TSIfExpression {
+    const falseVal = data.stackSize() == 4 ? data.popExpressions() : new TSExpressions();
+    const trueVal = data.popExpressions();
+    const ifExpression2 = data.popExpressions();
+    const ifExpression1 = data.popExpressions();
+    const operator = data.popString();
+    const booleanComparision = new BooleanComparison(ifExpression1, operator, ifExpression2);
+    return new TSIfExpression(data.name, booleanComparision, trueVal, falseVal);
+  }
+
+  private createIsNumberExpression(data: StackItem): TSIsNumberExpression {
+    const expression = data.popExpressions();
+    return new TSIsNumberExpression(expression);
+  }
+
+  private createLastRollExpression(data: StackItem): TSLastRollExpression {
+    data.popExpressions();
+    return new TSLastRollExpression();
+  }
+
+  private createLineExpression(data: StackItem): TSLineExpression {
+    const width = data.popExpressions();
+    const align = data.popExpressions();
+    return new TSLineExpression(align, width);
+  }
+
+  private createLogicalExpression(data: StackItem): TSLogicalExpression {
+    let ifExpression2 = data.popExpressions();
+    let ifExpression1 = data.popExpressions();
+    let operator = data.popString();
+    const booleanComparison2 = new BooleanComparison(ifExpression1, operator, ifExpression2);
+    ifExpression2 = data.popExpressions();
+    ifExpression1 = data.popExpressions();
+    operator = data.popString();
+    const booleanComparison1 = new BooleanComparison(ifExpression1, operator, ifExpression2);
+    return new TSLogicalExpression(data.name, booleanComparison1, booleanComparison2);
+  }
+
+  private createLoopExpression(data: StackItem): TSLoopExpression {
+    const block = data.popExpressions();
+    const counterExpression = data.popExpressions();
+    return new TSLoopExpression(counterExpression, block);
+  }
+
+  private createGroupLockExpression(data: StackItem): TSGroupLockExpression {
+    const parameters = [];
+    if (data.stackSize() < 2) throw 'Cannot create Lockout missing parameters!';
+    while (data.stackSize() > 1) {
+      const param = data.popExpressions();
+      parameters.push(param);
+    }
+    parameters.reverse();
+    const groupExpression = data.popExpressions();
+    return new TSGroupLockExpression(data.name, this.tsTable.getName(), groupExpression, parameters);
+  }
+
+  private createGroupRangeValueExpression(data: StackItem): TSGroupRangeValueExpression {
+    const param = data.popExpressions();
+    const groupExpression = data.popExpressions();
+    return new TSGroupRangeValueExpression(data.name, this.tsTable.getName(), groupExpression, param);
+  }
+
+  private createMathMax(data: StackItem): TSMathMaxExpression {
+    const param2 = data.popExpressions();
+    const param1 = data.popExpressions();
+    return new TSMathMaxExpression(param1, param2);
+  }
+
+  private createMathMin(data: StackItem): TSMathMinExpression {
+    const param2 = data.popExpressions();
+    const param1 = data.popExpressions();
+    return new TSMathMinExpression(param1, param2);
+  }
+
+  private createMathMod(data: StackItem): TSMathModExpression {
+    const divisor = data.popExpressions();
+    const param = data.popExpressions();
+    return new TSMathModExpression(param, divisor);
+  }
+
+  private createMathRound(data: StackItem): TSMathRoundExpression {
+    const param = data.popExpressions();
+    const places = data.popExpressions();
+    return new TSMathRoundExpression(param, places);
+  }
+
+  private createMathPower(data: StackItem): TSMathPowerExpression {
+    const power = data.popExpressions();
+    const param = data.popExpressions();
+    return new TSMathPowerExpression(param, power);
+  }
+
+  private createResetExpression(data: StackItem): TSGroupResetExpression {
+    const expression = data.popExpressions();
+    return new TSGroupResetExpression(this.tsTable.name, expression);
+  }
+
+  createSelectExpression(data: StackItem): TSSelectExpression {
+    // 1 depth for select + 2 for each key/value pair + 1 if default -> default is even
+    let defaultValue = new TSExpressions();
+    if (data.stackSize() % 2 == 0) {
+      defaultValue = data.popExpressions();
+    }
+    const tuples: SelectTuple[] = [];
+    while (data.stackSize() > 2) {
+      const value = data.popExpressions();
+      const key = data.popExpressions();
+      tuples.push(new SelectTuple(key, value));
+    }
+    tuples.reverse();
+    const selector = data.popExpressions();
+    return new TSSelectExpression(selector, tuples, defaultValue);
+  }
+
+  private createWhileExpression(data: StackItem): TSWhileExpression {
+    const block = data.popExpressions();
+    let checkExpression: TSExpression;
+    // number of stacked states can be 2 for a boolean comparison or 1 for a TS Expressions evaluated without comparison
+    if (data.stackSize() == 2) {
+      const ifExpression2 = data.popExpressions();
+      const ifExpression1 = data.popExpressions();
+      const operator = data.popString();
+      checkExpression = new BooleanComparison(ifExpression1, operator, ifExpression2);
+    } else {
+      checkExpression = data.popExpressions();
+    }
+    return new TSWhileExpression(checkExpression, block);
+  }
+
+  /**
+   * Checks if given expressions contain any data, if not throws exception.
+   * @param expressions to check to contain any data.
+   */
+  private checkExpressionsNotEmpty(expressions: TSExpressions) {
+    if (expressions.size() == 0) throw `Expressions empty, but should not!`;
+  }
+
+  /**
+   * Checks if all parsed data was used, if not throws exception.
+   * @param data to check that it is empty meaning that no unused data was parsed.
+   */
+  private checkEmpty(data: StackItem) {
+    if (!data.isEmpty()) throw `Expression data for ${data.name} retrieved, still data left: '${data.summary()}'`;
   }
 
   /**
@@ -65,83 +412,14 @@ class TSTableGroupBuilder {
    * Helper setting up the current expressions to add to the before expressions of the group.
    */
   addBefore(): void {
-    this.stack.current = this.tsGroup.before;
+    this.stack.startGroupLine(this.tsGroup.before);
   }
 
   /**
    * Helper setting up the current expressions to add to the after expressions of the group.
    */
   addAfter(): void {
-    this.stack.current = this.tsGroup.after;
-  }
-
-  /**
-   * Toggles variable assignment Context on and off. If toggled on the Expressions are collected
-   * for the variable assignment and the current expressions stacked away. If toggled of the old expression stack
-   * is restored to save Expressions following variable assignment.
-   */
-  toggleVariableAssigment(): void {
-    this.stack.toggleVariableAssigment();
-  }
-
-  /**
-   * Starts boolean expression with given type.
-   * @param type can be "And" or "Or".
-   */
-  startLogicalExpression(type: string) {
-    this.stack.stackLogical(type);
-  }
-
-  /**
-   * Starts boolean expression IsNumber.
-   */
-  startIsNumber() {
-    this.stack.stack();
-  }
-
-  /**
-   * Starts the next boolean expression part for Boolean functions.
-   */
-  startNextBooleanExpression(): void {
-    this.stack.stack();
-  }
-
-  /**
-   * Starts an while expression.
-   */
-  startWhile() {
-    this.stack.stackConditionalState();
-    this.stack.stack();
-  }
-
-  /**
-   * Starts a Loop expression.
-   */
-  startLoop() {
-    this.stack.stack();
-  }
-
-  /**
-   * Starts a select expression.
-   */
-  startSelect() {
-    this.stack.stackConditionalState();
-    this.stack.stack();
-  }
-
-  /**
-   * Starts the block to evaluate for a while or loop function.
-   */
-  startIteratorBlock() {
-    this.stack.stack();
-  }
-
-  /**
-   * Starts an If expression.
-   * @param functionname of the If can be "If" or "IIf".
-   */
-  startIf(functionname: string) {
-    this.stack.stackIf(functionname);
+    this.stack.startGroupLine(this.tsGroup.after);
   }
 
   /**
@@ -149,278 +427,15 @@ class TSTableGroupBuilder {
    * @param operator to set for comparison.
    */
   setBooleanComparisonOperator(operator: string) {
-    this.stack.stackBooleanOperator(operator);
-  }
-
-  /**
-   * Starts the true value Expressions for the if.
-   */
-  startIfTrueValue(): void {
-    this.stack.stack();
-  }
-
-  /**
-   * Starts the true value Expressions for the if.
-   */
-  startIfFalseValue(): void {
-    this.stack.stackIfFalseValue();
-  }
-
-  /**
-   * Creates while Expression from last stacked values and returns it.
-   * @returns TSWhileExpression from top of stack.
-   */
-  createWhile(): TSWhileExpression {
-    const block = this.stack.getCurrentExpressions();
-    let checkExpression: TSExpression;
-    const stackedContexts = this.stack.unstackConditionalState();
-    // number of stacked states can be 3 for BooleanComparison or 2 for a single Expression
-    if (stackedContexts == 3) {
-      const ifExpression2 = this.stack.unstack();
-      const ifExpression1 = this.stack.unstack();
-      const operator = this.stack.unstackBooleanOperator();
-      checkExpression = new BooleanComparison(ifExpression1, operator, ifExpression2);
-    } else if (stackedContexts == 2) {
-      checkExpression = this.stack.unstack();
-    } else {
-      throw `Unknown number of stacked contexts for While creation '${stackedContexts}', expected 2 or 3!`;
-    }
-    this.stack.unstack(); // pop out the last if, to be back to previous context
-    return new TSWhileExpression(checkExpression, block);
-  }
-
-  /**
-   * Creates loop Expression from last stacked values and returns it.
-   * @returns TSLoopExpression from top of stack.
-   */
-  createLoop(): TSLoopExpression {
-    const block = this.stack.getCurrentExpressions();
-    const counterExpression = this.stack.unstack();
-    this.stack.unstack(); // pop out the last if, to be back to previous context
-    return new TSLoopExpression(counterExpression, block);
-  }
-
-  /**
-   * Creates select Expression from last stacked values and returns it.
-   * @returns TSLoopExpression from top of stack.
-   */
-  createSelect(): TSSelectExpression {
-    let stackedContexts = this.stack.unstackConditionalState();
-    // 1 depth for select + 2 for each key/value pair + 1 if default -> default is even
-    let defaultValue = new TSExpressions();
-    if (stackedContexts % 2 == 0) {
-      defaultValue = this.stack.getCurrentExpressions();
-      this.stack.unstack();
-      stackedContexts -= 1;
-    }
-    const tuples: SelectTuple[] = [];
-    while (stackedContexts > 2) {
-      const value = this.stack.getCurrentExpressions();
-      const key = this.stack.unstack();
-      tuples.push(new SelectTuple(key, value));
-      this.stack.unstack();
-      stackedContexts -= 2;
-    }
-    tuples.reverse();
-    const selector = this.stack.getCurrentExpressions();
-    this.stack.unstack(); // pop out the last if, to be back to previous context
-    return new TSSelectExpression(selector, tuples, defaultValue);
-  }
-
-  /**
-   * Creates if Expression from last stacked values and returns it.
-   * @returns TSIfExpression If Expression on top of stack.
-   */
-  createIf(): TSIfExpression {
-    let falseVal, trueVal;
-    if (this.stack.unstackIfFalseValueAdded()) {
-      falseVal = this.stack.getCurrentExpressions();
-      trueVal = this.stack.unstack();
-    } else {
-      falseVal = new TSExpressions();
-      trueVal = this.stack.getCurrentExpressions();
-    }
-    const ifExpression2 = this.stack.unstack();
-    const ifExpression1 = this.stack.unstack();
-    const operator = this.stack.unstackBooleanOperator();
-    const functionName = this.stack.unstackIf();
-    this.stack.unstack(); // pop out the last if, to be back to previous context
-    const booleanComparision = new BooleanComparison(ifExpression1, operator, ifExpression2);
-    return new TSIfExpression(functionName, booleanComparision, trueVal, falseVal);
-  }
-
-  /**
-   * Creates Logical Expression "Or", "And" or "Xor" from last stacked values and returns it.
-   * @returns TSLogicalExpression that is on top of stack.
-   */
-  createLogicalExpression(): TSLogicalExpression {
-    let ifExpression2 = this.stack.getCurrentExpressions();
-    let ifExpression1 = this.stack.unstack();
-    let operator = this.stack.unstackBooleanOperator();
-    const booleanComparison2 = new BooleanComparison(ifExpression1, operator, ifExpression2);
-    ifExpression2 = this.stack.unstack();
-    ifExpression1 = this.stack.unstack();
-    operator = this.stack.unstackBooleanOperator();
-    const booleanComparison1 = new BooleanComparison(ifExpression1, operator, ifExpression2);
-    const functionName = this.stack.unstackLogical();
-    this.stack.unstack(); // pop out the last if, to be back to previous context
-    return new TSLogicalExpression(functionName, booleanComparison1, booleanComparison2);
-  }
-
-  /**
-   * Creates Logical check for IsNumber.
-   * @returns TSLogicalExpression that is on top of stack.
-   */
-  createIsNumber(): TSIsNumberExpression {
-    const expression = this.stack.getCurrentExpressions();
-    this.stack.unstack(); // pop out the last if, to be back to previous context
-    return new TSIsNumberExpression(expression);
-  }
-
-  /**
-   * Creates a new Group Count.
-   * @param functionname of named expression.
-   */
-  startGroupNamedExpression(functionname: string) {
-    this.stack.stackGroupFunction(functionname);
-  }
-
-  /**
-   * Creates a new GroupNamed Expression of type Reset or Count.
-   * @returns expression for named Group.
-   */
-  createGroupNamedExpression(tablename: string): TSExpression {
-    const expression = this.stack.getCurrentExpressions();
-    const functionname = this.stack.unstackGroupFunction();
-    let result;
-    switch (functionname) {
-      case 'Reset':
-        result = new TSGroupResetExpression(tablename, expression);
-        break;
-      case 'Count':
-        result = new TSGroupCountExpression(tablename, expression);
-        break;
-      default:
-        throw `Cannot create Group named function for unknown name '${functionname}'`;
-    }
-    this.stack.unstack(); // pop out the last if, to be back to previous context
-    return result;
-  }
-
-  /**
-   * Starts a bold expression.
-   */
-  startBold() {
-    this.stack.stack();
-  }
-
-  /**
-   * Creates TSBoldExpression for data collected.
-   */
-  createBold(): TSBoldExpression {
-    const result = this.stack.getCurrentExpressions();
-    this.stack.unstack();
-    return new TSBoldExpression(result);
+    this.stack.stackParameter();
+    this.stack.stackString(operator);
   }
 
   /**
    * Starts a bold expression.
    */
   startMath(functionname: string) {
-    this.stack.stackMath(functionname);
-  }
-
-  /**
-   * Starts next math parameter, for multi param functions.
-   */
-  startNextMathParameter(): void {
-    this.stack.stack();
-  }
-
-  /**
-   * Creates TSBoldExpression for data collected.
-   */
-  createMathFunction(): TSExpression {
-    const name = this.stack.unstackMath();
-    const param = this.stack.getCurrentExpressions();
-    let result;
-    let param1;
-    switch (name) {
-      case 'Abs':
-        result = new TSMathAbsExpression(param);
-        break;
-      case 'Ceil':
-        result = new TSMathCeilExpression(param);
-        break;
-      case 'Floor':
-        result = new TSMathFloorExpression(param);
-        break;
-      case 'Trunc':
-        result = new TSMathTruncExpression(param);
-        break;
-      case 'Sqrt':
-        result = new TSMathSqrtExpression(param);
-        break;
-      case 'Round':
-        const places = this.stack.unstack();
-        result = new TSMathRoundExpression(param, places);
-        break;
-      case 'Min':
-        param1 = this.stack.unstack();
-        result = new TSMathMinExpression(param1, param);
-        break;
-      case 'Max':
-        param1 = this.stack.unstack();
-        result = new TSMathMaxExpression(param1, param);
-        break;
-      case 'Mod':
-        param1 = this.stack.unstack();
-        result = new TSMathModExpression(param1, param);
-        break;
-      case 'Power':
-        param1 = this.stack.unstack();
-        result = new TSMathPowerExpression(param1, param);
-        break;
-      default:
-        throw `Math function for name '${name}' not implemented!`;
-    }
-    this.stack.unstack(); // unstack back
-    return result;
-  }
-
-  /**
-   * Starts a new group lock expression either an Unlock or a Lockout.
-   * @param functionname of Lock expression.
-   */
-  startGroupLockExpression(functionname: string): void {
-    this.stack.stackGroupLock(functionname);
-  }
-
-  /**
-   * Stacks next Parameter for Group Lock expression.
-   */
-  stackGroupLockParameter(): void {
-    this.stack.stack();
-  }
-
-  /**
-   * Creates and adds group lock expression on stack.
-   */
-  createGroupLockExpression(): TSGroupLockExpression {
-    const functionname = this.stack.unstackGroupFunction();
-    const stackDepth = this.stack.unstackGroupLockDepth();
-    const parameters = [];
-    let stackedContexts = this.stack.stacked.length - stackDepth;
-    while (stackedContexts > 1) {
-      const param = this.stack.getCurrentExpressions();
-      parameters.push(param);
-      this.stack.unstack();
-      stackedContexts -= 1;
-    }
-    parameters.reverse();
-    const groupExpression = this.stack.getCurrentExpressions();
-    this.stack.unstack(); // pop out the last if, to be back to previous context
-    return new TSGroupLockExpression(functionname, this.tsTable.getName(), groupExpression, parameters);
+    this.oldstack.stackMath(functionname);
   }
 }
 

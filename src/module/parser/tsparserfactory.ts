@@ -1,15 +1,9 @@
 import TSTextExpression from '../expressions/tstextexpression';
 import GroupCallModifierTerm from '../expressions/terms/groupcallmodifierterm';
 import TSGroupCallExpression from '../expressions/tsgroupcallexpression';
-import TSNewlineExpression from '../expressions/tsnewlineexpression';
-import TSLineExpression from '../expressions/tslineexpression';
-import TSVariableGetExpression from '../expressions/tsvariablegetexpression';
-import TSVariableSetExpression from '../expressions/tsvariablesetexpression';
 import TSTable from '../tstable';
 import TSTableGroupBuilder from './tstablegroupbuilder';
 import MathTermExpressionBuilder from './mathtermexpressionbuilder';
-import ParserStack from './parserstack';
-import TSGroupExpression from '../expressions/tsgroupexpression';
 
 /**
  * Factory used by the Peggy Parser to create the in memory representaion of a Tablesmith Table file.
@@ -17,13 +11,11 @@ import TSGroupExpression from '../expressions/tsgroupexpression';
 class TSParserFactory {
   table: TSTable;
   groupBuilder: TSTableGroupBuilder | undefined;
-  parserStack: ParserStack;
   mathBuilder: MathTermExpressionBuilder;
   groupCallModifier: GroupCallModifierTerm | undefined;
 
   constructor(table: TSTable) {
     this.table = table;
-    this.parserStack = new ParserStack();
     this.mathBuilder = new MathTermExpressionBuilder();
   }
 
@@ -44,7 +36,7 @@ class TSParserFactory {
    */
   addGroup(name: string, rangeAsProbabilty: boolean, nonRepeating: boolean): void {
     const group = this.table.addGroup(name, rangeAsProbabilty, nonRepeating);
-    this.groupBuilder = new TSTableGroupBuilder(this.table, group, this.parserStack);
+    this.groupBuilder = new TSTableGroupBuilder(this.table, group);
   }
 
   /**
@@ -74,71 +66,36 @@ class TSParserFactory {
   }
 
   /**
-   * Toggles variable assignment Context on and off. If toggled on the Expressions are collected
-   * for the variable assignment and the current expressions stacked away. If toggled of the old expression stack
-   * is restored to save Expressions following variable assignment.
+   * Starts a variable Assignment.
    */
-  toggleVariableAssigment(): void {
-    if (!this.groupBuilder) throw `Cannot toggle a Variable assignment, no Group set!`;
-    this.groupBuilder.toggleVariableAssigment();
+  startVariable(type: 'get' | 'set') {
+    if (!this.groupBuilder) throw `Cannot start variable without defined Group!`;
+    this.groupBuilder.startVariable(type);
   }
 
   /**
-   * Starts logical expression with given type.
-   * @param type can be "And", "Or" or "Xor".
+   * Creates a variable Assignment.
    */
-  startLogicalExpression(type: string) {
-    if (!this.groupBuilder) throw `Cannot start if expression, no Group set!`;
-    this.groupBuilder.startLogicalExpression(type);
+  createVariable() {
+    if (!this.groupBuilder) throw `Cannot create variable without defined Group!`;
+    this.groupBuilder.createVariable();
   }
 
   /**
-   * Starts boolean test for number.
+   * Starts TS Function Expression for name.
+   * @param name of function to start.
    */
-  startIsNumber() {
-    if (!this.groupBuilder) throw `Cannot start IsNumber expression, no Group set!`;
-    this.groupBuilder.startIsNumber();
+  startFunction(name: string) {
+    if (!this.groupBuilder) throw `Cannot start function '${name}' expression, no Group set!`;
+    this.groupBuilder.startFunction(name);
   }
 
   /**
-   * Starts a TS-While Function.
+   * Creates and adds TS Function Expression that is on top of stack.
    */
-  startWhile() {
-    if (!this.groupBuilder) throw `Cannot start while without defined Group!`;
-    this.groupBuilder.startWhile();
-  }
-
-  /**
-   * Starts a TS-Loop Function.
-   */
-  startLoop() {
-    if (!this.groupBuilder) throw `Cannot start loop without defined Group!`;
-    this.groupBuilder.startLoop();
-  }
-
-  /**
-   * Starts a TS-Selecg Function.
-   */
-  startSelect() {
-    if (!this.groupBuilder) throw `Cannot start select without defined Group!`;
-    this.groupBuilder.startSelect();
-  }
-
-  /**
-   * Starts the block to evaluate for while or loop functions.
-   */
-  startIteratorBlock() {
-    if (!this.groupBuilder) throw `Cannot start iterator block without defined Group!`;
-    this.groupBuilder.startIteratorBlock();
-  }
-
-  /**
-   * Starts a TS If Function.
-   * @param functionName of the if expression used "If" or "IIf".
-   */
-  startIf(functionName: string) {
-    if (!this.groupBuilder) throw `Cannot start If without defined Group!`;
-    this.groupBuilder.startIf(functionName);
+  createFunction() {
+    if (!this.groupBuilder) throw `Cannot create function , no Group set!`;
+    this.groupBuilder.createFunction();
   }
 
   /**
@@ -148,22 +105,6 @@ class TSParserFactory {
   setBooleanComparisonOperator(operator: string): void {
     if (!this.groupBuilder) throw `Cannot add If Operator, no Group set!`;
     this.groupBuilder.setBooleanComparisonOperator(operator);
-  }
-
-  /**
-   * Starts the true value Expressions for the if.
-   */
-  startIfTrueValue(): void {
-    if (!this.groupBuilder) throw `Cannot parse if, no Group set!`;
-    this.groupBuilder.startIfTrueValue();
-  }
-
-  /**
-   * Starts the false value Expressions for the if.
-   */
-  startIfFalseValue(): void {
-    if (!this.groupBuilder) throw `Cannot parse if, no Group set!`;
-    this.groupBuilder.startIfFalseValue();
   }
 
   /**
@@ -182,67 +123,6 @@ class TSParserFactory {
     if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
     const calc = this.mathBuilder.create('Calc');
     if (calc) this.groupBuilder.addExpression(calc);
-  }
-
-  /**
-   * Creates While loop expression and adds to current group.
-   */
-  createWhile(): void {
-    if (!this.groupBuilder) throw `Cannot create While without defined Group!`;
-    const whileExpression = this.groupBuilder.createWhile();
-    this.groupBuilder.addExpression(whileExpression);
-  }
-
-  /**
-   * Creates loop expressions adds to current group.
-   */
-  createLoop(): void {
-    if (!this.groupBuilder) throw `Cannot create Loop without defined Group!`;
-    const loop = this.groupBuilder.createLoop();
-    this.groupBuilder.addExpression(loop);
-  }
-
-  /**
-   * Creates select expressions adds to current group.
-   */
-  createSelect(): void {
-    if (!this.groupBuilder) throw `Cannot create Select without defined Group!`;
-    const select = this.groupBuilder.createSelect();
-    this.groupBuilder.addExpression(select);
-  }
-
-  /**
-   * Creates if expression and adds to current group.
-   */
-  createIf(): void {
-    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
-    const ifExpression = this.groupBuilder.createIf();
-    this.groupBuilder.addExpression(ifExpression);
-  }
-
-  /**
-   * Creates logical expression for "Or", "And" or "Xor".
-   */
-  createLogicalExpression(): void {
-    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
-    const logical = this.groupBuilder.createLogicalExpression();
-    this.groupBuilder.addExpression(logical);
-  }
-
-  /**
-   * Creates logical expression for IsNumber.
-   */
-  createIsNumber(): void {
-    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
-    this.groupBuilder.addExpression(this.groupBuilder.createIsNumber());
-  }
-
-  /**
-   * Starts the next boolean expression for Boolean functions, separated by ",".
-   */
-  startNextBooleanExpression(): void {
-    if (!this.groupBuilder) throw `Cannot parse boolean expression without defined Group!`;
-    this.groupBuilder.startNextBooleanExpression();
   }
 
   /**
@@ -267,27 +147,6 @@ class TSParserFactory {
   }
 
   /**
-   * Creates a new TSExpression to get value for variable.
-   * @param tablename the tablename to get variable from or undefined if it was not provided.
-   * @param variablename to get from expression.
-   */
-  createVariableGet(tablename: string | undefined, variablename: string) {
-    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
-    this.groupBuilder.addExpression(new TSVariableGetExpression(tablename, variablename));
-  }
-
-  /**
-   * Creates a new TSExpression to set value for variable.
-   * @param tablename the tablename to set variable to or undefined if it was not provided.
-   * @param variablename to set from expression.
-   * @param type the type of the set operation.
-   */
-  createVariableSet(tablename: string | undefined, variablename: string, type: string) {
-    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
-    this.groupBuilder.addExpression(new TSVariableSetExpression(tablename, variablename, type));
-  }
-
-  /**
    * Creates a new TSExpression for given text.
    * @param text to create simple TSExpression for.
    */
@@ -297,109 +156,19 @@ class TSParserFactory {
   }
 
   /**
-   * Start parsing context for a new TSExpression for bold text.
-   */
-  startBold(): void {
-    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
-    this.groupBuilder.startBold();
-  }
-
-  /**
-   * Creates a new TSExpression for bold test
-   */
-  createBold(): void {
-    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
-    this.groupBuilder.addExpression(this.groupBuilder.createBold());
-  }
-
-  /**
-   * Creates new Table Group expression.
-   * @param functionname of Group Expression to create.
-   */
-  createGroupExpression(functionname: string): void {
-    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
-    this.groupBuilder.addExpression(new TSGroupExpression(functionname));
-  }
-
-  /**
-   * Creates a new Table Reset expression.
-   * @param functionname for Group Function.
-   */
-  startGroupNamedExpression(functionname: string): void {
-    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
-    this.groupBuilder.startGroupNamedExpression(functionname);
-  }
-
-  /**
-   * Creates a new Table Grou Named expression.
-   */
-  createGroupNamedExpression(): void {
-    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
-    const expression = this.groupBuilder.createGroupNamedExpression(this.table.getName());
-    this.groupBuilder.addExpression(expression);
-  }
-
-  /**
-   * Starts a new group lock expression either an Unlock or a Lockout.
-   * @param functionname of Lock expression.
-   */
-  startGroupLockExpression(functionname: string): void {
-    if (!this.groupBuilder) throw `Cannot start Expression without defined Group!`;
-    this.groupBuilder.startGroupLockExpression(functionname);
-  }
-
-  /**
    * Stacks next Parameter for Group Lock expression.
    */
-  stackGroupLockParameter(): void {
-    if (!this.groupBuilder) throw `Cannot start Expression without defined Group!`;
-    this.groupBuilder.stackGroupLockParameter();
+  stackParameter(): void {
+    if (!this.groupBuilder) throw `Cannot stack parameter without defined Group!`;
+    this.groupBuilder.stackParameter();
   }
 
   /**
-   * Creates and adds group lock expression on stack.
+   * Stacks given string in current context.
    */
-  createGroupLockExpression(): void {
-    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
-    this.groupBuilder.addExpression(this.groupBuilder.createGroupLockExpression());
-  }
-
-  /**
-   * Creates a Line separator for values.
-   * @param align of separator, should be "left", "center" or "right"
-   * @param width in percent, int between 1-100
-   */
-  createLine(align: 'left' | 'center' | 'right', width = 100): void {
-    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
-    this.groupBuilder.addExpression(new TSLineExpression(align, width));
-  }
-
-  /**
-   * Creates a new line expression.
-   */
-  createNewline(): void {
-    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
-    this.groupBuilder.addExpression(new TSNewlineExpression());
-  }
-
-  startMath(functionname: string): void {
-    if (!this.groupBuilder) throw `Cannot start Expression without defined Group!`;
-    this.groupBuilder.startMath(functionname);
-  }
-
-  /**
-   * Starts next parameter, separator found.
-   */
-  startNextMathParameter(): void {
-    if (!this.groupBuilder) throw `Cannot start Expression without defined Group!`;
-    this.groupBuilder.startNextMathParameter();
-  }
-  /**
-   * Creates and adds math function on stack.
-   */
-  createMathFunction(): void {
-    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
-    this.groupBuilder.addExpression(this.groupBuilder.createMathFunction());
+  stackString(value: string): void {
+    if (!this.groupBuilder) throw `Cannot stack string '${value}' without defined Group!`;
+    this.groupBuilder.stackString(value);
   }
 }
 

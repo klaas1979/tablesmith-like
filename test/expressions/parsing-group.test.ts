@@ -31,16 +31,23 @@ describe('Parsing {MinVal~', () => {
   });
 
   it('expression representation uses correct function name', () => {
-    simpleTable = ':Start\n1,{MinVal~}\n';
+    simpleTable = ':Start\n1,{MinVal~Start,1}\n';
     tablesmith.addTable(filename, simpleTable);
-    expect(tablesmith.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{MinVal~}');
+    expect(tablesmith.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{MinVal~Start,1}');
   });
 
   it('min value from first range', () => {
-    simpleTable = ':Start\n1-49,{MinVal~}\n50-100,{MinVal~}';
+    simpleTable = ':Start\n1-49,{MinVal~Start,1}\n50-100,{MinVal~Start,1}';
     tablesmith.addTable(filename, simpleTable);
     const result = tablesmith.evaluate(`[${filename}]`);
     expect(result).toBe('1');
+  });
+
+  it('min value from second range', () => {
+    simpleTable = ':Start\n1-49,{MinVal~Start,2}\n50-100,{MinVal~Start,2}';
+    tablesmith.addTable(filename, simpleTable);
+    const result = tablesmith.evaluate(`[${filename}]`);
+    expect(result).toBe('50');
   });
 });
 describe('Parsing {MaxVal~', () => {
@@ -49,12 +56,18 @@ describe('Parsing {MaxVal~', () => {
     filename = 'simpletable';
   });
   it('expression representation uses correct function name', () => {
-    simpleTable = ':Start\n1,{MaxVal~}\n';
+    simpleTable = ':Start\n1,{MaxVal~Start,1}\n';
     tablesmith.addTable(filename, simpleTable);
-    expect(tablesmith.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{MaxVal~}');
+    expect(tablesmith.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{MaxVal~Start,1}');
   });
   it('max value from first range', () => {
-    simpleTable = ':Start\n1-49,{MaxVal~}\n50-100,{MaxVal~}';
+    simpleTable = ':Start\n1-49,{MaxVal~Start,1}\n50-100,{MaxVal~Start,1}';
+    tablesmith.addTable(filename, simpleTable);
+    const result = tablesmith.evaluate(`[${filename}]`);
+    expect(result).toBe('49');
+  });
+  it('max value from second range', () => {
+    simpleTable = ':Start\n1-49,{MaxVal~Start,2}\n50-100,{MaxVal~Start,2}';
     tablesmith.addTable(filename, simpleTable);
     const result = tablesmith.evaluate(`[${filename}]`);
     expect(result).toBe('100');

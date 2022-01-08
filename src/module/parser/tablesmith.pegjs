@@ -81,18 +81,29 @@ AfterValue
           }); }
 
 VariableGet
-  = '%' tablename:(@Name '.')? varname:VariableName '%' { errorHandling(() => {
-            options.pf.createVariableGet(tablename, varname);
+  = StartVariableGet VariableIdentifier '%' { errorHandling(() => {
+            options.pf.createVariable();
+          }); }
+
+StartVariableGet
+  = '%' { errorHandling(() => {
+            options.pf.startVariable('get');
           }); }
 
 VariableSet
-  = VariableSetIdentifier tablename:(@Name '.')? varname:VariableName type:$[-+=*/\\<>&] VariableSetExpressions VariableSetIdentifier { errorHandling(() => {
-            options.pf.createVariableSet(tablename, varname, type);
+  = StartVariableSet VariableIdentifier VariableSetType VariableSetExpressions '|' { errorHandling(() => {
+            options.pf.createVariable();
           }); }
 
-VariableSetIdentifier
+StartVariableSet
   = '|' { errorHandling(() => {
-            options.pf.toggleVariableAssigment();
+            options.pf.startVariable('set');
+          }); }
+
+VariableSetType
+  = type:$[-+=*/\\<>&] { errorHandling(() => {
+            options.pf.stackString(type);
+            options.pf.stackParameter();
           }); }
 
 /* The simplest Expression is a test value that is returned as is, without further processing. */
@@ -125,45 +136,40 @@ TsFunction
 
 TSConditionalFunctions
   = IfSlash _ BooleanExpression _ IfQuestionmark _ IfExpressionTextSlash _ (IfSlashSeparator _ IfExpressionTextSlash? _)? '}' { errorHandling(() => {
-            options.pf.createIf();
+            options.pf.createFunction();
           }); }
-  / IfColon _ BooleanExpression _ IfQuestionmark _ IfExpressionTextColon _ (IfColonSeparator _ IfExpressionTextColon? _)?'}' { errorHandling(() => {
-            options.pf.createIf();
+  / IfColon _ BooleanExpression _ IfQuestionmark _ IfExpressionTextColon _ (IfColonSeparator _ IfExpressionTextColon? _)? '}' { errorHandling(() => {
+            options.pf.createFunction();
           }); }
-  / WhileStart _ WhileExpression _ BlockSeparator _ Expression _ '}' { errorHandling(() => {
-            options.pf.createWhile();
+  / WhileStart _ WhileExpression _ ParamSeparatorComma _ Expression _ '}' { errorHandling(() => {
+            options.pf.createFunction();
           }); }
-  / LoopStart _ LoopExpression _ BlockSeparator _ Expression _ '}' { errorHandling(() => {
-            options.pf.createLoop();
+  / LoopStart _ LoopExpression _ ParamSeparatorComma _ Expression _ '}' { errorHandling(() => {
+            options.pf.createFunction();
           }); }
-  / SelectStart _ SelectExpression _ (BlockSeparator _ ExpressionTextNoComma _)+ ExpressionTextNoComma? _ '}' { errorHandling(() => {
-            options.pf.createSelect();
+  / SelectStart _ SelectExpression _ (ParamSeparatorComma _ ExpressionTextNoComma _)+ ExpressionTextNoComma? _ '}' { errorHandling(() => {
+            options.pf.createFunction();
           }); }
 
 WhileStart
-  = '{While~' { errorHandling(() => {
-            options.pf.startWhile();
+  = '{' name:'While' '~' { errorHandling(() => {
+            options.pf.startFunction(name);
           }); }
 
 WhileExpression
   = IfExpressionPart (_ BooleanOperator _ IfExpressionPart)?
 
-BlockSeparator
-  = ',' { errorHandling(() => {
-            options.pf.startIteratorBlock();
-          }); }
-
 LoopStart
-  = '{' _ 'Loop~' { errorHandling(() => {
-            options.pf.startLoop();
+  = '{' _ name:'Loop' '~' { errorHandling(() => {
+            options.pf.startFunction(name);
           }); }
 
 LoopExpression
   = IfExpressionPart
 
 SelectStart
-  = '{' _ 'Select~' { errorHandling(() => {
-            options.pf.startSelect();
+  = '{' _ name:'Select' '~' { errorHandling(() => {
+            options.pf.startFunction(name);
           }); }
 
 SelectExpression
@@ -171,31 +177,30 @@ SelectExpression
 
 TSLogicalFunctions
   = StartLogicalExpression _ BooleanExpression _ LogicalExpressionSeparator _ BooleanExpression _ '}' { errorHandling(() => {
-            options.pf.createLogicalExpression();
+            options.pf.createFunction();
           }); }
   / IsNumber _ Expression _ '}' { errorHandling(() => {
-            options.pf.createIsNumber();
+            options.pf.createFunction();
           }); }
 
 StartLogicalExpression
   = '{' name:('Or' / 'And' / 'Xor') '~' { errorHandling(() => {
-            options.pf.startLogicalExpression(name);
+            options.pf.startFunction(name);
           }); }
 
 LogicalExpressionSeparator
   = ',' { errorHandling(() => {
-            options.pf.startNextBooleanExpression();
+            options.pf.stackParameter();
           }); }
 
 IfSlash
   = '{' name:'If' '~' { errorHandling(() => {
-            options.pf.startIf(name);
-
+            options.pf.startFunction(name);
           }); }
 
 IfColon
   = '{' name:'IIf' '~' { errorHandling(() => {
-            options.pf.startIf(name);
+            options.pf.startFunction(name);
 
           }); }
 
@@ -206,22 +211,22 @@ BooleanOperator
 
 IfQuestionmark
   = '?' { errorHandling(() => {
-            options.pf.startIfTrueValue();
+            options.pf.stackParameter();
           }); }
 
 IfSlashSeparator
   = '/' { errorHandling(() => {
-            options.pf.startIfFalseValue();
+            options.pf.stackParameter();
           }); }
 
 IfColonSeparator
   = ':' { errorHandling(() => {
-            options.pf.startIfFalseValue();
+            options.pf.stackParameter();
           }); }
 
 IsNumber
-  = '{' _ 'IsNumber~'{ errorHandling(() => {
-            options.pf.startIsNumber();
+  = '{' _ name:'IsNumber' '~'{ errorHandling(() => {
+            options.pf.startFunction(name);
           }); }
 
 /* Expressions are all supported values or results for a Range. The Tablesmith functions are defined here. */
@@ -248,6 +253,13 @@ IfExpressionPart
   / TsFunction IfExpressionPart*
   / VariableGet IfExpressionPart*
   / ValueIfPart IfExpressionPart*
+
+
+VariableIdentifier
+  = GroupFunction VariableIdentifier*
+  / TsFunction VariableIdentifier*
+  / VariableGet VariableIdentifier*
+  / ValueVariableIdentifier VariableIdentifier*
 
 /* Expressions that are allowed in true or false part after the "?" for a slash "/" If. */
 IfExpressionTextSlash
@@ -283,6 +295,10 @@ ValueIfPart
             options.pf.createText(text);
           }); }
 
+ValueVariableIdentifier
+  = text:PlainTextSetExpression { errorHandling(() => {
+            options.pf.createText(text);
+          }); }
 ValueIfSlash
   = text:PlainTextIfSlash { errorHandling(() => {
             options.pf.createText(text);
@@ -304,38 +320,37 @@ ValueNoCommaNorPower
           }); }
 
 GroupAndTableFunctions
-  = '{' _ 'LastRoll~' _ '}' { errorHandling(() => {
-            options.pf.createGroupExpression('LastRoll');
+  = GroupAndTableFunctionsZeroParams _ '}' { errorHandling(() => {
+            options.pf.createFunction();
           }); }
-  / '{' _ 'MaxVal~' _ '}' { errorHandling(() => {
-            options.pf.createGroupExpression('MaxVal');
+  / GroupAndTableFunctionsOneParam _ Expression _ '}' { errorHandling(() => {
+            options.pf.createFunction();
           }); }
-  / '{' _ 'MinVal~' _ '}' { errorHandling(() => {
-            options.pf.createGroupExpression('MinVal');
-          }); }
-  / GroupNamedFunctions _ Expression _ '}' { errorHandling(() => {
-            options.pf.createGroupNamedExpression();
-          }); }
-  / GroupLockFunctions _ ExpressionTextNoComma _ (GroupLockParameter)+ '}' { errorHandling(() => {
-            options.pf.createGroupLockExpression();
+  / GroupAndTableFunctionsManyParams _ ExpressionTextNoComma _ (GroupLockParameter)+ '}' { errorHandling(() => {
+            options.pf.createFunction();
           }); }
 
-GroupNamedFunctions
+GroupAndTableFunctionsZeroParams
+  = '{' _ name:'LastRoll' '~' { errorHandling(() => {
+            options.pf.startFunction(name);
+          }); }
+
+GroupAndTableFunctionsOneParam
   = '{' _ name:(@'Reset' / @'Count') '~' { errorHandling(() => {
-            options.pf.startGroupNamedExpression(name);
+            options.pf.startFunction(name);
           }); }
 
-GroupLockFunctions
-  = '{' _ name:(@'Unlock' / @'Lockout') '~' { errorHandling(() => {
-            options.pf.startGroupLockExpression(name);
+GroupAndTableFunctionsManyParams
+  = '{' _ name:(@'Unlock' / @'Lockout' / @'MaxVal' / @'MinVal') '~' { errorHandling(() => {
+            options.pf.startFunction(name);
           }); }
 
 GroupLockParameter
-  = GroupLockParamSeparator _ ExpressionTextNoComma _ 
+  = ParamSeparatorComma _ ExpressionTextNoComma _ 
 
-GroupLockParamSeparator
+ParamSeparatorComma
   = ',' { errorHandling(() => {
-            options.pf.stackGroupLockParameter();
+            options.pf.stackParameter();
           }); }
 
 TSMathFunction
@@ -359,61 +374,61 @@ Calc = '{' _ 'Calc~'  { errorHandling(() => {
 
 MathOneParamFunctions
   = '{' _ MathOneParamFunctionsNames _ Expression _ '}' { errorHandling(() => {
-            options.pf.createMathFunction();
+            options.pf.createFunction();
           }); }
 
 MathTwoParamFunctions
   = '{' _ MathTwoParamFunctionsNames _ ExpressionTextNoComma _ MathParamSeparator _ Expression _ '}' { errorHandling(() => {
-            options.pf.createMathFunction();
+            options.pf.createFunction();
           }); }
 
 MathOneParamFunctionsNames
   = 'Abs~' { errorHandling(() => {
-            options.pf.startMath('Abs');
+            options.pf.startFunction('Abs');
           }); }
   / 'Ceil~' { errorHandling(() => {
-            options.pf.startMath('Ceil');
+            options.pf.startFunction('Ceil');
           }); }
   / 'Floor~' { errorHandling(() => {
-            options.pf.startMath('Floor');
+            options.pf.startFunction('Floor');
           }); }
   / 'Trunc~' { errorHandling(() => {
-            options.pf.startMath('Trunc');
+            options.pf.startFunction('Trunc');
           }); }
   / 'Sqrt~' { errorHandling(() => {
-            options.pf.startMath('Sqrt');
+            options.pf.startFunction('Sqrt');
           }); }
 
 MathTwoParamFunctionsNames
   = 'Round~' { errorHandling(() => {
-            options.pf.startMath('Round');
+            options.pf.startFunction('Round');
           }); }
   / 'Min~' { errorHandling(() => {
-            options.pf.startMath('Min');
+            options.pf.startFunction('Min');
           }); }
   / 'Max~' { errorHandling(() => {
-            options.pf.startMath('Max');
+            options.pf.startFunction('Max');
           }); }
   / 'Mod~' { errorHandling(() => {
-            options.pf.startMath('Mod');
+            options.pf.startFunction('Mod');
           }); }
 
 MathPowerFunction
   = '{' _ MathPower _ ValueNoCommaNorPower _ MathPowerSeparator _ Expression _ '}' { errorHandling(() => {
-            options.pf.createMathFunction();
+            options.pf.createFunction();
           }); }
 
 MathPower = 'Power~' { errorHandling(() => {
-            options.pf.startMath('Power');
+            options.pf.startFunction('Power');
           }); }
 
 MathPowerSeparator = [,^] { errorHandling(() => { // has only '^' in definition but use both for convenience
-            options.pf.startNextMathParameter();
+            options.pf.stackParameter();
           }); }
 
 MathParamSeparator
   = ','  { errorHandling(() => {
-            options.pf.startNextMathParameter();
+            options.pf.stackParameter();
           }); }
 
 MathExpression
@@ -460,18 +475,24 @@ OpenBracket
 
 TSFormatFunctions
   = _ StartBold Expression  '}' { errorHandling(() => { 
-            options.pf.createBold();
+            options.pf.createFunction();
           }); }
-  / _ '{' _ 'Line~' _ align:Align _ ',' _ width:int? _ '}' { errorHandling(() => {
-            options.pf.createLine(align, width);
+  / _ StartLine _ ExpressionTextNoComma _ ParamSeparatorComma _ ExpressionTextNoComma _ '}' { errorHandling(() => {
+            options.pf.createFunction();
           }); }
-  / _ '{CR~' _ '}' { errorHandling(() => {
-            options.pf.createNewline();
+  / _ '{' _ name:'CR' '~' _ '}' { errorHandling(() => {
+            options.pf.startFunction(name);
+            options.pf.createFunction();
           }); }
 
 StartBold
-  = '{' _ 'Bold~' { errorHandling(() => { 
-            options.pf.startBold();
+  = '{' _ name:'Bold' '~' { errorHandling(() => { 
+            options.pf.startFunction(name);
+          }); }
+
+StartLine
+  = '{' _ name:'Line' '~' { errorHandling(() => { 
+            options.pf.startFunction(name);
           }); }
 
 /** Matches all text that is printed verbose, without special chars that are key chars for the DSL. */
@@ -480,6 +501,9 @@ PlainText
 
 PlainTextIfPart
  = $[^!=<>,?/{}[\]%|\n]+
+
+PlainTextSetExpression
+ = $[^-+\\*&!=<>,?/{}[\]%|\n]+
 
 /** Text that is allowed within an If with slash "/" {If~}. */
 PlainTextIfSlash
@@ -496,9 +520,6 @@ PlainTextIfSlash
  /** Text that is allowed within an selections where a comma ',' or power '^' happens. */
 PlainTextNoCommaNorPower
  = $[^^,{}[\]%|\n]+
-
-Align
- = $'center' / $'left' / $'right'
 
 /* Simple name without Dot or special characters. */
 VariableName

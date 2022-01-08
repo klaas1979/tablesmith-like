@@ -9,6 +9,7 @@ import PlusTerm from '../expressions/terms/plusterm';
 import Term from '../expressions/terms/term';
 import TSExpression from '../expressions/tsexpression';
 import TSTermExpression from '../expressions/tstermexpression';
+import TSTextExpression from '../expressions/tstextexpression';
 import TSVariableGetExpression from '../expressions/tsvariablegetexpression';
 
 type TermCreator = (a: Term, b: Term) => Term;
@@ -103,7 +104,8 @@ class MathTermExpressionBuilder {
    * Called by parser if variable reference is found in a Term.
    */
   addVariableGet(tablename: string | undefined, variablename: string): void {
-    const variableTerm = new TSVariableGetExpression(tablename, variablename);
+    const tableVarNameExpression = new TSTextExpression(tablename ? `${tablename}.${variablename}` : variablename);
+    const variableTerm = new TSVariableGetExpression(tableVarNameExpression);
     const term = this.context.terms.pop();
     const termCreator = this.context.termCreators.pop();
     if (term && termCreator) {

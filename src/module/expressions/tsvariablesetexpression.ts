@@ -1,35 +1,38 @@
 import TSGroup from '../tsgroup';
 import { evalcontext } from './evaluationcontextinstance';
 import TSExpression from './tsexpression';
-import TSExpressions from './tsexpressions';
 
 /**
- * Class representing a Group Expression referencing a variable value, or a variable reference within a Math calculation.
- * Can function as TSExpression or Term.
+ * Class representing a variable Set expression.
  */
 class TSVariableSetExpression implements TSExpression {
+  varNameExpression: TSExpression;
   tablename: string | undefined;
-  variablename: string;
+  variablename = '';
   type: string;
-  valueExpressions: TSExpressions | undefined;
-  constructor(tablename: string | undefined, variablename: string, type: string) {
-    this.tablename = tablename;
-    this.variablename = variablename;
+  valueExpression: TSExpression;
+  constructor(varNameExpression: TSExpression, type: string, valueExpression: TSExpression) {
+    this.varNameExpression = varNameExpression;
     this.type = type;
-  }
-
-  /**
-   * Sets the ValueExpressions the set value is evaluated from.
-   * @param valueExpressions to set as expression to calculate the set value from.
-   */
-  setValueExpressions(valueExpressions: TSExpressions) {
-    this.valueExpressions = valueExpressions;
+    this.valueExpression = valueExpression;
   }
 
   evaluate(): string {
-    if (!this.valueExpressions)
-      throw `No TSExpressions set for Variable set expression table '${this.tablename}', variable '${this.variablename}'`;
-    const value = this.valueExpressions.evaluate();
+    const evaluated = this.varNameExpression.evaluate();
+    const tableGroup = evaluated.split('.');
+    switch (tableGroup.length) {
+      case 1:
+        this.tablename = undefined;
+        this.variablename = tableGroup[0];
+        break;
+      case 2:
+        this.tablename = tableGroup[0];
+        this.variablename = tableGroup[1];
+        break;
+      default:
+        throw `Could not get variable expression did not result in ([tablename].)?[varname] but '${evaluated}'`;
+    }
+    const value = this.valueExpression.evaluate();
     const currentValue = evalcontext.getVar(this.tablename, this.variablename);
     switch (this.type) {
       case '=':
@@ -111,7 +114,7 @@ class TSVariableSetExpression implements TSExpression {
   }
 
   getExpression(): string {
-    return `|${this.variablename}${this.type}${this.valueExpressions?.getExpression()}|`;
+    return `|${this.varNameExpression.getExpression()}${this.type}${this.valueExpression.getExpression()}|`;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

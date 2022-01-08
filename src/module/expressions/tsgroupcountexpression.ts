@@ -3,7 +3,7 @@ import TSGroup from '../tsgroup';
 import TSExpression from './tsexpression';
 
 /**
- * Simple Text Expression as value of a Range in a Group or part of the value, i.e. prefix or suffix to a TermExpression.
+ * Expression to give Count in a group.
  */
 class TSGroupCountExpression implements TSExpression {
   tablename: string;

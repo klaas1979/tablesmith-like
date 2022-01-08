@@ -115,6 +115,7 @@ describe('Parsing variables', () => {
     expect(tablesmith.evaluate(`[${filename}]`)).toBe('');
     expect(evalcontext.getVar(filename, 'varname')).toBe(4);
   });
+
   it('setting variables |varname<3| var=1 changed', () => {
     simpleTable = '%varname%,1\n:Start\n1,|varname<3|\n';
     tablesmith.addTable(filename, simpleTable);
