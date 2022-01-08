@@ -1,6 +1,7 @@
 import { tablesmith } from '../tablesmithinstance';
 import TSGroup from '../tsgroup';
 import { evalcontext } from './evaluationcontextinstance';
+import groupcallsplitter from './groupcallsplitter';
 import GroupCallModifierTerm from './terms/groupcallmodifierterm';
 import InnerDiceTerm from './terms/innerdiceterm';
 import IntTerm from './terms/intterm';
@@ -12,20 +13,20 @@ import TSExpression from './tsexpression';
  * the modifer.
  */
 class TSGroupCallExpression implements TSExpression {
-  table: string | undefined;
-  group: string;
+  tableAndGroupExpression: TSExpression;
   groupCallModifier: GroupCallModifierTerm;
-  constructor(table: string | undefined, group: string, groupCallModifier: GroupCallModifierTerm | undefined) {
-    this.table = table;
-    this.group = group;
+  constructor(tableAndGroupExpression: TSExpression, groupCallModifier: GroupCallModifierTerm | undefined) {
+    this.tableAndGroupExpression = tableAndGroupExpression;
     this.groupCallModifier = groupCallModifier ? groupCallModifier : GroupCallModifierTerm.createUnmodified();
   }
 
   evaluate(): string {
-    const tsTable = tablesmith.tableForName(this.table ? this.table : evalcontext.getCurrentCallTablename());
-    if (!tsTable) throw `Table '${this.table}' is not defined cannot evaluate!`;
-    const tsGroup = tsTable.groupForName(this.group);
-    if (!tsGroup) throw `Group '${this.group}' is not defined cannot evaluate!`;
+    const tableAndGroup = this.tableAndGroupExpression.evaluate();
+    const splitted = groupcallsplitter.split(tableAndGroup);
+    const tsTable = tablesmith.tableForName(splitted.tablename);
+    if (!tsTable) throw `Table '${splitted.tablename}' is not defined cannot evaluate!`;
+    const tsGroup = tsTable.groupForName(splitted.variablename);
+    if (!tsGroup) throw `Group '${splitted.variablename}' is not defined cannot evaluate!`;
     const maxValue = tsGroup.getMaxValue();
     const innerDiceTerm = new InnerDiceTerm(new IntTerm(1), new IntTerm(maxValue));
     const termResult = this.groupCallModifier.modify(innerDiceTerm).roll(evalcontext);
@@ -38,8 +39,10 @@ class TSGroupCallExpression implements TSExpression {
 
   getExpression(): string {
     let tablePrefix = '';
-    if (this.table != null) tablePrefix = `${this.table}.`;
-    return `[${tablePrefix}${this.group}${this.groupCallModifier.getTerm()}]`;
+    const tableAndGroup = this.tableAndGroupExpression.evaluate();
+    const splitted = groupcallsplitter.split(tableAndGroup);
+    if (evalcontext.getCurrentCallTablename() != splitted.tablename) tablePrefix = `${splitted.tablename}.`;
+    return `[${tablePrefix}${splitted.variablename}${this.groupCallModifier.getTerm()}]`;
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setGroup(group: TSGroup): void {

@@ -1,6 +1,7 @@
 import TSGroup from '../tsgroup';
 import Evalcontext from './evaluationcontext';
 import { evalcontext } from './evaluationcontextinstance';
+import groupcallsplitter from './groupcallsplitter';
 import Term from './terms/term';
 import TermResult from './terms/termresult';
 import TSExpression from './tsexpression';
@@ -29,22 +30,8 @@ class TSVariableGetExpression implements TSExpression, Term {
 
   evaluate(): string {
     const evaluated = this.tableGroupExpression.evaluate();
-    const tableGroup = evaluated.split('.');
-    let tablename;
-    let variablename;
-    switch (tableGroup.length) {
-      case 1:
-        tablename = evalcontext.getCurrentCallTablename();
-        variablename = tableGroup[0];
-        break;
-      case 2:
-        tablename = tableGroup[0];
-        variablename = tableGroup[1];
-        break;
-      default:
-        throw `Could not get variable expression did not result in ([tablename].)?[varname] but '${evaluated}'`;
-    }
-    return `${evalcontext.getVar(tablename, variablename)}`;
+    const splitted = groupcallsplitter.split(evaluated);
+    return `${evalcontext.getVar(splitted.tablename, splitted.variablename)}`;
   }
 
   getExpression(): string {

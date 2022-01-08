@@ -34,6 +34,8 @@ import TSVariableSetExpression from '../expressions/tsvariablesetexpression';
 import TSVariableGetExpression from '../expressions/tsvariablegetexpression';
 import TSLineExpression from '../expressions/tslineexpression';
 import TSNewlineExpression from '../expressions/tsnewlineexpression';
+import TSGroupCallExpression from '../expressions/tsgroupcallexpression';
+import GroupCallModifierTerm from '../expressions/terms/groupcallmodifierterm';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -58,6 +60,13 @@ class TSTableGroupBuilder {
   addRange(upper: number): void {
     const newRange = this.tsGroup.addRange(upper);
     this.stack.startGroupLine(newRange.getExpressions());
+  }
+
+  /**
+   * Prepares stack for a Group Call.
+   */
+  startGroupCall() {
+    this.stack.startGroupCall();
   }
 
   /**
@@ -93,7 +102,29 @@ class TSTableGroupBuilder {
   }
 
   /**
-   * Creates Variable Get or Set from stack.
+   * Creates GroupCall from stack and its it to expressions.
+   */
+  createGroupCall() {
+    this.addExpression(this.endGroupCall());
+  }
+
+  private endGroupCall(): TSExpression {
+    const stacked = this.stack.pop();
+    if (stacked.type != STACK_TYPE.GROUP_CALL) throw `Cannot create group Call type on stack is '${stacked.type}'`;
+    const tableAndGroup = stacked.popExpressions();
+    let modifierTerm = GroupCallModifierTerm.createUnmodified();
+    if (stacked.stringSize() == 2) {
+      const modifier = stacked.popString();
+      const operator = stacked.popString();
+      const num = Number.parseInt(modifier);
+      if (Number.isNaN(num)) throw `Could not create GroupCall modifier is not a number but '${modifier}'`;
+      modifierTerm = GroupCallModifierTerm.create(operator, num);
+    }
+    return new TSGroupCallExpression(tableAndGroup, modifierTerm);
+  }
+
+  /**
+   * Creates Variable Get or Set from stack and adds it to expressions.
    */
   createVariable() {
     this.addExpression(this.endVariable());

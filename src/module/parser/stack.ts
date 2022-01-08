@@ -34,6 +34,15 @@ class Stack {
   }
 
   /**
+   * Starts a new Group Call Expression.
+   */
+  startGroupCall() {
+    if (this.stacked.length == 0) throw `Stack is empty, cannot start new Group Call!`;
+    const rangeStack = new StackItem(new TSExpressions(), STACK_TYPE.GROUP_CALL);
+    this.stacked.push(rangeStack);
+  }
+
+  /**
    * Starts a new Variable get or set Expression.
    */
   startVariable(type: 'get' | 'set') {

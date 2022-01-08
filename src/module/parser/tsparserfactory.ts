@@ -1,6 +1,5 @@
 import TSTextExpression from '../expressions/tstextexpression';
 import GroupCallModifierTerm from '../expressions/terms/groupcallmodifierterm';
-import TSGroupCallExpression from '../expressions/tsgroupcallexpression';
 import TSTable from '../tstable';
 import TSTableGroupBuilder from './tstablegroupbuilder';
 import MathTermExpressionBuilder from './mathtermexpressionbuilder';
@@ -66,6 +65,26 @@ class TSParserFactory {
   }
 
   /**
+   * Creates a new Group Call Expression that takes a defined GroupCallModifier into account.
+   * @param table to create a Group call for, may be undefined, then this table is used.
+   * @param group to call.
+   */
+  startGroupCall(): void {
+    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
+    this.groupBuilder.startGroupCall();
+  }
+
+  /**
+   * Creates a new Group Call Expression that takes a defined GroupCallModifier into account.
+   * @param table to create a Group call for, may be undefined, then this table is used.
+   * @param group to call.
+   */
+  createGroupCall(): void {
+    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
+    this.groupBuilder.createGroupCall();
+  }
+
+  /**
    * Starts a variable Assignment.
    */
   startVariable(type: 'get' | 'set') {
@@ -123,27 +142,6 @@ class TSParserFactory {
     if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
     const calc = this.mathBuilder.create('Calc');
     if (calc) this.groupBuilder.addExpression(calc);
-  }
-
-  /**
-   * Creates a new Group Call Expression that takes a defined GroupCallModifier into account.
-   * @param table to create a Group call for, may be undefined, then this table is used.
-   * @param group to call.
-   */
-  createGroupCall(table: string, group: string): void {
-    const modifier = this.groupCallModifier ? this.groupCallModifier : GroupCallModifierTerm.createUnmodified();
-    this.groupCallModifier = undefined;
-    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
-    this.groupBuilder.addExpression(new TSGroupCallExpression(table, group, modifier));
-  }
-
-  /**
-   * Prepares a group call by setting up potential modifications.
-   * @param modifierType can be "=" for a fixed result or "+" / "-" for a modification of roll.
-   * @param modifier to add to roll, or if fixed result the result to use.
-   */
-  addGroupCallModifier(modifierType: string, modifier: number): void {
-    this.groupCallModifier = GroupCallModifierTerm.create(modifierType, modifier);
   }
 
   /**

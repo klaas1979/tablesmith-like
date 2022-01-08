@@ -1,5 +1,6 @@
 import TSGroup from '../tsgroup';
 import { evalcontext } from './evaluationcontextinstance';
+import groupcallsplitter from './groupcallsplitter';
 import TSExpression from './tsexpression';
 
 /**
@@ -7,33 +8,21 @@ import TSExpression from './tsexpression';
  */
 class TSVariableSetExpression implements TSExpression {
   varNameExpression: TSExpression;
-  tablename: string | undefined;
-  variablename = '';
+  call: { tablename: string; variablename: string };
   type: string;
   valueExpression: TSExpression;
   constructor(varNameExpression: TSExpression, type: string, valueExpression: TSExpression) {
     this.varNameExpression = varNameExpression;
     this.type = type;
     this.valueExpression = valueExpression;
+    this.call = { tablename: '', variablename: '' };
   }
 
   evaluate(): string {
     const evaluated = this.varNameExpression.evaluate();
-    const tableGroup = evaluated.split('.');
-    switch (tableGroup.length) {
-      case 1:
-        this.tablename = undefined;
-        this.variablename = tableGroup[0];
-        break;
-      case 2:
-        this.tablename = tableGroup[0];
-        this.variablename = tableGroup[1];
-        break;
-      default:
-        throw `Could not get variable expression did not result in ([tablename].)?[varname] but '${evaluated}'`;
-    }
+    this.call = groupcallsplitter.split(evaluated);
     const value = this.valueExpression.evaluate();
-    const currentValue = evalcontext.getVar(this.tablename, this.variablename);
+    const currentValue = evalcontext.getVar(this.call.tablename, this.call.variablename);
     switch (this.type) {
       case '=':
         this.evaluateSet(currentValue, value);
@@ -110,7 +99,7 @@ class TSVariableSetExpression implements TSExpression {
   }
 
   private assign(value: string | number) {
-    evalcontext.assignVar(this.tablename, this.variablename, value);
+    evalcontext.assignVar(this.call.tablename, this.call.variablename, value);
   }
 
   getExpression(): string {

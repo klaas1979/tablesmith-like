@@ -53,6 +53,14 @@ class StackItem {
   }
 
   /**
+   * Gives numbe of stacked Strings.
+   * @returns number of stacked strings.
+   */
+  stringSize(): number {
+    return this.strings.length;
+  }
+
+  /**
    * String summary of this stack item.
    * @returns Summary of this Stack Item.
    */

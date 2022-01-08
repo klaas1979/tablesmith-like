@@ -113,14 +113,20 @@ Value
           }); }
 
 /* Call of another group within this Table or within another. Table */
-GroupFunction
-  = '[' _ table:(@Name '.')? group:Name _ Modifier? _ ']' { errorHandling(() => {
-            options.pf.createGroupCall(table, group);
+GroupCall
+  = StartGroupCall _ VariableIdentifier _ Modifier? _ ']' { errorHandling(() => {
+            options.pf.createGroupCall();
           }); }
-  
+
+StartGroupCall
+  = '[' { errorHandling(() => {
+            options.pf.startGroupCall();
+          }); }
+
 Modifier
   = modType:ModifierType _ modifier:int { errorHandling(() => {
-            options.pf.addGroupCallModifier(modType, toInt(`${modifier}`));
+            options.pf.stackString(modType);
+            options.pf.stackString(modifier);
           }); }
 
 ModifierType
@@ -231,7 +237,7 @@ IsNumber
 
 /* Expressions are all supported values or results for a Range. The Tablesmith functions are defined here. */
 Expression
-  = GroupFunction Value? _ Expression*
+  = GroupCall Value? _ Expression*
   / TsFunction Value? _ Expression*
   / VariableGet Value? _ Expression*
   / VariableSet Value? _ Expression*
@@ -239,7 +245,7 @@ Expression
 
 /* Expressions that are allowed in a set Variable expression. */
 VariableSetExpressions
-  = GroupFunction VariableSetExpressions*
+  = GroupCall VariableSetExpressions*
   / TsFunction VariableSetExpressions*
   / VariableGet VariableSetExpressions*
   / Value VariableSetExpressions*
@@ -249,42 +255,42 @@ BooleanExpression
 
 /* Expressions that are allowed in the boolean part before the "?". */
 IfExpressionPart
-  = GroupFunction IfExpressionPart*
+  = GroupCall IfExpressionPart*
   / TsFunction IfExpressionPart*
   / VariableGet IfExpressionPart*
   / ValueIfPart IfExpressionPart*
 
 
 VariableIdentifier
-  = GroupFunction VariableIdentifier*
+  = GroupCall VariableIdentifier*
   / TsFunction VariableIdentifier*
   / VariableGet VariableIdentifier*
   / ValueVariableIdentifier VariableIdentifier*
 
 /* Expressions that are allowed in true or false part after the "?" for a slash "/" If. */
 IfExpressionTextSlash
-  = GroupFunction IfExpressionTextSlash*
+  = GroupCall IfExpressionTextSlash*
   / TsFunction IfExpressionTextSlash*
   / VariableGet IfExpressionTextSlash*
   / ValueIfSlash IfExpressionTextSlash*
 
 /* Expressions that are allowed in true or false part after the "?" for a colon ":" If. */
 IfExpressionTextColon
-  = GroupFunction IfExpressionTextColon*
+  = GroupCall IfExpressionTextColon*
   / TsFunction IfExpressionTextColon*
   / VariableGet IfExpressionTextColon*
   / ValueIfColon IfExpressionTextColon*
 
 /* Expressions where text is not matching "," that are allowed as value in a Select. */
 ExpressionTextNoComma
-  = GroupFunction ExpressionTextNoComma*
+  = GroupCall ExpressionTextNoComma*
   / TsFunction ExpressionTextNoComma*
   / VariableGet ExpressionTextNoComma*
   / ValueNoComma ExpressionTextNoComma*
 
 /* Expressions where text is not matching "," that are allowed as value in a Select. */
 ExpressionTextNoCommaNorPower
-  = GroupFunction ExpressionTextNoCommaNorPower*
+  = GroupCall ExpressionTextNoCommaNorPower*
   / TsFunction ExpressionTextNoCommaNorPower*
   / VariableGet ExpressionTextNoCommaNorPower*
   / ValueNoCommaNorPower ExpressionTextNoCommaNorPower*
