@@ -7,34 +7,37 @@ import TSGroup from '../tsgroup';
  */
 class TSLogicalExpression implements TSExpression {
   functionName: string;
-  booleanComparison1: BooleanComparison;
-  booleanComparison2: BooleanComparison;
-  constructor(functionName: string, booleanComparison1: BooleanComparison, booleanComparison2: BooleanComparison) {
+  comparisons: BooleanComparison[];
+  constructor(functionName: string, comparisons: BooleanComparison[]) {
     this.functionName = functionName;
-    this.booleanComparison1 = booleanComparison1;
-    this.booleanComparison2 = booleanComparison2;
+    this.comparisons = comparisons;
   }
 
   evaluate(): string {
     let result = '-1';
-    const be1 = this.booleanComparison1.evaluate(),
-      be2 = this.booleanComparison2.evaluate();
-    if (be1 == '-1' || be2 == '-1') {
+    const results: string[] = [];
+    this.comparisons.forEach((comparison) => {
+      results.push(comparison.evaluate());
+    });
+    if (results.includes('-1')) {
       result = '-1';
     } else if (this.functionName == 'Or') {
-      result = be1 == '1' || be2 == '1' ? '1' : '0';
+      result = results.includes('1') ? '1' : '0';
     } else if (this.functionName == 'And') {
-      result = be1 == '1' && be2 == '1' ? '1' : '0';
+      result = results.includes('0') ? '0' : '1';
     } else if (this.functionName == 'Xor') {
-      result = (be1 == '1' && be2 == '0') || (be1 == '0' && be2 == '1') ? '1' : '0';
+      const numTrueValue = results.reduce((sum, current) => sum + Number.parseInt(current), 0);
+      result = numTrueValue == 1 ? '1' : '0';
     }
     return result;
   }
 
   getExpression(): string {
-    const e1 = this.booleanComparison1.getExpression(),
-      e2 = this.booleanComparison2.getExpression();
-    return `{${this.functionName}~${e1},${e2}}`;
+    const expressions = this.comparisons.reduce(
+      (all, cur) => (all.length > 0 ? all + ',' + cur.getExpression() : cur.getExpression()),
+      '',
+    );
+    return `{${this.functionName}~${expressions}}`;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

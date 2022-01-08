@@ -47,7 +47,6 @@ VariableDeclaration
 /* A group is a subtable, all Tablesmith stuff starting with :Name to be called and rolled */
 Group
   = GroupName GroupContent+
-
 /* The name for a group, this is the name without dot. */
 GroupName
   = type:[:;] repeat:'!'? name:Name EmptyLine { errorHandling(() => {
@@ -56,81 +55,71 @@ GroupName
             options.pf.addGroup(name, rangeAsProbability, nonRepeating);
           }); }
 
+
 /* Range is a single line in a group donating the lower and upper end for the result, i.e. 1-2,Result */
 GroupContent
   = RangeValue Expression+ EmptyLine?
   / BeforeValue Expression+ EmptyLine?
   / AfterValue Expression+ EmptyLine?
-
 /* Only the range expression with the colon ',' */
 RangeValue
   = (int __ '-' __)? up:int __ [,] { errorHandling(() => {
             options.pf.addRange(toInt(up));
           }); }
-
 /* Only the before expression  */
 BeforeValue
   = '<' _ { errorHandling(() => {
             options.pf.addBefore();
           }); }
-
 /* Only the after expression  */
 AfterValue
   = '>' _ { errorHandling(() => {
             options.pf.addAfter();
           }); }
 
+
 VariableGet
   = StartVariableGet VariableIdentifier '%' { errorHandling(() => {
             options.pf.createVariable();
           }); }
-
 StartVariableGet
   = '%' { errorHandling(() => {
             options.pf.startVariable('get');
           }); }
 
+
 VariableSet
   = StartVariableSet VariableIdentifier VariableSetType VariableSetExpressions '|' { errorHandling(() => {
             options.pf.createVariable();
           }); }
-
 StartVariableSet
   = '|' { errorHandling(() => {
             options.pf.startVariable('set');
           }); }
-
 VariableSetType
   = type:$[-+=*/\\<>&] { errorHandling(() => {
             options.pf.stackString(type);
             options.pf.stackParameter();
           }); }
 
-/* The simplest Expression is a test value that is returned as is, without further processing. */
-Value
-  = text:PlainText { errorHandling(() => {
-            options.pf.createText(text);
-          }); }
 
 /* Call of another group within this Table or within another. Table */
 GroupCall
   = StartGroupCall _ VariableIdentifier _ Modifier? _ ']' { errorHandling(() => {
             options.pf.createGroupCall();
           }); }
-
 StartGroupCall
   = '[' { errorHandling(() => {
             options.pf.startGroupCall();
           }); }
-
 Modifier
   = modType:ModifierType _ modifier:int { errorHandling(() => {
             options.pf.stackString(modType);
             options.pf.stackString(modifier);
           }); }
-
 ModifierType
   = $[=+-]
+
 
 /* This are all supported functions from Tablesmith */
 TsFunction
@@ -161,7 +150,6 @@ WhileStart
   = '{' name:'While' '~' { errorHandling(() => {
             options.pf.startFunction(name);
           }); }
-
 WhileExpression
   = IfExpressionPart (_ BooleanOperator _ IfExpressionPart)?
 
@@ -169,7 +157,6 @@ LoopStart
   = '{' _ name:'Loop' '~' { errorHandling(() => {
             options.pf.startFunction(name);
           }); }
-
 LoopExpression
   = IfExpressionPart
 
@@ -177,23 +164,20 @@ SelectStart
   = '{' _ name:'Select' '~' { errorHandling(() => {
             options.pf.startFunction(name);
           }); }
-
 SelectExpression
   = IfExpressionPart
 
 TSLogicalFunctions
-  = StartLogicalExpression _ BooleanExpression _ LogicalExpressionSeparator _ BooleanExpression _ '}' { errorHandling(() => {
+  = StartLogicalExpression _ BooleanExpression (_ LogicalExpressionSeparator _ BooleanExpression)+ _ '}' { errorHandling(() => {
             options.pf.createFunction();
           }); }
   / IsNumber _ Expression _ '}' { errorHandling(() => {
             options.pf.createFunction();
           }); }
-
 StartLogicalExpression
   = '{' name:('Or' / 'And' / 'Xor') '~' { errorHandling(() => {
             options.pf.startFunction(name);
           }); }
-
 LogicalExpressionSeparator
   = ',' { errorHandling(() => {
             options.pf.stackParameter();
@@ -294,36 +278,6 @@ ExpressionTextNoCommaNorPower
   / TsFunction ExpressionTextNoCommaNorPower*
   / VariableGet ExpressionTextNoCommaNorPower*
   / ValueNoCommaNorPower ExpressionTextNoCommaNorPower*
-
-
-ValueIfPart
-  = text:PlainTextIfPart { errorHandling(() => {
-            options.pf.createText(text);
-          }); }
-
-ValueVariableIdentifier
-  = text:PlainTextSetExpression { errorHandling(() => {
-            options.pf.createText(text);
-          }); }
-ValueIfSlash
-  = text:PlainTextIfSlash { errorHandling(() => {
-            options.pf.createText(text);
-          }); }
-
-ValueIfColon
-  = text:PlainTextIfColon { errorHandling(() => {
-            options.pf.createText(text);
-          }); }
-
-ValueNoComma
-  = text:PlainTextNoComma { errorHandling(() => {
-            options.pf.createText(text);
-          }); }
-
-ValueNoCommaNorPower
-  = text:PlainTextNoCommaNorPower { errorHandling(() => {
-            options.pf.createText(text);
-          }); }
 
 GroupAndTableFunctions
   = GroupAndTableFunctionsZeroParams _ '}' { errorHandling(() => {
@@ -501,29 +455,64 @@ StartLine
             options.pf.startFunction(name);
           }); }
 
+/* The simplest Expression is a test value that is returned as is, without further processing. */
+Value
+  = text:PlainText { errorHandling(() => {
+            options.pf.createText(text);
+          }); }
 /** Matches all text that is printed verbose, without special chars that are key chars for the DSL. */
 PlainText
  = $[^{}[\]%|\n]+
 
+ValueIfPart
+  = text:PlainTextIfPart { errorHandling(() => {
+            options.pf.createText(text);
+          }); }
+
 PlainTextIfPart
  = $[^!=<>,?/{}[\]%|\n]+
 
+ValueVariableIdentifier
+  = text:PlainTextSetExpression { errorHandling(() => {
+            options.pf.createText(text);
+          }); }
+
 PlainTextSetExpression
  = $[^-+\\*&!=<>,?/{}[\]%|\n]+
+
+ValueIfSlash
+  = text:PlainTextIfSlash { errorHandling(() => {
+            options.pf.createText(text);
+          }); }
 
 /** Text that is allowed within an If with slash "/" {If~}. */
 PlainTextIfSlash
  = $[^/{}[\]%|\n]+
 
+ValueIfColon
+  = text:PlainTextIfColon { errorHandling(() => {
+            options.pf.createText(text);
+          }); }
+
 /** Text that is allowed within an If with colon ":" {IIf~}. */
  PlainTextIfColon
  = $[^:{}[\]%|\n]+
+
+ValueNoComma
+  = text:PlainTextNoComma { errorHandling(() => {
+            options.pf.createText(text);
+          }); }
 
  /** Text that is allowed within an selections where a comma ',' happens. */
  PlainTextNoComma
  = $[^,{}[\]%|\n]+
 
- /** Text that is allowed within an selections where a comma ',' or power '^' happens. */
+ValueNoCommaNorPower
+  = text:PlainTextNoCommaNorPower { errorHandling(() => {
+            options.pf.createText(text);
+          }); }
+
+/** Text that is allowed within an selections where a comma ',' or power '^' happens. */
 PlainTextNoCommaNorPower
  = $[^^,{}[\]%|\n]+
 

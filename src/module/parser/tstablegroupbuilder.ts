@@ -309,15 +309,16 @@ class TSTableGroupBuilder {
   }
 
   private createLogicalExpression(data: StackItem): TSLogicalExpression {
-    let ifExpression2 = data.popExpressions();
-    let ifExpression1 = data.popExpressions();
-    let operator = data.popString();
-    const booleanComparison2 = new BooleanComparison(ifExpression1, operator, ifExpression2);
-    ifExpression2 = data.popExpressions();
-    ifExpression1 = data.popExpressions();
-    operator = data.popString();
-    const booleanComparison1 = new BooleanComparison(ifExpression1, operator, ifExpression2);
-    return new TSLogicalExpression(data.name, booleanComparison1, booleanComparison2);
+    const comparisons: BooleanComparison[] = [];
+    while (data.stackSize() > 0) {
+      const ifExpression2 = data.popExpressions();
+      const ifExpression1 = data.popExpressions();
+      const operator = data.popString();
+      const comparison = new BooleanComparison(ifExpression1, operator, ifExpression2);
+      comparisons.push(comparison);
+    }
+    comparisons.reverse();
+    return new TSLogicalExpression(data.name, comparisons);
   }
 
   private createLoopExpression(data: StackItem): TSLoopExpression {
