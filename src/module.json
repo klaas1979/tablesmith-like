@@ -1,18 +1,11 @@
 {
   "name": "foundryvtt-tablesmith",
-  "title": "foundryvtt-tablesmith",
-  "description": "",
+  "title": "Tablesmith like Tables",
+  "description": "Use Tablesmith-like tables in FoundryVTT and create complex nested tables",
   "version": "0.0.0",
-  "author": "<your name>",
-  "authors": [
-    {
-      "name": "<your name>",
-      "email": "<optionally your e-mail address>",
-      "discord": "<optionally your discord username>"
-    }
-  ],
-  "minimumCoreVersion": "0.8.8",
-  "compatibleCoreVersion": "0.8.8",
+  "author": "Klaas",
+  "minimumCoreVersion": "0.9.4",
+  "compatibleCoreVersion": "0.9.4",
   "scripts": [],
   "esmodules": ["module/foundryvtt-tablesmith.js"],
   "styles": ["styles/foundryvtt-tablesmith.css"],

@@ -1,4 +1,5 @@
 import { tablesmith } from '../../src/module/tablesmithinstance';
+import { tstables } from '../../src/module/tstables';
 
 let filename: string;
 let simpleTable: string;
@@ -11,15 +12,13 @@ describe('Parsing {Loop~', () => {
   it('loop expressions correct with expression', () => {
     simpleTable = ':Start\n1,{Loop~{Dice~1d20},x}\n';
     tablesmith.addTable(filename, simpleTable);
-    expect(tablesmith.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe(
-      '{Loop~{Dice~1d20},x}',
-    );
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Loop~{Dice~1d20},x}');
   });
 
   it('loop expressions correct with single %var%', () => {
     simpleTable = '%var%,1\n:Start\n1,{Loop~%var%,x}\n';
     tablesmith.addTable(filename, simpleTable);
-    expect(tablesmith.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Loop~%var%,x}');
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Loop~%var%,x}');
   });
 
   it('with expression', () => {

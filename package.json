@@ -1,8 +1,7 @@
 {
-  "private": true,
   "name": "foundryvtt-tablesmith",
-  "version": "0.0.0",
-  "description": "",
+  "version": "0.0.1",
+  "description": "Use Tablesmith-like tables in FoundryVTT and create complex nested tables.",
   "license": "",
   "homepage": "",
   "repository": {
@@ -12,12 +11,7 @@
   "bugs": {
     "url": ""
   },
-  "contributors": [
-    {
-      "name": "",
-      "email": ""
-    }
-  ],
+  "author": "Klaas",
   "scripts": {
     "build": "gulp build",
     "build:watch": "gulp watch",
@@ -34,7 +28,8 @@
     "postinstall": "husky install"
   },
   "devDependencies": {
-    "@league-of-foundry-developers/foundry-vtt-types": "^0.8.9-9",
+    "@league-of-foundry-developers/foundry-vtt-types": "github:League-of-Foundry-Developers/foundry-vtt-types",
+    "@rollup/plugin-commonjs": "^21.0.1",
     "@rollup/plugin-node-resolve": "^13.1.1",
     "@types/jest": "^27.0.3",
     "@types/node": "^17.0.1",
@@ -65,6 +60,7 @@
     "*.(json|css)": "prettier --write"
   },
   "dependencies": {
-    "peggy": "^1.2.0"
+    "peggy": "^1.2.0",
+    "ts-pegjs": "^1.2.1"
   }
 }

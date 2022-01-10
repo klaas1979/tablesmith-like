@@ -1,4 +1,4 @@
-import { tablesmith } from '../tablesmithinstance';
+import { tstables } from '../tstables';
 import TSGroup from '../tsgroup';
 import TSExpression from './tsexpression';
 
@@ -18,7 +18,7 @@ class TSGroupRangeValueExpression implements TSExpression {
   }
   evaluate(): string {
     const groupname = this.groupExpression.evaluate();
-    const group = tablesmith.tableForName(this.tablename)?.groupForName(groupname);
+    const group = tstables.tableForName(this.tablename)?.groupForName(groupname);
     if (!group) throw `Cannot Count group '${groupname}' in table '${groupname}', not defined!`;
     const rangeIndexString = this.rangeExpression.evaluate();
     const rangeIndex = Number.parseInt(rangeIndexString);

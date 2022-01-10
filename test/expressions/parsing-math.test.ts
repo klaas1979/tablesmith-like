@@ -1,4 +1,5 @@
 import { tablesmith } from '../../src/module/tablesmithinstance';
+import { tstables } from '../../src/module/tstables';
 
 let filename: string;
 let simpleTable: string;
@@ -12,21 +13,21 @@ describe('Parsing {Dice~}', () => {
   it('3d6+3 roll with modifier', () => {
     simpleTable = ':Start\n1,{Dice~3d6+3}\n';
     tablesmith.addTable(filename, simpleTable);
-    const result = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    const result = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
     expect(result).toBe('{Dice~3d6+3}');
   });
 
   it('1d4+3d6+4d8 chained rolls', () => {
     simpleTable = ':Start\n1,{Dice~1d4+3d6+4d8}\n';
     tablesmith.addTable(filename, simpleTable);
-    const result = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    const result = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
     expect(result).toBe('{Dice~1d4+3d6+4d8}');
   });
 
   it('1+2 addition', () => {
     simpleTable = ':Start\n1,{Dice~1+2}\n';
     tablesmith.addTable(filename, simpleTable);
-    const result = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    const result = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
     expect(result).toBe('{Dice~1+2}');
     expect(tablesmith.evaluate(`[${filename}]`)).toBe('3');
   });
@@ -34,7 +35,7 @@ describe('Parsing {Dice~}', () => {
   it('2-1 subtraction', () => {
     simpleTable = ':Start\n1,{Dice~2-1}\n';
     tablesmith.addTable(filename, simpleTable);
-    const result = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    const result = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
     expect(result).toBe('{Dice~2-1}');
     expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
   });
@@ -42,7 +43,7 @@ describe('Parsing {Dice~}', () => {
   it('3*6 multiplication', () => {
     simpleTable = ':Start\n1,{Dice~3*6}\n';
     tablesmith.addTable(filename, simpleTable);
-    const result = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    const result = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
     expect(result).toBe('{Dice~3*6}');
     expect(tablesmith.evaluate(`[${filename}]`)).toBe('18');
   });
@@ -50,7 +51,7 @@ describe('Parsing {Dice~}', () => {
   it('18/6 division', () => {
     simpleTable = ':Start\n1,{Dice~18/6}\n';
     tablesmith.addTable(filename, simpleTable);
-    const result = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    const result = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
     expect(result).toBe('{Dice~18/6}');
     expect(tablesmith.evaluate(`[${filename}]`)).toBe('3');
   });
@@ -58,7 +59,7 @@ describe('Parsing {Dice~}', () => {
   it('((5+5)/10)d(10-9) brackets', () => {
     simpleTable = ':Start\n1,{Dice~((5+5)/10)d(10-9)}\n';
     tablesmith.addTable(filename, simpleTable);
-    const result = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    const result = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
     expect(result).toBe('{Dice~((5+5)/10)d(10-9)}');
     expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
   });
@@ -73,7 +74,7 @@ describe('Parsing {Calc~}', () => {
   it('((5+5)/10) brackets', () => {
     simpleTable = ':Start\n1,{Calc~((5+5)/10)}\n';
     tablesmith.addTable(filename, simpleTable);
-    const result = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    const result = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
     expect(result).toBe('{Calc~((5+5)/10)}');
     expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
   });
@@ -81,7 +82,7 @@ describe('Parsing {Calc~}', () => {
   it('((5+5)/10)d(10-9) brackets', () => {
     simpleTable = ':Start\n1,{Calc~((5+5)/10)d(10-9)}\n';
     tablesmith.addTable(filename, simpleTable);
-    const result = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    const result = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
     expect(result).toBe('{Calc~((5+5)/10)d(10-9)}');
     expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
   });
@@ -96,18 +97,18 @@ describe('Parsing nested Math in Dice~ or Calc~', () => {
   it('{Dice~{Dice~3d1}d{Dice~1d1}}', () => {
     simpleTable = ':Start\n1,{Dice~{Dice~3d1}d{Dice~1d1}}\n';
     tablesmith.addTable(filename, simpleTable);
-    const term = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    const term = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
     expect(term).toBe('{Dice~{Dice~3d1}d{Dice~1d1}}');
-    const total = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.evaluate();
+    const total = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.evaluate();
     expect(total).toBe('3');
   });
 
   it('with whitespaces and linebreaks', () => {
     simpleTable = ':Start\n1,{  Dice~\n_{\n_Dice~\n_3d1   } d\n_{Dice~\n_1\n_d1}\n_}\n';
     tablesmith.addTable(filename, simpleTable);
-    const term = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    const term = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
     expect(term).toBe('{Dice~{Dice~3d1}d{Dice~1d1}}');
-    const total = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.evaluate();
+    const total = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.evaluate();
     expect(total).toBe('3');
   });
 });
@@ -121,7 +122,7 @@ describe('Abs~', () => {
   it('correct abs expression', () => {
     simpleTable = ':Start\n1,{Abs~-10}\n';
     tablesmith.addTable(filename, simpleTable);
-    const expression = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    const expression = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
     expect(expression).toBe('{Abs~-10}');
   });
 
@@ -159,7 +160,7 @@ describe('Ceil~', () => {
   it('correct abs expression', () => {
     simpleTable = ':Start\n1,{Ceil~1.5}\n';
     tablesmith.addTable(filename, simpleTable);
-    const expression = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    const expression = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
     expect(expression).toBe('{Ceil~1.5}');
   });
 
@@ -197,7 +198,7 @@ describe('Floor~', () => {
   it('correct abs expression', () => {
     simpleTable = ':Start\n1,{Floor~1.5}\n';
     tablesmith.addTable(filename, simpleTable);
-    const expression = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    const expression = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
     expect(expression).toBe('{Floor~1.5}');
   });
 
@@ -235,7 +236,7 @@ describe('Trunc~', () => {
   it('correct trunc expression', () => {
     simpleTable = ':Start\n1,{Trunc~1.5}\n';
     tablesmith.addTable(filename, simpleTable);
-    const expression = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    const expression = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
     expect(expression).toBe('{Trunc~1.5}');
   });
 
@@ -261,7 +262,7 @@ describe('Sqrt~', () => {
   it('correct trunc expression', () => {
     simpleTable = ':Start\n1,{Sqrt~9}\n';
     tablesmith.addTable(filename, simpleTable);
-    const expression = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    const expression = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
     expect(expression).toBe('{Sqrt~9}');
   });
 
@@ -281,7 +282,7 @@ describe('Round~', () => {
   it('correct round expression', () => {
     simpleTable = ':Start\n1,{Round~2,2.1234}\n';
     tablesmith.addTable(filename, simpleTable);
-    const expression = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    const expression = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
     expect(expression).toBe('{Round~2,2.1234}');
   });
 
@@ -307,7 +308,7 @@ describe('Min~', () => {
   it('correct min expression', () => {
     simpleTable = ':Start\n1,{Min~2,2.1234}\n';
     tablesmith.addTable(filename, simpleTable);
-    const expression = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    const expression = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
     expect(expression).toBe('{Min~2,2.1234}');
   });
 
@@ -339,7 +340,7 @@ describe('Max~', () => {
   it('correct max expression', () => {
     simpleTable = ':Start\n1,{Max~2,2.1234}\n';
     tablesmith.addTable(filename, simpleTable);
-    const expression = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    const expression = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
     expect(expression).toBe('{Max~2,2.1234}');
   });
 
@@ -371,7 +372,7 @@ describe('Mod~ (modulo or remainder)', () => {
   it('correct max expression', () => {
     simpleTable = ':Start\n1,{Mod~3,2}\n';
     tablesmith.addTable(filename, simpleTable);
-    const expression = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    const expression = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
     expect(expression).toBe('{Mod~3,2}');
   });
 
@@ -397,7 +398,7 @@ describe('Power~', () => {
   it('correct power expression', () => {
     simpleTable = ':Start\n1,{Power~2^4}\n';
     tablesmith.addTable(filename, simpleTable);
-    const expression = tablesmith.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    const expression = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
     expect(expression).toBe('{Power~2^4}');
   });
 

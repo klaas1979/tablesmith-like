@@ -1,4 +1,5 @@
 import { tablesmith } from '../../src/module/tablesmithinstance';
+import { tstables } from '../../src/module/tstables';
 
 let filename: string;
 let simpleTable: string;
@@ -11,7 +12,7 @@ describe('Parsing {While~', () => {
   it('while expressions correct with BooleanComparison', () => {
     simpleTable = '%var%,0\n:Start\n1,{While~%var%<5,|var+1|x}\n';
     tablesmith.addTable(filename, simpleTable);
-    expect(tablesmith.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe(
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe(
       '{While~%var%<5,|var+1|x}',
     );
   });
@@ -19,7 +20,7 @@ describe('Parsing {While~', () => {
   it('while expressions correct with single %var%', () => {
     simpleTable = '%var%,1\n:Start\n1,{While~%var%,|var=0|body}\n';
     tablesmith.addTable(filename, simpleTable);
-    expect(tablesmith.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe(
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe(
       '{While~%var%,|var=0|body}',
     );
   });

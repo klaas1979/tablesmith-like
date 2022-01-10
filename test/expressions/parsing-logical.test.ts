@@ -1,4 +1,5 @@
 import { tablesmith } from '../../src/module/tablesmithinstance';
+import { tstables } from '../../src/module/tstables';
 
 let filename: string;
 let simpleTable: string;
@@ -12,7 +13,7 @@ describe('Parsing {And~', () => {
   it('expression representation uses correct function name And', () => {
     simpleTable = ':Start\n1,{And~1=1,2=2}\n';
     tablesmith.addTable(filename, simpleTable);
-    expect(tablesmith.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{And~1=1,2=2}');
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{And~1=1,2=2}');
   });
 
   it('sub expression error => -1', () => {
@@ -55,7 +56,7 @@ describe('Parsing {Or~', () => {
   it('expression representation uses correct function name Or', () => {
     simpleTable = ':Start\n1,{Or~1=1,2=2}\n';
     tablesmith.addTable(filename, simpleTable);
-    expect(tablesmith.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Or~1=1,2=2}');
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Or~1=1,2=2}');
   });
 
   it('sub expression error => -1', () => {
@@ -98,7 +99,7 @@ describe('Parsing {Xor~', () => {
   it('expression representation uses correct function name Xor', () => {
     simpleTable = ':Start\n1,{Xor~1=1,2=2}\n';
     tablesmith.addTable(filename, simpleTable);
-    expect(tablesmith.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Xor~1=1,2=2}');
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Xor~1=1,2=2}');
   });
 
   it('sub expression error => -1', () => {
@@ -212,7 +213,7 @@ describe('Parsing {IsNumber~', () => {
   it('expression representation uses correct function name IsNumber', () => {
     simpleTable = ':Start\n1,{IsNumber~20}\n';
     tablesmith.addTable(filename, simpleTable);
-    expect(tablesmith.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{IsNumber~20}');
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{IsNumber~20}');
   });
 
   it('integer => 1', () => {

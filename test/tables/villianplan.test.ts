@@ -1,4 +1,5 @@
 import { tablesmith } from '../../src/module/tablesmithinstance';
+import { tstables } from '../../src/module/tstables';
 import fs from 'fs';
 import path from 'path';
 
@@ -12,10 +13,10 @@ describe('ToAD Villian Plan.tab', () => {
   });
 
   it('parsed complete', () => {
-    expect(tablesmith.getTSTables().length).toBe(1);
-    expect(tablesmith.getLastTSTable().getName()).toBe(tablename);
+    expect(tstables.getTSTables().length).toBe(1);
+    expect(tstables.getLastTSTable().getName()).toBe(tablename);
     expect(tablesmith.tableForName(tablename)?.getGroups().length).toEqual(50);
-    const lastGroup = tablesmith.tableForName(tablename)?.getGroups()[50 - 1];
+    const lastGroup = tstables.tableForName(tablename)?.getGroups()[50 - 1];
     expect(lastGroup?.getName()).toEqual('Reason_Why_in_Service');
   });
 

@@ -13,6 +13,7 @@
 // Import TypeScript modules
 import { registerSettings } from './settings';
 import { preloadTemplates } from './preloadTemplates';
+import { tablesmith } from './tablesmithinstance';
 
 // Initialize module
 Hooks.once('init', async () => {
@@ -33,6 +34,8 @@ Hooks.once('init', async () => {
 Hooks.once('setup', async () => {
   // Do anything after initialization but before
   // ready
+  tablesmith.reset();
+  // tablesmith.addTable('name', ':Start\n1,One');
 });
 
 // When ready

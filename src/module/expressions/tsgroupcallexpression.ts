@@ -1,4 +1,4 @@
-import { tablesmith } from '../tablesmithinstance';
+import { tstables } from '../tstables';
 import TSGroup from '../tsgroup';
 import { evalcontext } from './evaluationcontextinstance';
 import groupcallsplitter from './groupcallsplitter';
@@ -23,7 +23,7 @@ class TSGroupCallExpression implements TSExpression {
   evaluate(): string {
     const tableAndGroup = this.tableAndGroupExpression.evaluate();
     const splitted = groupcallsplitter.split(tableAndGroup);
-    const tsTable = tablesmith.tableForName(splitted.tablename);
+    const tsTable = tstables.tableForName(splitted.tablename);
     if (!tsTable) throw `Table '${splitted.tablename}' is not defined cannot evaluate!`;
     const tsGroup = tsTable.groupForName(splitted.variablename);
     if (!tsGroup) throw `Group '${splitted.variablename}' is not defined cannot evaluate!`;

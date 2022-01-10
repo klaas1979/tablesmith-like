@@ -1,4 +1,5 @@
 import { tablesmith } from '../../src/module/tablesmithinstance';
+import { tstables } from '../../src/module/tstables';
 
 let filename: string;
 let simpleTable: string;
@@ -11,7 +12,7 @@ describe('Parsing {Select~', () => {
   it('select expressions correct with simple tuples', () => {
     simpleTable = '%var%,\n:Start\n1,{Select~%var%,key1,value1,key2,value2,default}\n';
     tablesmith.addTable(filename, simpleTable);
-    expect(tablesmith.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe(
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe(
       '{Select~%var%,key1,value1,key2,value2,default}',
     );
   });
@@ -19,7 +20,7 @@ describe('Parsing {Select~', () => {
   it('loop expressions correct with complex expressions', () => {
     simpleTable = '%var%,\n:Start\n1,{Select~%var%,[key1],{Calc~1*2},%key2%,value2,default}\n';
     tablesmith.addTable(filename, simpleTable);
-    expect(tablesmith.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe(
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe(
       '{Select~%var%,[key1],{Calc~1*2},%key2%,value2,default}',
     );
   });

@@ -1,4 +1,5 @@
 import { tablesmith } from '../src/module/tablesmithinstance';
+import { tstables } from '../src/module/tstables';
 
 let filename: string;
 let simpleTable: string;
@@ -12,7 +13,7 @@ describe('Tablesmith#addTable', () => {
 
   it('single table filename set', () => {
     tablesmith.addTable(filename, simpleTable);
-    expect(tablesmith.getTSTables().length).toBe(1);
+    expect(tstables.getTSTables().length).toBe(1);
     expect(tablesmith.tableForName(filename)?.name).toEqual(filename);
   });
 

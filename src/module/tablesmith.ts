@@ -1,47 +1,24 @@
-import * as peggy from 'peggy';
-import fs from 'fs';
 import TSTable from './tstable';
 import TSParserFactory from './parser/tsparserfactory';
 import { evalcontext } from './expressions/evaluationcontextinstance';
-import path from 'path';
 import GroupCallModifierTerm from './expressions/terms/groupcallmodifierterm';
 import TSGroup from './tsgroup';
-
-const parserFilePath = 'src/module/parser/tablesmith.pegjs';
-const callParserFilePath = 'src/module/parser/tablesmithcall.pegjs';
+import { tstables } from './tstables';
+import { tableparser } from './parser/tableparser';
+import { callparser } from './parser/callparser';
 
 /**
  * The Tablesmith class to setup the Tablesmith environment, contains all parsed tables and provides needed functionality
  * to retrive results.
  */
 class Tablesmith {
-  tstables: TSTable[];
   evaluateTable: TSTable | undefined;
-  parser: peggy.Parser;
-  parserGrammar: string;
-  debugText: string;
-  callParser: peggy.Parser;
-  constructor() {
-    this.tstables = [];
-    this.parserGrammar = _parserGrammarSource();
-    this.parser = _parser(this.parserGrammar);
-    this.callParser = _callParser();
-    this.debugText = '';
-  }
 
   /**
    * Resets to instance without parsed tables, normally only needed for testing purpose.
    */
   reset(): void {
-    this.tstables = [];
-  }
-
-  /**
-   * Returns expressions factories debug text.
-   * @returns The DebugText from the underlying TSExpressionFactory.
-   */
-  getDebugText(): string {
-    return this.debugText;
+    tstables.reset();
   }
 
   /**
@@ -73,7 +50,7 @@ class Tablesmith {
     expression: string,
     options: { table: string; group: string; modType: string; modNumber: number },
   ): TSGroup | undefined {
-    this.callParser.parse(expression, options);
+    callparser.parse(expression, options);
     const evaluateTable = this.tableForName(options.table);
     if (!evaluateTable) throw `TSTable for name='${options.table}' not defined! Expression was '${expression}'`;
     evalcontext.pushCurrentCallTablename(options.table);
@@ -83,33 +60,21 @@ class Tablesmith {
   }
 
   /**
-   * Resets the EvaluationContext back to ensure that no Groups have locked entries and to set back variables
-   * in tables to their default declaration.
+   * Resets the EvaluationContext for all tables.
    */
   resetEvaluationContext() {
-    this.tstables.forEach((table) => {
-      table.resetEvaluationContext();
-    });
+    tstables.resetEvaluationContext();
   }
   /**
    * Parses table and stores it with given filename as Tablename.
    * @param filename name of file, used as Table name for evaluation.
    * @param fileContent file as a single string to be parsed.
    */
-  addTable(filename: string, fileContent: string): void {
+  addTable(filename: string, fileContent: string): TSTable {
     const tstable = new TSTable(_stripPathAndExtensions(filename));
-    try {
-      const options = this._parseOptions(tstable);
-      this.parser.parse(fileContent, options);
-    } catch (error) {
-      const syntaxError = error as peggy.parser.SyntaxError;
-      if (typeof syntaxError.format === 'function') {
-        const description = syntaxError.format([{ source: this.parserGrammar, text: fileContent }]);
-        throw description;
-      }
-      throw error;
-    }
-    this.tstables.push(tstable);
+    tableparser.parse(fileContent, this._parseOptions(tstable));
+    tstables.addTable(tstable);
+    return tstable;
   }
 
   _parseOptions(table: TSTable): {
@@ -126,38 +91,8 @@ class Tablesmith {
    * @returns Table for name or undefined if no table was found.
    */
   tableForName(name: string): TSTable | undefined {
-    return this.tstables.find((current) => current.getName() === name);
+    return tstables.tableForName(name);
   }
-
-  getTSTables(): TSTable[] {
-    return this.tstables;
-  }
-
-  getLastTSTable(): TSTable {
-    return this.tstables[this.tstables.length - 1];
-  }
-}
-
-/**
- * Strips file path and ".tab" extension to make table callable under it's name.
- * @param filename to strip from.
- * @returns string base file name without ".tab" extension.
- */
-function _stripPathAndExtensions(filename: string): string {
-  return path.basename(filename, '.tab');
-}
-
-function _parserGrammarSource(): string {
-  return fs.readFileSync(parserFilePath, 'utf8');
-}
-
-function _parser(grammar: string): peggy.Parser {
-  return peggy.generate(grammar);
-}
-
-function _callParser(): peggy.Parser {
-  const peggyGrammar = fs.readFileSync(callParserFilePath, 'utf8');
-  return peggy.generate(peggyGrammar);
 }
 
 /**
@@ -169,3 +104,6 @@ function _setDefaultGroup(options: { group: string }): void {
 }
 
 export default Tablesmith;
+function _stripPathAndExtensions(filename: string): string {
+  return filename.trim().replace('.tab', '');
+}

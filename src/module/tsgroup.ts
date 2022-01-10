@@ -102,7 +102,7 @@ class TSGroup {
    * @param groupCallModifier to modify rolls with.
    */
   roll(groupCallModifier: GroupCallModifierTerm): string {
-    let result = undefined;
+    let result: string | undefined = undefined;
     const roller = groupCallModifier.modify(this.rollTerm());
     for (let i = 0; result === undefined && i < this.ranges.length * 10; i++) {
       const roll = roller.roll(evalcontext);

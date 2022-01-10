@@ -1,4 +1,4 @@
-import { tablesmith } from '../tablesmithinstance';
+import { tstables } from '../tstables';
 import TSGroup from '../tsgroup';
 import TSExpression from './tsexpression';
 
@@ -17,7 +17,7 @@ class TSGroupLockExpression implements TSExpression {
     this.parameters = parameters;
   }
   evaluate(): string {
-    const table = tablesmith.tableForName(this.tablename);
+    const table = tstables.tableForName(this.tablename);
     const groupname = this.groupExpression.evaluate();
     const group = table?.groupForName(groupname);
     if (!group) throw `Cannot ${this.functionname} group '${groupname}' in table '${this.tablename}', not defined!`;

@@ -1,6 +1,6 @@
 # foundryvtt-tablesmith
 
-Add your description here.
+Use Tablesmith-like tables in FoundryVTT and create complex nested tables.
 
 ## Installation
 

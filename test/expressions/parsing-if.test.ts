@@ -1,4 +1,5 @@
 import { tablesmith } from '../../src/module/tablesmithinstance';
+import { tstables } from '../../src/module/tstables';
 
 let filename: string;
 let simpleTable: string;
@@ -12,9 +13,7 @@ describe('Parsing {If~', () => {
   it('expression representation uses correct function name If', () => {
     simpleTable = '\n:Start\n1,{If~1=1?true/false}\n';
     tablesmith.addTable(filename, simpleTable);
-    expect(tablesmith.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe(
-      '{If~1=1?true/false}',
-    );
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{If~1=1?true/false}');
   });
 
   it('simple if evaluation => true', () => {
@@ -75,9 +74,7 @@ describe('Parsing {IIf~', () => {
   it('expression representation uses correct function name IIf', () => {
     simpleTable = '\n:Start\n1,{IIf~1=1?true:false}\n';
     tablesmith.addTable(filename, simpleTable);
-    expect(tablesmith.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe(
-      '{IIf~1=1?true:false}',
-    );
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{IIf~1=1?true:false}');
   });
 
   it('simple if evaluation', () => {
