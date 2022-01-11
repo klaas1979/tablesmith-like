@@ -1,8 +1,8 @@
-import GroupCallModifierTerm from '../src/module/expressions/terms/groupcallmodifierterm';
-import TSExpression from '../src/module/expressions/tsexpression';
-import TSTextExpression from '../src/module/expressions/tstextexpression';
-import TSGroup from '../src/module/tsgroup';
-import TSRange from '../src/module/tsrange';
+import GroupCallModifierTerm from '../src/module/tablesmith/expressions/terms/groupcallmodifierterm';
+import TSExpression from '../src/module/tablesmith/expressions/tsexpression';
+import TSTextExpression from '../src/module/tablesmith/expressions/tstextexpression';
+import TSGroup from '../src/module/tablesmith/tsgroup';
+import TSRange from '../src/module/tablesmith/tsrange';
 
 let group: TSGroup;
 const name = 'groupname';

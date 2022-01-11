@@ -1,5 +1,5 @@
-import { tablesmith } from '../../src/module/tablesmithinstance';
-import { tstables } from '../../src/module/tstables';
+import { tablesmith } from '../../src/module/tablesmith/tablesmithinstance';
+import { tstables } from '../../src/module/tablesmith/tstables';
 import fs from 'fs';
 import path from 'path';
 

@@ -1,4 +1,4 @@
-import { evalcontext } from '../../src/module/expressions/evaluationcontextinstance';
+import { evalcontext } from '../../src/module/tablesmith/expressions/evaluationcontextinstance';
 
 describe('Evalcontext#roll', () => {
   let resultCount: Array<number>;

@@ -1,5 +1,5 @@
 // Helper to access Types see: https://github.com/League-of-Foundry-Developers/foundry-vtt-types/wiki/FAQ
-function getGame(): Game {
+export function getGame(): Game {
   if (!(game instanceof Game)) {
     throw new Error('game is not initialized yet!');
   }

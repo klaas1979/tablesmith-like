@@ -1,6 +1,6 @@
-import { tablesmith } from '../../src/module/tablesmithinstance';
+import { tablesmith } from '../../src/module/tablesmith/tablesmithinstance';
 
-import { tstables } from '../../src/module/tstables';
+import { tstables } from '../../src/module/tablesmith/tstables';
 
 let filename: string;
 let simpleTable: string;

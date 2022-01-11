@@ -1,4 +1,4 @@
-import type TSParserFactory from '../module/parser/tsparserfactory';
+import type TSParserFactory from '../module/tablesmith/parser/tsparserfactory';
 
 declare function parse(
   table: string,

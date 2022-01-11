@@ -11,9 +11,9 @@
  */
 
 // Import TypeScript modules
-import { registerSettings } from './settings';
-import { preloadTemplates } from './preloadTemplates';
-import { tablesmith } from './tablesmithinstance';
+import { getGame, registerSettings } from './foundry/settings';
+import { preloadTemplates } from './foundry/preloadTemplates';
+import { tablesmith } from './tablesmith/tablesmithinstance';
 
 // Initialize module
 Hooks.once('init', async () => {
@@ -34,8 +34,7 @@ Hooks.once('init', async () => {
 Hooks.once('setup', async () => {
   // Do anything after initialization but before
   // ready
-  tablesmith.reset();
-  // tablesmith.addTable('name', ':Start\n1,One');
+  tablesmith.addTable('name', ':Start\n1,One');
 });
 
 // When ready
@@ -44,3 +43,18 @@ Hooks.once('ready', async () => {
 });
 
 // Add any additional hooks if necessary
+
+export default class MGMEChatJournal {
+  static async _mgmeFindOrCreateJournal() {
+    const date = new Date().toDateInputString();
+    const folderName = 'Mythic Journal';
+    const journalName = 'Adventure Notes ' + date;
+    let journal = getGame().journal?.contents.find((j) => j.name === journalName && j.folder?.name === folderName);
+    if (!journal) {
+      let folder = getGame().folders?.contents.find((f) => f.name === folderName);
+      if (!folder) folder = await Folder.create({ name: folderName, type: 'JournalEntry' });
+      journal = await JournalEntry.create({ name: journalName, folder: folder });
+    }
+    return journal;
+  }
+}

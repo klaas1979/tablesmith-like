@@ -1,7 +1,7 @@
 import * as peggy from 'peggy';
 import fs from 'fs';
-import TSTable from '../src/module/tstable';
-import TSParserFactory from '../src/module/parser/tsparserfactory';
+import TSTable from '../src/module/tablesmith/tstable';
+import TSParserFactory from '../src/module/tablesmith/parser/tsparserfactory';
 
 describe('Tablesmith Peggy parser#parse', () => {
   let parser: peggy.Parser;

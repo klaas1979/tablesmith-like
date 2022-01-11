@@ -1,5 +1,5 @@
-import { evalcontext } from '../../src/module/expressions/evaluationcontextinstance';
-import { tablesmith } from '../../src/module/tablesmithinstance';
+import { evalcontext } from '../../src/module/tablesmith/expressions/evaluationcontextinstance';
+import { tablesmith } from '../../src/module/tablesmith/tablesmithinstance';
 
 let filename: string;
 let simpleTable: string;
