@@ -69,10 +69,18 @@ async function copyFiles() {
 }
 
 /**
+ * Watch for changes in grammars
+ */
+function buildWatchPeggy() {
+  gulp.watch(`${sourceDirectory}/**/*.${peggyGrammarExtension}`, { ignoreInitial: false }, peggyGen);
+  gulp.watch(`${grammarFilePath}*.d.ts`, { ignoreInitial: false }, peggyCopyDTS);
+}
+
+/**
  * Watch for changes for each build step
  */
 function buildWatch() {
-  gulp.watch(`${sourceDirectory}/**/*.${peggyGrammarExtension}`, { ignoreInitial: false }, peggyGen);
+  buildWatchPeggy();
   gulp.watch(`${sourceDirectory}/**/*.${sourceFileExtension}`, { ignoreInitial: false }, buildCode);
   gulp.watch(`${stylesDirectory}/**/*.${stylesExtension}`, { ignoreInitial: false }, buildStyles);
   gulp.watch(
@@ -237,6 +245,7 @@ const execBuild = gulp.series(execPeggy, gulp.parallel(buildCode, buildStyles, c
 exports.peggy = execPeggy;
 exports.build = gulp.series(clean, execBuild);
 exports.watch = buildWatch;
+exports.watchpeggy = buildWatchPeggy;
 exports.clean = clean;
 exports.link = linkUserData;
 exports.bumpVersion = bumpVersion;
