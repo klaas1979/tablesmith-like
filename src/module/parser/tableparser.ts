@@ -1,4 +1,4 @@
-import { parse } from './generated/peggytable';
+import { parse } from '../../../build/parser/peggytable';
 import type TSParserFactory from './tsparserfactory';
 
 class Tableparser {

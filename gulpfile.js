@@ -5,6 +5,7 @@ const gulp = require('gulp');
 const path = require('path');
 const rollupConfig = require('./rollup.config');
 const semver = require('semver');
+const peggy = require('./gulp-peggy');
 
 /********************/
 /*  CONFIGURATION   */
@@ -12,12 +13,30 @@ const semver = require('semver');
 
 const name = path.basename(path.resolve('.'));
 const sourceDirectory = './src';
+const buildDirectory = './build';
 const distDirectory = './dist';
 const stylesDirectory = `${sourceDirectory}/styles`;
 const stylesExtension = 'css';
 const sourceFileExtension = 'ts';
+const peggyGrammarExtension = 'pegjs';
+const grammarFilePath = 'src/peggy/';
 const staticFiles = ['assets', 'fonts', 'lang', 'packs', 'templates', 'module.json'];
 const getDownloadURL = (version) => `https://host/path/to/${version}.zip`;
+
+/********************/
+/* Peggy Parser Gen */
+/********************/
+
+async function peggyCopyDTS() {
+  return gulp.src(`${grammarFilePath}*.d.ts`).pipe(gulp.dest(`${buildDirectory}/parser`));
+}
+
+async function peggyGen() {
+  return gulp
+    .src(`${grammarFilePath}*.${peggyGrammarExtension}`)
+    .pipe(peggy())
+    .pipe(gulp.dest(`${buildDirectory}/parser`));
+}
 
 /********************/
 /*      BUILD       */
@@ -53,6 +72,7 @@ async function copyFiles() {
  * Watch for changes for each build step
  */
 function buildWatch() {
+  gulp.watch(`${sourceDirectory}/**/*.${peggyGrammarExtension}`, { ignoreInitial: false }, peggyGen);
   gulp.watch(`${sourceDirectory}/**/*.${sourceFileExtension}`, { ignoreInitial: false }, buildCode);
   gulp.watch(`${stylesDirectory}/**/*.${stylesExtension}`, { ignoreInitial: false }, buildStyles);
   gulp.watch(
@@ -70,18 +90,22 @@ function buildWatch() {
  * Remove built files from `dist` folder while ignoring source files
  */
 async function clean() {
-  const files = [...staticFiles, 'module'];
+  const distFiles = [...staticFiles, 'module'];
 
   if (fs.existsSync(`${stylesDirectory}/${name}.${stylesExtension}`)) {
-    files.push('styles');
+    distFiles.push('styles');
   }
 
-  console.log(' ', 'Files to clean:');
-  console.log('   ', files.join('\n    '));
+  console.log(' ', 'Dist files to clean:');
+  console.log('   ', distFiles.join('\n    '));
 
-  for (const filePath of files) {
+  for (const filePath of distFiles) {
     await fs.remove(`${distDirectory}/${filePath}`);
   }
+  const buildFiles = [buildDirectory];
+  console.log(' ', 'Build files to clean:');
+  console.log('   ', buildFiles.join('\n    '));
+  await fs.remove(`${buildDirectory}`);
 }
 
 /********************/
@@ -207,8 +231,10 @@ function bumpVersion(cb) {
   }
 }
 
-const execBuild = gulp.parallel(buildCode, buildStyles, copyFiles);
+const execPeggy = gulp.parallel(peggyCopyDTS, peggyGen);
+const execBuild = gulp.series(execPeggy, gulp.parallel(buildCode, buildStyles, copyFiles));
 
+exports.peggy = execPeggy;
 exports.build = gulp.series(clean, execBuild);
 exports.watch = buildWatch;
 exports.clean = clean;

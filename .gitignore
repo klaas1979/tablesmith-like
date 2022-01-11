@@ -18,6 +18,9 @@ npm-debug.log
 # Local configuration
 foundryconfig.json
 
+# Peggy generated Parsers
+build
+
 # Distribution files
 dist
 
