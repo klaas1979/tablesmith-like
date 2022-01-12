@@ -9,7 +9,7 @@ describe('ToAD Villian Plan.tab', () => {
   let tablename: string;
   beforeAll(() => {
     tablename = path.basename(filename, '.tab');
-    tablesmith.addTable(filename, fs.readFileSync(filename, { encoding: 'utf8', flag: 'r' }));
+    tablesmith.addTable(tablename, fs.readFileSync(filename, { encoding: 'utf8', flag: 'r' }));
   });
 
   it('parsed complete', () => {
