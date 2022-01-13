@@ -7,7 +7,10 @@ declare function parse(
   },
 ): void;
 declare interface SyntaxError {
-  format(a: string, b: string): void;
+  location: {
+    start: { offset: number; line: number; column: number };
+    end: { offset: number; line: number; column: number };
+  };
 }
 
 export { parse, SyntaxError };

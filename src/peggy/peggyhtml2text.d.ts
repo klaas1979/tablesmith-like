@@ -1,7 +1,4 @@
-declare function parse(
-  expression: string,
-  options: { table: string; group: string; modType: string; modNumber: number },
-): void;
+declare function parse(html: string): Array<string>;
 declare interface SyntaxError {
   location: {
     start: { offset: number; line: number; column: number };

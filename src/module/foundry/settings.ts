@@ -1,10 +1,8 @@
-// Helper to access Types see: https://github.com/League-of-Foundry-Developers/foundry-vtt-types/wiki/FAQ
-export function getGame(): Game {
-  if (!(game instanceof Game)) {
-    throw new Error('game is not initialized yet!');
-  }
-  return game;
-}
+import { getGame } from './helper';
+
+/**
+ * All settings to register for module.
+ */
 export function registerSettings(): void {
   getGame().settings.register('foundryvtt-tablesmith', 'currentChaos', {
     name: 'Tablesmith Journal',

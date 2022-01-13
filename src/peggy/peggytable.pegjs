@@ -40,7 +40,7 @@ function toInt(text) {
 
 /* A Tablesmith file as starting point, it is called Table */
 Table
-  = (Ignore TableContent)+
+  = (Ignore / TableContent)+
 
 /** Content allowed in Table in general are variables or groups */
 TableContent
@@ -69,6 +69,7 @@ GroupContent
   = RangeValue Expression+ EmptyLine?
   / BeforeValue Expression+ EmptyLine?
   / AfterValue Expression+ EmptyLine?
+  / Ignore
 /* Only the range expression with the colon ',' */
 RangeValue
   = (int __ '-' __)? up:int __ [,] { errorHandling(() => {
@@ -493,7 +494,7 @@ __ 'Whitspace'
 
 /* Stuff to ignore within a Table file. */
 Ignore
-  = EmptyLine* Comment* EmptyLine*
+  = (EmptyLine / Comment)+
 
 EmptyLine
  = _ [\n]

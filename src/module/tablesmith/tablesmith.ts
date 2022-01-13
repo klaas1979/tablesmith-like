@@ -6,6 +6,7 @@ import TSGroup from './tsgroup';
 import { tstables } from './tstables';
 import { tableparser } from './parser/tableparser';
 import { callparser } from './parser/callparser';
+import { html2text } from './parser/html2text';
 
 /**
  * The Tablesmith class to setup the Tablesmith environment, contains all parsed tables and provides needed functionality
@@ -69,10 +70,12 @@ class Tablesmith {
    * Parses table and stores it with given filename as Tablename.
    * @param filename name of file, used as Table name for evaluation.
    * @param fileContent file as a single string to be parsed.
+   * @param contentType one of 'plain' default for plain text or 'html' for html text.
    */
-  addTable(filename: string, fileContent: string): TSTable {
+  addTable(filename: string, fileContent: string, contentType: 'plain' | 'html' = 'plain'): TSTable {
     const tstable = new TSTable(_stripPathAndExtensions(filename));
-    tableparser.parse(fileContent, this._parseOptions(tstable));
+    const content = _convertContentType(fileContent, contentType);
+    tableparser.parse(content, this._parseOptions(tstable));
     tstables.addTable(tstable);
     return tstable;
   }
@@ -103,7 +106,21 @@ function _setDefaultGroup(options: { group: string }): void {
   if (!options.group || options.group.length == 0) options.group = 'Start';
 }
 
-export default Tablesmith;
 function _stripPathAndExtensions(filename: string): string {
   return filename.trim().replace('.tab', '');
 }
+
+/**
+ * Converts content to plain text for Tablesmith parsing.
+ * @param content to convert to plain text.
+ * @param type of input content needed to select converter.
+ */
+function _convertContentType(content: string, type: 'plain' | 'html'): string {
+  let converted = content;
+  if (type == 'html') {
+    converted = html2text.convert(content);
+  }
+  return converted;
+}
+
+export default Tablesmith;
