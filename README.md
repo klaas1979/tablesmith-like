@@ -1,4 +1,4 @@
-# foundryvtt-tablesmith
+# tablesmith-like
 
 Use Tablesmith-like tables in FoundryVTT and create complex nested tables.
 

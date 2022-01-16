@@ -1,6 +1,6 @@
 import TSTextExpression from '../expressions/tstextexpression';
 import GroupCallModifierTerm from '../expressions/terms/groupcallmodifierterm';
-import TSTable from '../tstable';
+import { TableParameter, TSTable } from '../tstable';
 import TSTableGroupBuilder from './tstablegroupbuilder';
 import MathTermExpressionBuilder from './mathtermexpressionbuilder';
 
@@ -25,6 +25,16 @@ class TSParserFactory {
    */
   declareVariable(variablename: string, value: string | undefined) {
     this.table.declareVariable(variablename, value);
+  }
+
+  /**
+   * Declares a variale in the currently parsed table with optional default value.
+   * @param variablename to add to the table.
+   * @param value default value to initialize the variable with.
+   */
+  declareParameter(variablename: string, defaultValue: string, prompt: string, multiList: boolean, options: string[]) {
+    const param = new TableParameter(variablename, defaultValue, prompt, multiList, options);
+    this.table.declareParameter(param);
   }
 
   /**

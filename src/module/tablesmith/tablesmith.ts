@@ -1,4 +1,4 @@
-import TSTable from './tstable';
+import { TSTable } from './tstable';
 import TSParserFactory from './parser/tsparserfactory';
 import { evalcontext } from './expressions/evaluationcontextinstance';
 import GroupCallModifierTerm from './expressions/terms/groupcallmodifierterm';

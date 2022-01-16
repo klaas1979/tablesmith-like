@@ -12,12 +12,13 @@
 // Import TypeScript modules
 import { registerSettings } from './foundry/settings';
 import { preloadTemplates } from './foundry/preloadTemplates';
-import JournalTables from './foundry/journaltables';
-import { tablesmith } from './tablesmith/tablesmithinstance';
+import { getGame, TABLESMITH_ID } from './foundry/helper';
+import { Logger, DevModeApi, LOG_LEVEL } from './foundry/logger';
+import TablesmithApi from './foundry/tablesmithapi';
 
 // Initialize module
 Hooks.once('init', async () => {
-  console.log('foundryvtt-tablesmith | Initializing foundryvtt-tablesmith');
+  Logger.info(true, 'Initializing tablesmith-like');
 
   // Assign custom classes and constants here
 
@@ -30,6 +31,9 @@ Hooks.once('init', async () => {
   // Register custom sheets (if any)
 });
 
+interface TablesmithModuleData {
+  api: TablesmithApi;
+}
 // Setup module
 Hooks.once('setup', async () => {
   // Do anything after initialization but before
@@ -39,7 +43,11 @@ Hooks.once('setup', async () => {
 // When ready
 Hooks.once('ready', async () => {
   // Do anything once the module is ready
-  JournalTables.loadTablesFromJournal(tablesmith);
+  const tablesmithModuleData = getGame().modules.get(TABLESMITH_ID) as unknown as TablesmithModuleData;
+  tablesmithModuleData.api = new TablesmithApi();
 });
 
 // Add any additional hooks if necessary
+Hooks.once('devModeReady', ({ registerPackageDebugFlag }: DevModeApi): void => {
+  registerPackageDebugFlag(TABLESMITH_ID, 'level', { default: LOG_LEVEL.INFO });
+});

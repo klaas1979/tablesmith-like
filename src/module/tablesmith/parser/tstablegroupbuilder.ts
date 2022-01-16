@@ -21,7 +21,7 @@ import TSMathPowerExpression from '../expressions/tstmathpowerexpression';
 import TSMathModExpression from '../expressions/tstmathmodexpression';
 import TSMathSqrtExpression from '../expressions/tstmathsqrtexpression';
 import TSIsNumberExpression from '../expressions/tsisnumberexpression';
-import TSTable from '../tstable';
+import { TSTable } from '../tstable';
 import TSGroupLockExpression from '../expressions/tsgrouplockexpression';
 import TSGroupCountExpression from '../expressions/tsgroupcountexpression';
 import TSGroupResetExpression from '../expressions/tsgroupresetexpression';

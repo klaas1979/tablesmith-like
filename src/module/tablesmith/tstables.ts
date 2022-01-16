@@ -1,4 +1,5 @@
-import type TSTable from './tstable';
+import { TSTable } from './tstable';
+
 /**
  * The collection of all loaded tables that is used to retrieve instances or load them.
  */
@@ -19,6 +20,7 @@ class TSTables {
    */
   addTable(table: TSTable): void {
     this.tables.push(table);
+    this.tables.sort((a, b) => a.name.localeCompare(b.name));
   }
 
   /**

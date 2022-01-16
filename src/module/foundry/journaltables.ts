@@ -1,5 +1,6 @@
 import Tablesmith from '../tablesmith/tablesmith';
 import { getJournal } from './helper';
+import { Logger } from './logger';
 
 const tablesmithExtension = 'tab';
 class JournalTables {
@@ -7,12 +8,10 @@ class JournalTables {
   static async loadTablesFromJournal(tablesmith: Tablesmith) {
     getJournal().contents.forEach((entry) => {
       if (JournalTables.isTablesmithTable(entry.name)) {
-        console.log(`Found Tablesmith table ${entry.name}`);
-        console.log(`Content\n${entry.data.content}`);
+        Logger.info(false, `Found Tablesmith table '${entry.name}'`);
         const tablename = JournalTables.tableBasename(entry.name);
         tablesmith.addTable(tablename, entry.data.content, 'html');
-        console.log(`Added table ${tablename}`);
-        console.log(tablesmith.evaluate(`[${tablename}]`));
+        Logger.debug(false, tablesmith.evaluate(`[${tablename}]`));
       }
     });
   }

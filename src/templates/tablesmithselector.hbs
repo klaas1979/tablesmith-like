@@ -1,0 +1,8 @@
+<form>
+  <label for="tablename">{{localize "TABLESMITH.table"}}:</label>
+  <select name="tablename" id="tablename">
+      {{selectOptions tables selected=selected nameAttr="name" labelAttr="name"}}
+  </select>
+  <button type="button" data-action="evaluate"><i class="fas fa-plus"></i> {{localize "TABLESMITH.evaluate-table"}}</button>
+  <p>{{{result}}}</p>
+</form>

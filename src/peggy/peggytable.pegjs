@@ -45,11 +45,17 @@ Table
 /** Content allowed in Table in general are variables or groups */
 TableContent
   = VariableDeclaration
+  / ParameterDeclaration
   / Group
 
 VariableDeclaration
   = '%' name:Name '%,' value:PlainText? { errorHandling(() => {
             options?.pf.declareVariable(name, value);
+          }); }
+
+ParameterDeclaration
+  = '@' multi:(@'*')? name:Name ',' _ defVal:ParamOption ',' _ prompt:ParamOption tail:(_ ',' _ @ParamOption)* { errorHandling(() => {
+            options?.pf.declareParameter(name, defVal, prompt, multi == '*', tail);
           }); }
 
 /* A group is a subtable, all Tablesmith stuff starting with :Name to be called and rolled */
@@ -412,6 +418,10 @@ StartLine
   = '{' _ name:'Line' '~' { errorHandling(() => { 
             options?.pf.startFunction(name);
           }); }
+
+ /** Text that is allowed within an selections where a comma ',' happens. */
+ParamOption
+ = $[^,\n]+
 
 /* The simplest Expression is a test value that is returned as is, without further processing. */
 Value

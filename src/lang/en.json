@@ -1,1 +1,7 @@
-{}
+{
+  "TABLESMITH": {
+    "evaluation-form": "Tablesmith - eval",
+    "evaluate-table": "Evaluate",
+    "table": "Table"
+  }
+}

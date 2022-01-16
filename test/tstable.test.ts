@@ -1,5 +1,5 @@
 import { evalcontext } from '../src/module/tablesmith/expressions/evaluationcontextinstance';
-import TSTable from '../src/module/tablesmith/tstable';
+import { TSTable } from '../src/module/tablesmith/tstable';
 
 let tstable: TSTable;
 describe('TSTable', () => {
