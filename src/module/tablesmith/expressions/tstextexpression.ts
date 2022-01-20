@@ -9,12 +9,15 @@ class TSTextExpression implements TSExpression {
   constructor(text: string) {
     this.text = text;
   }
+
   evaluate(): string {
     return this.text;
   }
+
   getExpression(): string {
-    return this.text;
+    return this.text.replace('%', '/%').replace('[', '/[').replace(']', '/]');
   }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setGroup(group: TSGroup): void {
     // empty

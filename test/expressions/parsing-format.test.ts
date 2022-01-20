@@ -11,6 +11,12 @@ describe('Special chars escaping', () => {
     filename = 'simpletable';
   });
 
+  it('escaped chars result in correct expression', () => {
+    simpleTable = ':Start\n1,/%/[/]/\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('/%/[/]/');
+  });
+
   it('/% results in %', () => {
     simpleTable = ':Start\n1,/%/%\n';
     tablesmith.addTable(filename, simpleTable);
