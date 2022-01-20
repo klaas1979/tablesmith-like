@@ -49,7 +49,7 @@ TableContent
   / Group
 
 VariableDeclaration
-  = '%' name:Name '%,' value:PlainText? { errorHandling(() => {
+  = !'/' '%' name:Name '%,' value:PlainText? { errorHandling(() => {
             options?.pf.declareVariable(name, value);
           }); }
 
@@ -98,7 +98,7 @@ VariableGet
             options?.pf.createVariable();
           }); }
 StartVariableGet
-  = '%' { errorHandling(() => {
+  = !'/' '%' { errorHandling(() => {
             options?.pf.startVariable('get');
           }); }
 
@@ -120,11 +120,11 @@ VariableSetType
 
 /* Call of another group within this Table or within another. Table */
 GroupCall
-  = StartGroupCall _ VariableIdentifier _ Modifier? _ ']' { errorHandling(() => {
+  = StartGroupCall _ VariableIdentifier _ Modifier? _ !'/' ']' { errorHandling(() => {
             options?.pf.createGroupCall();
           }); }
 StartGroupCall
-  = '[' { errorHandling(() => {
+  = !'/' '[' { errorHandling(() => {
             options?.pf.startGroupCall();
           }); }
 Modifier
@@ -410,7 +410,7 @@ MathFactor
   / number:int { errorHandling(() => {
             options?.pf.mathBuilder.addNumber(toInt(number));
           }); }
-  / '%' tablename:(@Name '.')? varname:Name '%'{ errorHandling(() => {
+  / !'/' '%' tablename:(@Name '.')? varname:Name '%'{ errorHandling(() => {
             options?.pf.mathBuilder.addVariableGet(tablename, varname);
           }); }
 
@@ -430,7 +430,7 @@ Value
           }); }
 /** Matches all text that is printed verbose, without special chars that are key chars for the DSL. */
 PlainText
- = $[^{}[\]%|\n]+
+ = text:(@[^{}[\]%|/\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ { return text.join(''); }
 
 ValueIfPart
   = text:PlainTextIfPart { errorHandling(() => {
@@ -438,7 +438,7 @@ ValueIfPart
           }); }
 
 PlainTextIfPart
- = $[^!=<>,?/{}[\]%|\n]+
+ = text:(@[^!=<>,?/{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ { return text.join(''); }
 
 ValueVariableIdentifier
   = text:PlainTextSetExpression { errorHandling(() => {
@@ -446,7 +446,7 @@ ValueVariableIdentifier
           }); }
 
 PlainTextSetExpression
- = $[^-+\\*&!=<>,?/{}[\]%|\n]+
+ = text:([^-+\\*&!=<>,?/{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']')+ { return text.join(''); }
 
 ValueIfSlash
   = text:PlainTextIfSlash { errorHandling(() => {
@@ -455,7 +455,7 @@ ValueIfSlash
 
 /** Text that is allowed within an If with slash "/" {If~}. */
 PlainTextIfSlash
- = $[^/{}[\]%|\n]+
+ = text:([^/{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']')+ { return text.join(''); }
 
 ValueIfColon
   = text:PlainTextIfColon { errorHandling(() => {
@@ -464,7 +464,7 @@ ValueIfColon
 
 /** Text that is allowed within an If with colon ":" {IIf~}. */
  PlainTextIfColon
- = $[^:{}[\]%|\n]+
+ = text:([^:{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ { return text.join(''); }
 
 ValueNoComma
   = text:PlainTextNoComma { errorHandling(() => {
@@ -473,7 +473,7 @@ ValueNoComma
 
  /** Text that is allowed within an selections where a comma ',' happens. */
  PlainTextNoComma
- = $[^,{}[\]%|\n]+
+ = text:([^,{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ { return text.join(''); }
 
 ValueNoCommaNorPower
   = text:PlainTextNoCommaNorPower { errorHandling(() => {
@@ -482,7 +482,7 @@ ValueNoCommaNorPower
 
 /** Text that is allowed within an selections where a comma ',' or power '^' happens. */
 PlainTextNoCommaNorPower
- = $[^^,{}[\]%|\n]+
+ = text:([^^,{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ { return text.join(''); }
 
 /* Simple name without Dot or special characters. */
 VariableName

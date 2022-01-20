@@ -5,6 +5,42 @@ import { tstables } from '../../src/module/tablesmith/tstables';
 let filename: string;
 let simpleTable: string;
 
+describe('Special chars escaping', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('/% results in %', () => {
+    simpleTable = ':Start\n1,/%/%\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('%%');
+  });
+
+  it('/[ results in [', () => {
+    simpleTable = ':Start\n1,/[/[\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('[[');
+  });
+
+  it('/] results in ]', () => {
+    simpleTable = ':Start\n1,/]/]\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe(']]');
+  });
+  it('/ without char to escape results in /', () => {
+    simpleTable = ':Start\n1,/%/\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('%/');
+  });
+
+  it('/ without char can be chained', () => {
+    simpleTable = ':Start\n1,/%/// other\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('%/// other');
+  });
+});
+
 describe('Parsing {Bold~', () => {
   beforeEach(() => {
     tablesmith.reset();
