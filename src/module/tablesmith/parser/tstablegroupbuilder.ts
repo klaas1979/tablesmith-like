@@ -36,6 +36,7 @@ import TSLineExpression from '../expressions/tslineexpression';
 import TSNewlineExpression from '../expressions/tsnewlineexpression';
 import TSGroupCallExpression from '../expressions/tsgroupcallexpression';
 import GroupCallModifierTerm from '../expressions/terms/groupcallmodifierterm';
+import TSParamExpression from '../expressions/tsparamexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -180,33 +181,6 @@ class TSTableGroupBuilder {
       case 'Abs':
         result = new TSMathAbsExpression(stacked.popExpressions());
         break;
-      case 'Ceil':
-        result = new TSMathCeilExpression(stacked.popExpressions());
-        break;
-      case 'Floor':
-        result = new TSMathFloorExpression(stacked.popExpressions());
-        break;
-      case 'Trunc':
-        result = new TSMathTruncExpression(stacked.popExpressions());
-        break;
-      case 'Sqrt':
-        result = new TSMathSqrtExpression(stacked.popExpressions());
-        break;
-      case 'Round':
-        result = this.createMathRound(stacked);
-        break;
-      case 'Min':
-        result = this.createMathMinMax(stacked);
-        break;
-      case 'Max':
-        result = this.createMathMinMax(stacked);
-        break;
-      case 'Mod':
-        result = this.createMathMod(stacked);
-        break;
-      case 'Power':
-        result = this.createMathPower(stacked);
-        break;
       case 'And':
         result = this.createLogicalExpression(stacked);
         break;
@@ -216,9 +190,15 @@ class TSTableGroupBuilder {
       case 'Count':
         result = this.createCountExpression(stacked);
         break;
+      case 'Ceil':
+        result = new TSMathCeilExpression(stacked.popExpressions());
+        break;
       case 'CR':
         stacked.popExpressions();
         result = new TSNewlineExpression();
+        break;
+      case 'Floor':
+        result = new TSMathFloorExpression(stacked.popExpressions());
         break;
       case 'IsNumber':
         result = this.createIsNumberExpression(stacked);
@@ -241,11 +221,20 @@ class TSTableGroupBuilder {
       case 'Loop':
         result = this.createLoopExpression(stacked);
         break;
+      case 'Min':
+        result = this.createMathMinMax(stacked);
+        break;
       case 'MinVal':
         result = this.createGroupRangeValueExpression(stacked);
         break;
+      case 'Max':
+        result = this.createMathMinMax(stacked);
+        break;
       case 'MaxVal':
         result = this.createGroupRangeValueExpression(stacked);
+        break;
+      case 'Mod':
+        result = this.createMathMod(stacked);
         break;
       case 'Or':
         result = this.createLogicalExpression(stacked);
@@ -253,8 +242,23 @@ class TSTableGroupBuilder {
       case 'Reset':
         result = this.createResetExpression(stacked);
         break;
+      case 'Param':
+        result = this.createParamExpression(stacked);
+        break;
+      case 'Power':
+        result = this.createMathPower(stacked);
+        break;
+      case 'Round':
+        result = this.createMathRound(stacked);
+        break;
+      case 'Trunc':
+        result = new TSMathTruncExpression(stacked.popExpressions());
+        break;
       case 'Select':
         result = this.createSelectExpression(stacked);
+        break;
+      case 'Sqrt':
+        result = new TSMathSqrtExpression(stacked.popExpressions());
         break;
       case 'Unlock':
         result = this.createGroupLockExpression(stacked);
@@ -381,6 +385,12 @@ class TSTableGroupBuilder {
     const power = data.popExpressions();
     const param = data.popExpressions();
     return new TSMathPowerExpression(param, power);
+  }
+
+  private createParamExpression(data: StackItem): TSParamExpression {
+    const index = data.popExpressions();
+    const variable = data.popExpressions();
+    return new TSParamExpression(variable, index, this.tsTable.parameters);
   }
 
   private createResetExpression(data: StackItem): TSGroupResetExpression {

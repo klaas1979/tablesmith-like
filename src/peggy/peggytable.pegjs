@@ -163,7 +163,7 @@ TsFunction
   / FunctionsOneParam _ Expression _ '}' { errorHandling(() => {
             options?.pf.createFunction();
           }); }
-  / _ StartLine _ ExpressionTextNoComma _ ParamSeparatorComma _ ExpressionTextNoComma _ '}' { errorHandling(() => {
+  / FunctionsTwoParams _ ExpressionTextNoComma _ ParamSeparatorComma _ ExpressionTextNoComma _ '}' { errorHandling(() => {
             options?.pf.createFunction();
           }); }
   / FunctionsManyParams _ ExpressionTextNoComma _ (GroupLockParameter)+ '}' { errorHandling(() => {
@@ -296,6 +296,11 @@ FunctionsOneParam
             options?.pf.startFunction(name);
           }); }
 
+FunctionsTwoParams
+  = '{' _ name:(@'Line' / @'Param') '~' { errorHandling(() => {
+            options?.pf.startFunction(name);
+          }); }
+
 FunctionsManyParams
   = '{' _ name:(@'Unlock' / @'Lockout' / @'MaxVal' / @'MinVal') '~' { errorHandling(() => {
             options?.pf.startFunction(name);
@@ -412,11 +417,6 @@ MathFactor
 OpenBracket
   = '(' { errorHandling(() => {
             options?.pf.mathBuilder.openBracket();
-          }); }
-
-StartLine
-  = '{' _ name:'Line' '~' { errorHandling(() => { 
-            options?.pf.startFunction(name);
           }); }
 
  /** Text that is allowed within an selections where a comma ',' happens. */

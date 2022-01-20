@@ -116,3 +116,42 @@ describe('Parsing MultiList', () => {
     }).toThrowError();
   });
 });
+
+describe('Parsing {Param~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('existing values', () => {
+    simpleTable =
+      '%var%,\n@var,1,Prompt,O1,O2,O3,O4\n:Start\n1,{Param~var,1},{Param~var,2},{Param~var,3},{Param~var,4}\n';
+    tablesmith.addTable(filename, simpleTable);
+    const result = tablesmith.evaluate(`[${filename}]`);
+    expect(result).toBe('O1,O2,O3,O4');
+  });
+
+  it('non existing param throws', () => {
+    simpleTable = '%var%,\n@var,1,Prompt,O1,O2,O3,O4\n:Start\n1,{Param~nonExisting,1}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(() => {
+      tablesmith.evaluate(`[${filename}]`);
+    }).toThrow();
+  });
+
+  it('index = 0 throws, must be 1 or greater', () => {
+    simpleTable = '%var%,\n@var,1,Prompt,O1,O2,O3,O4\n:Start\n1,{Param~var,0}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(() => {
+      tablesmith.evaluate(`[${filename}]`);
+    }).toThrow();
+  });
+
+  it('index = 5 throws max is 4', () => {
+    simpleTable = '%var%,\n@var,1,Prompt,O1,O2,O3,O4\n:Start\n1,{Param~var,5}\n';
+    tablesmith.addTable(filename, simpleTable);
+    expect(() => {
+      tablesmith.evaluate(`[${filename}]`);
+    }).toThrow();
+  });
+});
