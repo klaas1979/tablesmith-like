@@ -14,22 +14,107 @@ export class TableParameter {
   type: TableParameterType;
   prompt: string;
   defaultValue: string;
+  selectedMultiList: string[] = [];
+  options: { index: number; value: string }[];
   constructor(variable: string, defaultValue: string, prompt: string, multiList: boolean, options: string[]) {
     this.variable = variable;
+    this.prompt = prompt;
+    this.defaultValue = defaultValue;
+    this.options = options.map((option, index) => {
+      return { index: index + 1, value: option };
+    });
     if (options.length == 0) {
       this.type = TableParameterType.PROMPT;
     } else if (multiList) {
       this.type = TableParameterType.MULTI_LIST;
+      this._initSelectedMultiList();
+      this.validateMultiListValue();
     } else {
       this.type = TableParameterType.LIST;
+      this.validateListValue();
     }
-    if (this.type != TableParameterType.PROMPT) {
-      const defaultNumber = Number.parseInt(defaultValue);
-      if (Number.isNaN(defaultNumber) || defaultNumber < 1 || defaultNumber > options.length)
-        throw `Default value '${defaultValue}' must be integer for (multi-)list Parameter between 1 and ${options.length}`;
+  }
+  private validateListValue(): void {
+    const defaultNumber = Number.parseInt(this.defaultValue);
+    if (Number.isNaN(defaultNumber) || defaultNumber < 1 || defaultNumber > this.options.length)
+      throw `Default value '${this.defaultValue}' must be integer for list Parameter between 1 and ${this.options.length}`;
+  }
+  private validateMultiListValue() {
+    if (this.defaultValue.length != this.options.length)
+      throw `Default value '${this.defaultValue}' for multi-list Parameter must be binary of length '${this.options.length}'`;
+    for (let i = 0; i < this.defaultValue.length; i++) {
+      const num = Number.parseInt(this.defaultValue[i]);
+      if (Number.isNaN(num) || num < 0 || num > 1)
+        throw `Default value '${this.defaultValue}' for multi-list Parameter must be binary of length '${this.options.length}'`;
     }
-    this.defaultValue = defaultValue;
-    this.prompt = prompt;
+  }
+
+  /**
+   * Sets default value for this parameter, checking validity.
+   * @param value to set to.
+   */
+  setDefaultValue(value: string | string[]) {
+    switch (this.type) {
+      case TableParameterType.PROMPT:
+        if (typeof value != 'string') throw `Type must be string, not a '${typeof value}' cannot set value!`;
+        this.defaultValue = value;
+        break;
+      case TableParameterType.LIST:
+        if (typeof value != 'string') throw `Type must be string, not a '${typeof value}' cannot set value!`;
+        this.defaultValue = value;
+        this.validateListValue();
+        break;
+      case TableParameterType.MULTI_LIST:
+        if (typeof value == 'string') throw `Type must be string[], not a '${typeof value}' cannot set value!`;
+        let result = '';
+        for (let i = 0; i < this.options.length; i++) {
+          const isSelected = value.find((selected) => {
+            return selected == `${i + 1}`;
+          });
+          result += isSelected ? '1' : '0';
+        }
+        this.defaultValue = result;
+        this.selectedMultiList = value;
+        this.validateMultiListValue();
+        break;
+      default:
+        throw `Setting value for Type '${this.type}' not implemented!`;
+    }
+  }
+
+  /**
+   * Inits array of selected options in Multi List parameter from defaultValue.
+   */
+  _initSelectedMultiList(): void {
+    const result: string[] = [];
+    for (let i = 0; i < this.defaultValue.length; i++) {
+      if (this.defaultValue[i] == '1') result.push(`${i + 1}`);
+    }
+    this.selectedMultiList = result;
+  }
+
+  /**
+   * Checks for type.
+   * @returns true if is Prompt, false otherwise.
+   */
+  isPrompt(): boolean {
+    return this.type == TableParameterType.PROMPT;
+  }
+
+  /**
+   * Checks for type.
+   * @returns true if is List, false otherwise.
+   */
+  isList(): boolean {
+    return this.type == TableParameterType.LIST;
+  }
+
+  /**
+   * Checks for type.
+   * @returns true if is Multi-List, false otherwise.
+   */
+  isMultiList(): boolean {
+    return this.type == TableParameterType.MULTI_LIST;
   }
 }
 
@@ -104,6 +189,16 @@ export class TSTable {
    */
   getParameters(): TableParameter[] {
     return this.parameters;
+  }
+
+  /**
+   * Sets parameters to given values for evaluation.
+   * @param params to set for evaluation.
+   */
+  setParametersForEvaluation(params: { name: string; value: string | undefined }[]): void {
+    params.forEach((param) => {
+      this.setVariableInEvalContext(param.name, param.value);
+    });
   }
 
   /**

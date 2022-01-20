@@ -29,14 +29,15 @@ class Tablesmith {
    * added modifier in the form "=int", "+int" or "-int".
    * @returns result from Table as text.
    */
-  evaluate(expression: string): string {
+  evaluate(expression: string, parameters: { name: string; value: string | undefined }[] = []): string {
     const options = { table: '', group: '', modType: 'unmodified', modNumber: 0 };
-    const group = this.parseEvaluateExpression(expression, options);
-    if (!group)
+    const tableAndGroup = this.parseEvaluateExpression(expression, options);
+    if (!tableAndGroup.group)
       throw `TSTable for name='${options.table}' does not contain Group='${options.group}'! Expression was '${expression}'`;
     const modifier = GroupCallModifierTerm.create(options.modType, options.modNumber);
     this.resetEvaluationContext();
-    const result = group.roll(modifier);
+    tableAndGroup.table?.setParametersForEvaluation(parameters);
+    const result = tableAndGroup.group.roll(modifier);
     evalcontext.popCurrentCallTablename();
     return result;
   }
@@ -50,14 +51,14 @@ class Tablesmith {
   private parseEvaluateExpression(
     expression: string,
     options: { table: string; group: string; modType: string; modNumber: number },
-  ): TSGroup | undefined {
+  ): { table: TSTable | undefined; group: TSGroup | undefined } {
     callparser.parse(expression, options);
     const evaluateTable = this.tableForName(options.table);
     if (!evaluateTable) throw `TSTable for name='${options.table}' not defined! Expression was '${expression}'`;
     evalcontext.pushCurrentCallTablename(options.table);
     _setDefaultGroup(options);
     const group = evaluateTable.groupForName(options.group);
-    return group;
+    return { table: evaluateTable, group: group };
   }
 
   /**

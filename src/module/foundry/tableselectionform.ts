@@ -1,5 +1,5 @@
 import { tablesmith } from '../tablesmith/tablesmithinstance';
-import { TSTable } from '../tablesmith/tstable';
+import { TableParameter, TSTable } from '../tablesmith/tstable';
 import { tstables } from '../tablesmith/tstables';
 import { TABLESMITH_ID } from './helper';
 import { Logger } from './logger';
@@ -15,11 +15,12 @@ interface TableSelectionOptions extends FormApplication.Options {
  * Data class used within the Form.
  */
 class FormData {
-  selected: string;
+  selected: TSTable | undefined;
+  parameters: TableParameter[];
   tables: TSTable[];
   result: string;
   constructor() {
-    this.selected = '';
+    this.parameters = [];
     this.tables = [];
     this.result = '';
   }
@@ -54,20 +55,68 @@ class TableSelectionForm extends FormApplication<TableSelectionOptions, FormData
 
   async getData(): Promise<FormData> {
     data.tables = tstables.getTSTables();
+    if (!data.selected) {
+      this._selectTable(undefined);
+    }
+    // data.parameters <- to store parameter in, read from selected table and set to default on init then to selected
     return data;
   }
 
-  protected async _updateObject(event: Event, formData?: { tablename: string }) {
+  /**
+   * Selects given table and set parameters for form.
+   * @param table table or name to select, if undefined selects first table in list of tables.
+   */
+  protected _selectTable(table: TSTable | string | undefined): void {
+    table = !table ? data.tables[0] : table;
+    const tstable =
+      typeof table == 'string'
+        ? data.tables.find((tab) => {
+            return tab.name == table;
+          })
+        : table;
+    if (!tstable) throw `Cannot select table '${table}', not found in loaded tables`;
+
+    if (data.selected != tstable) {
+      data.selected = tstable;
+      data.parameters = tstable.parameters.map((param) => {
+        return Object.create(param);
+      });
+    }
+  }
+
+  protected async _updateObject(event: Event, formData?: Map<string, string>) {
     // foundry.utils.expandObject(formData); <- for later
     if (formData) {
-      data.selected = formData.tablename;
-      Logger.debug(false, 'data', data);
+      Logger.debug(false, 'formData', formData);
+      const keyValues = Object.entries(formData) as [string, string][];
+      this._selectTable(
+        keyValues.find(([key]) => {
+          return key == 'tablename';
+        })?.[1],
+      );
+      data.result = '';
+      this._updateParameters(keyValues);
+      Logger.debug(false, 'data updated', data);
     }
     this.render();
   }
 
+  _updateParameters(keyValues: [string, string][]): void {
+    keyValues.forEach(([key, value]) => {
+      const found = data.parameters.find((param) => {
+        return param.variable == key;
+      });
+
+      if (found) {
+        Logger.debug(false, 'setDefaultValue', found.variable, value);
+        found.setDefaultValue(value);
+      }
+    });
+  }
+
   activateListeners(html: JQuery): void {
     super.activateListeners(html);
+    Logger.debug(false, 'Listeners', this);
     html.on('click', '[data-action]', this._handleButtonClick.bind(this));
   }
 
@@ -76,11 +125,20 @@ class TableSelectionForm extends FormApplication<TableSelectionOptions, FormData
     const clickedElement = $(event.currentTarget);
     const action = clickedElement.data().action;
     if (action == 'evaluate') {
-      data.result = tablesmith.evaluate(`[${data.selected}]`);
-      this.render();
+      Logger.debug(false, 'Evaluating table');
+      if (data.selected) {
+        data.result = tablesmith.evaluate(`[${data.selected?.name}]`, this._mapParameter());
+        this.render();
+      } else Logger.warn(false, 'No table selected!');
     } else {
       Logger.error(true, 'Unknown action', action);
     }
+  }
+
+  _mapParameter() {
+    return data.parameters.map((param) => {
+      return { name: param.variable, value: param.defaultValue };
+    });
   }
 }
 
