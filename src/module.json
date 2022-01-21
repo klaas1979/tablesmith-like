@@ -10,7 +10,11 @@
   "esmodules": ["module/tablesmith-like.js"],
   "styles": ["styles/tablesmith-like.css"],
   "packs": [],
-  "dependencies": [],
+  "dependencies": [
+    {
+      "name": "lib-wrapper"
+    }
+  ],
   "languages": [
     {
       "lang": "en",

@@ -10,10 +10,22 @@ class JournalTables {
       if (JournalTables.isTablesmithTable(entry.name)) {
         Logger.info(false, `Found Tablesmith table '${entry.name}'`);
         const tablename = JournalTables.tableBasename(entry.name);
-        tablesmith.addTable(tablename, entry.data.content, 'html');
-        Logger.debug(false, tablesmith.evaluate(`[${tablename}]`));
+        JournalTables.addTableHandleErrors(tablesmith, tablename, entry.data.content);
       }
     });
+  }
+
+  /**
+   * Checks if journalName donates a Tablesmith table identified by extension in name '.tab'.
+   * @param journalName of Jounal entry to check if it is a Tablesmith entry.
+   */
+  static addTableHandleErrors(tablesmith: Tablesmith, tablename: string, content: string): void {
+    try {
+      tablesmith.addTable(tablename, content, 'html');
+      Logger.debug(false, tablesmith.evaluate(`[${tablename}]`));
+    } catch (error) {
+      Logger.warn(false, 'Error adding table', tablename, error);
+    }
   }
 
   /**
