@@ -123,6 +123,15 @@ describe('Tablesmith#evaluate Group calls', () => {
     const result = tablesmith.evaluate(`[${filename}]`);
     expect(result).toBe('One');
   });
+
+  it('call to other table with param', () => {
+    const otherTable = '%p2%,\n@p2,d,Prompt\n%p1%,\n@p1,d,Prompt\n:Start\n1,%p1%-%p2%';
+    tablesmith.addTable('other', otherTable);
+    simpleTable = ':Start\n1,[other.Start(2,1)]';
+    tablesmith.addTable(filename, simpleTable);
+    const result = tablesmith.evaluate(`[${filename}]`);
+    expect(result).toBe('1-2');
+  });
 });
 
 describe('Tablesmith#evaluate', () => {

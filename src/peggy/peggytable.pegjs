@@ -120,7 +120,7 @@ VariableSetType
 
 /* Call of another group within this Table or within another. Table */
 GroupCall
-  = StartGroupCall _ VariableIdentifier _ Modifier? _ !'/' ']' { errorHandling(() => {
+  = StartGroupCall _ VariableIdentifier _ Modifier? _ CallParameters? _ !'/' ']' { errorHandling(() => {
             options?.pf.createGroupCall();
           }); }
 StartGroupCall
@@ -134,7 +134,12 @@ Modifier
           }); }
 ModifierType
   = $[=+-]
-
+CallParameters
+  = StartCallParams _ ExpressionTextNoCommaNorCurlyBraces _ (ParamSeparatorComma _ ExpressionTextNoCommaNorCurlyBraces)* _ ')'
+StartCallParams
+  = '(' { errorHandling(() => {
+            options?.pf.stackParameter();
+          }); }
 
 /* This are all supported functions from Tablesmith */
 TsFunction
@@ -278,12 +283,17 @@ ExpressionTextNoComma
   / VariableGet ExpressionTextNoComma*
   / ValueNoComma ExpressionTextNoComma*
 
-/* Expressions where text is not matching "," that are allowed as value in a Select. */
 ExpressionTextNoCommaNorPower
   = GroupCall ExpressionTextNoCommaNorPower*
   / TsFunction ExpressionTextNoCommaNorPower*
   / VariableGet ExpressionTextNoCommaNorPower*
   / ValueNoCommaNorPower ExpressionTextNoCommaNorPower*
+
+ExpressionTextNoCommaNorCurlyBraces
+  = GroupCall ExpressionTextNoCommaNorCurlyBraces*
+  / TsFunction ExpressionTextNoCommaNorCurlyBraces*
+  / VariableGet ExpressionTextNoCommaNorCurlyBraces*
+  / ValueNoCommaNorCurlyBraces ExpressionTextNoCommaNorCurlyBraces*
 
 FunctionsZeroParams
   = '{' _ name:(@'CR' / @'LastRoll') '~' { errorHandling(() => {
@@ -440,12 +450,12 @@ PlainTextIfPart
  = text:(@[^!=<>,?/{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ { return text.join(''); }
 
 ValueVariableIdentifier
-  = text:PlainTextSetExpression { errorHandling(() => {
+  = text:PlainTextVariableExpression { errorHandling(() => {
             options?.pf.createText(text);
           }); }
 
-PlainTextSetExpression
- = text:([^-+\\*&!=<>,?/{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']')+ { return text.join(''); }
+PlainTextVariableExpression
+ = text:([^-+\\*&!=<>,?/(){}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']')+ { return text.join(''); }
 
 ValueIfSlash
   = text:PlainTextIfSlash { errorHandling(() => {
@@ -482,6 +492,15 @@ ValueNoCommaNorPower
 /** Text that is allowed within an selections where a comma ',' or power '^' happens. */
 PlainTextNoCommaNorPower
  = text:([^^,{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ { return text.join(''); }
+
+ ValueNoCommaNorCurlyBraces
+  = text:PlainTextNoCommaNorCurlyBraces { errorHandling(() => {
+            options?.pf.createText(text);
+          }); }
+
+/** Text that is allowed within an selections where a comma ',' or power '()' happens. */
+PlainTextNoCommaNorCurlyBraces
+ = text:([^,(){}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ { return text.join(''); }
 
 /* Simple name without Dot or special characters. */
 VariableName

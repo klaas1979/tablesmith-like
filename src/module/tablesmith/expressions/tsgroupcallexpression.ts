@@ -6,6 +6,7 @@ import GroupCallModifierTerm from './terms/groupcallmodifierterm';
 import InnerDiceTerm from './terms/innerdiceterm';
 import IntTerm from './terms/intterm';
 import TSExpression from './tsexpression';
+import TSExpressions from './tsexpressions';
 
 /**
  * Expression to evaluate / roll on a tables group. If modifier is "=" set fixed result to true and add
@@ -15,9 +16,15 @@ import TSExpression from './tsexpression';
 class TSGroupCallExpression implements TSExpression {
   tableAndGroupExpression: TSExpression;
   groupCallModifier: GroupCallModifierTerm;
-  constructor(tableAndGroupExpression: TSExpression, groupCallModifier: GroupCallModifierTerm | undefined) {
+  params: TSExpressions[];
+  constructor(
+    tableAndGroupExpression: TSExpression,
+    groupCallModifier: GroupCallModifierTerm | undefined,
+    params: TSExpressions[],
+  ) {
     this.tableAndGroupExpression = tableAndGroupExpression;
     this.groupCallModifier = groupCallModifier ? groupCallModifier : GroupCallModifierTerm.createUnmodified();
+    this.params = params;
   }
 
   evaluate(): string {
@@ -31,7 +38,13 @@ class TSGroupCallExpression implements TSExpression {
     const innerDiceTerm = new InnerDiceTerm(new IntTerm(1), new IntTerm(maxValue));
     const termResult = this.groupCallModifier.modify(innerDiceTerm).roll(evalcontext);
 
+    let evaledParams: string[] = [];
+    if (this.params && this.params.length > 0)
+      evaledParams = this.params.map((exp) => {
+        return exp.evaluate();
+      });
     evalcontext.pushCurrentCallTablename(tsTable.name);
+    tsTable.setParametersForEvaluationByIndex(evaledParams);
     const result = tsGroup.result(termResult.total);
     evalcontext.popCurrentCallTablename();
     return result;

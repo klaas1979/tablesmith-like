@@ -112,6 +112,8 @@ class TSTableGroupBuilder {
   private endGroupCall(): TSExpression {
     const stacked = this.stack.pop();
     if (stacked.type != STACK_TYPE.GROUP_CALL) throw `Cannot create group Call type on stack is '${stacked.type}'`;
+    const params = [];
+    while (stacked.stackSize() > 1) params.push(stacked.popExpressions());
     const tableAndGroup = stacked.popExpressions();
     let modifierTerm = GroupCallModifierTerm.createUnmodified();
     if (stacked.stringSize() == 2) {
@@ -121,7 +123,7 @@ class TSTableGroupBuilder {
       if (Number.isNaN(num)) throw `Could not create GroupCall modifier is not a number but '${modifier}'`;
       modifierTerm = GroupCallModifierTerm.create(operator, num);
     }
-    return new TSGroupCallExpression(tableAndGroup, modifierTerm);
+    return new TSGroupCallExpression(tableAndGroup, modifierTerm, params.reverse());
   }
 
   /**
