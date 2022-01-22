@@ -255,7 +255,6 @@ IfExpressionPart
 VariableIdentifier
   = GroupCall VariableIdentifier*
   / TsFunction VariableIdentifier*
-  / VariableGet VariableIdentifier*
   / ValueVariableIdentifier VariableIdentifier*
 
 /* Expressions that are allowed in true or false part after the "?" for a slash "/" If. */

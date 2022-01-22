@@ -122,6 +122,8 @@ export class TableParameter {
  * A single table or tablesmith file, tables can contain many groups to be rolled upon.
  */
 export class TSTable {
+  /** The table definition plain text. */
+  content = '';
   groups: TSGroup[];
   name: string;
   variables: { name: string; value: string | undefined }[];
@@ -132,6 +134,22 @@ export class TSTable {
     this.name = name;
     this.variables = [];
     this.parameters = [];
+  }
+
+  /**
+   * Gets content the table is defined by.
+   * @returns content plain text table is defined from.
+   */
+  getContent(): string {
+    return this.content;
+  }
+
+  /**
+   * Sets content the table is defined from.
+   * @param content to set.
+   */
+  setContent(content: string) {
+    this.content = content;
   }
 
   /**
@@ -195,10 +213,28 @@ export class TSTable {
    * Sets parameters to given values for evaluation.
    * @param params to set for evaluation.
    */
-  setParametersForEvaluation(params: { name: string; value: string | undefined }[]): void {
+  setParametersForEvaluationByName(params: { name: string; value: string | undefined }[]): void {
     params.forEach((param) => {
       this.setVariableInEvalContext(param.name, param.value);
     });
+  }
+
+  /**
+   * Sets parameters to given values for evaluation by index.
+   * @param params to set for evaluation.
+   */
+  setParametersForEvaluationByIndex(params: string[]): void {
+    if (params.length > 0) {
+      if (this.parameters.length != params.length)
+        throw `Cannot set parameters by index, length do not match, needed=${this.parameters.length} got length=${
+          params.length
+        } values='${params.join(',')}'`;
+      const clone = [...params].reverse();
+      this.parameters.forEach((parameter) => {
+        const value = clone.pop();
+        if (value) this.setVariableInEvalContext(parameter.variable, value);
+      });
+    }
   }
 
   /**

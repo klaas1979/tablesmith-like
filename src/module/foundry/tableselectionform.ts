@@ -124,17 +124,22 @@ class TableSelectionForm extends FormApplication<TableSelectionOptions, FormData
   async _handleButtonClick(event: { currentTarget: any }) {
     const clickedElement = $(event.currentTarget);
     const action = clickedElement.data().action;
-    if (action == 'evaluate') {
-      Logger.debug(false, 'Evaluating table');
-      if (data.selected) {
-        data.result = tablesmith.evaluate(`[${data.selected?.name}]`, this._mapParameter());
-        this.render();
-      } else Logger.warn(false, 'No table selected!');
-    } else {
-      Logger.error(true, 'Unknown action', action);
+    switch (action) {
+      case 'evaluate':
+        this._evaluateTable();
+        break;
+      default:
+        Logger.error(true, 'Unknown action', action);
     }
   }
 
+  _evaluateTable() {
+    Logger.debug(false, 'Evaluating table');
+    if (data.selected) {
+      data.result = tablesmith.evaluate(`[${data.selected.name}]`, this._mapParameter());
+      this.render();
+    } else Logger.warn(false, 'No table selected!');
+  }
   _mapParameter() {
     return data.parameters.map((param) => {
       return { name: param.variable, value: param.defaultValue };

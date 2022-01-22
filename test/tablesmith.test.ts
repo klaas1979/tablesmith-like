@@ -59,6 +59,44 @@ describe('Tablesmith#evaluate default values and modifiers', () => {
   });
 });
 
+describe('Tablesmith#evaluate with params', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('[tablename.Group(p1,p2)] order is valued', () => {
+    simpleTable = '%p2%,\n@p2,d,Prompt\n%p1%,\n@p1,d,Prompt\n:Start\n1,%p1%-%p2%';
+    tablesmith.addTable(filename, simpleTable);
+    const expression = `[${filename}.Start(p1,p2)]`;
+    const result = tablesmith.evaluate(expression);
+    expect(result).toBe('p2-p1');
+  });
+  it('[tablename.Group(,p2)] empty param is using default', () => {
+    simpleTable = '%p2%,default\n@p2,d,Prompt\n%p1%,default\n@p1,d,Prompt\n:Start\n1,%p1%-%p2%';
+    tablesmith.addTable(filename, simpleTable);
+    const expression = `[${filename}.Start(,p2)]`;
+    const result = tablesmith.evaluate(expression);
+    expect(result).toBe('p2-default');
+  });
+  it('to many params throws', () => {
+    simpleTable = '%p2%,\n@p2,d,Prompt\n%p1%,\n@p1,d,Prompt\n:Start\n1,%p1%-%p2%';
+    tablesmith.addTable(filename, simpleTable);
+    const expression = `[${filename}.Start(p1,p2,x)]`;
+    expect(() => {
+      tablesmith.evaluate(expression);
+    }).toThrow();
+  });
+  it('tmissing param throws', () => {
+    simpleTable = '%p2%,\n@p2,d,Prompt\n%p1%,\n@p1,d,Prompt\n:Start\n1,%p1%-%p2%';
+    tablesmith.addTable(filename, simpleTable);
+    const expression = `[${filename}.Start(p1)]`;
+    expect(() => {
+      tablesmith.evaluate(expression);
+    }).toThrow();
+  });
+});
+
 describe('Tablesmith#evaluate Group calls', () => {
   beforeEach(() => {
     tablesmith.reset();

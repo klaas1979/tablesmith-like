@@ -30,13 +30,14 @@ class Tablesmith {
    * @returns result from Table as text.
    */
   evaluate(expression: string, parameters: { name: string; value: string | undefined }[] = []): string {
-    const options = { table: '', group: '', modType: 'unmodified', modNumber: 0 };
+    const options = { table: '', group: '', modType: 'unmodified', modNumber: 0, params: [] };
     const tableAndGroup = this.parseEvaluateExpression(expression, options);
     if (!tableAndGroup.group)
       throw `TSTable for name='${options.table}' does not contain Group='${options.group}'! Expression was '${expression}'`;
     const modifier = GroupCallModifierTerm.create(options.modType, options.modNumber);
     this.resetEvaluationContext();
-    tableAndGroup.table?.setParametersForEvaluation(parameters);
+    if (options.params) tableAndGroup.table?.setParametersForEvaluationByIndex(options.params);
+    tableAndGroup.table?.setParametersForEvaluationByName(parameters);
     const result = tableAndGroup.group.roll(modifier);
     evalcontext.popCurrentCallTablename();
     return result;
@@ -50,7 +51,7 @@ class Tablesmith {
    */
   private parseEvaluateExpression(
     expression: string,
-    options: { table: string; group: string; modType: string; modNumber: number },
+    options: { table: string; group: string; modType: string; modNumber: number; params: string[] },
   ): { table: TSTable | undefined; group: TSGroup | undefined } {
     callparser.parse(expression, options);
     const evaluateTable = this.tableForName(options.table);
@@ -76,6 +77,7 @@ class Tablesmith {
   addTable(filename: string, fileContent: string, contentType: 'plain' | 'html' = 'plain'): TSTable {
     const tstable = new TSTable(_stripPathAndExtensions(filename));
     const content = _convertContentType(fileContent, contentType);
+    tstable.setContent(content);
     tableparser.parse(content, this._parseOptions(tstable));
     tstables.addTable(tstable);
     return tstable;

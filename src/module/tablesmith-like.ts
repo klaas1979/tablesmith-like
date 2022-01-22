@@ -10,7 +10,6 @@
  */
 
 // Import TypeScript modules
-import { libWrapper } from './foundry/shims/libwrappershim';
 import { registerSettings } from './foundry/settings';
 import { preloadTemplates } from './foundry/preloadTemplates';
 import { getGame, TABLESMITH_ID } from './foundry/helper';
@@ -46,15 +45,6 @@ Hooks.once('ready', async () => {
   // Do anything once the module is ready
   const tablesmithModuleData = getGame().modules.get(TABLESMITH_ID) as unknown as TablesmithModuleData;
   tablesmithModuleData.api = new TablesmithApi();
-  libWrapper.register(
-    TABLESMITH_ID,
-    'RollTable.prototype.draw',
-    function (wrapped, ...args) {
-      Logger.debug(false, 'wrapped call to draw');
-      return wrapped(...args);
-    },
-    'MIXED',
-  );
 });
 
 // Add any additional hooks if necessary

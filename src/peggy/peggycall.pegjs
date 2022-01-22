@@ -13,12 +13,16 @@ function toInt(text) {
 }}
 
 GroupFunction
-  = '[' _ table:Name group:('.' @Name)? _ Modifier? _ ']' {
+  = '[' _ table:Name group:('.' @Name)? _ Modifier? _ params:Params? _ ']' {
         if (options == undefined) throw 'Could not parse Call no options provided!';
         options.table = table;
         options.group = group;
+        options.params = params;
       }
-  
+
+Params
+  = '(' head:Name? tail:(_ "," _ @Name?)* ')' { return [head, ...tail]; }
+
 Modifier
   = modType:ModifierType _ modifier:int {
           if (options == undefined) throw 'Could not parse Call no options provided!';

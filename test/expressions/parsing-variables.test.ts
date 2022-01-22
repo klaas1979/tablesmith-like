@@ -33,6 +33,11 @@ describe('Parsing variables', () => {
     tablesmith.addTable(filename, simpleTable);
     expect(tablesmith.evaluate(`[${filename}]`)).toBe('value');
   });
+  it('declared variable can be chained', () => {
+    simpleTable = `%varname%,value\n:Start\n1,%varname%%varname%\n`;
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('valuevalue');
+  });
 
   it('declared variable can be referenced from {Dice~', () => {
     simpleTable = '%varname%,10\n:Start\n1,{Dice~1d1-%varname%}\n';
