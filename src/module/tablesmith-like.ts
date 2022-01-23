@@ -12,9 +12,10 @@
 // Import TypeScript modules
 import { registerSettings } from './foundry/settings';
 import { preloadTemplates } from './foundry/preloadTemplates';
-import { getGame, TABLESMITH_ID } from './foundry/helper';
+import { getTablesmithApi, setTablesmithApi, TABLESMITH_ID } from './foundry/helper';
 import { Logger, DevModeApi, LOG_LEVEL } from './foundry/logger';
 import TablesmithApi from './foundry/tablesmithapi';
+import { libWrapper } from './foundry/shims/libwrappershim';
 
 // Initialize module
 Hooks.once('init', async () => {
@@ -31,9 +32,6 @@ Hooks.once('init', async () => {
   // Register custom sheets (if any)
 });
 
-interface TablesmithModuleData {
-  api: TablesmithApi;
-}
 // Setup module
 Hooks.once('setup', async () => {
   // Do anything after initialization but before
@@ -43,9 +41,17 @@ Hooks.once('setup', async () => {
 // When ready
 Hooks.once('ready', async () => {
   // Do anything once the module is ready
-  const tablesmithModuleData = getGame().modules.get(TABLESMITH_ID) as unknown as TablesmithModuleData;
-  tablesmithModuleData.api = new TablesmithApi();
+  setTablesmithApi(new TablesmithApi());
+  //libWrapper.register(TABLESMITH_ID, 'RollTable.prototype.draw', drawWrapper, 'WRAPPER');
+  libWrapper.register(TABLESMITH_ID, 'TableResult.prototype.getChatText', tableResultChatTextWrapper, 'WRAPPER');
 });
+
+function tableResultChatTextWrapper(this: TableResult, wrapped: () => string): string {
+  const originalResult = wrapped();
+  const replacedResult = getTablesmithApi().replaceTablesmithCalls(originalResult);
+  Logger.debug(false, 'Original and replaced result', originalResult, replacedResult);
+  return replacedResult;
+}
 
 // Add any additional hooks if necessary
 Hooks.once('devModeReady', ({ registerPackageDebugFlag }: DevModeApi): void => {
