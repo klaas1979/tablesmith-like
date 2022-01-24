@@ -4,15 +4,16 @@ import PlusTerm from './plusterm';
 import Evalcontext from '../evaluationcontext';
 import Term from './term';
 import TermResult from './termresult';
+import { MODIFIERS } from '../../../foundry/tablecallvalues';
 
 /**
  * A modifier for a table group call, consists of the operation "+", "-" or "="(fixed) modifier and the term
  * that represents the modifier.
  */
 class GroupCallModifierTerm implements Term {
-  modifierType: string;
+  modifierType: MODIFIERS;
   modifierTerm: Term;
-  private constructor(modifierType: string, modifierTerm: Term) {
+  private constructor(modifierType: MODIFIERS, modifierTerm: Term) {
     this.modifierType = modifierType;
     this.modifierTerm = modifierTerm;
   }
@@ -22,7 +23,7 @@ class GroupCallModifierTerm implements Term {
    * @returns The expression this Group call modifier translates to.
    */
   getTerm(): string {
-    if (this.modifierType == 'unmodified') return '';
+    if (this.modifierType == MODIFIERS.none) return '';
     return `${this.modifierType}${this.modifierTerm.getTerm()}`;
   }
 
@@ -37,13 +38,13 @@ class GroupCallModifierTerm implements Term {
    * @returns Term that evaluates based on given rollTerm to correct result.
    */
   modify(rollTerm: Term): Term {
-    if (this.modifierType == 'unmodified') {
+    if (this.modifierType == MODIFIERS.none) {
       return rollTerm;
-    } else if (this.modifierType == '-') {
+    } else if (this.modifierType == MODIFIERS.minus) {
       return new MinusTerm(rollTerm, this.modifierTerm);
-    } else if (this.modifierType == '+') {
+    } else if (this.modifierType == MODIFIERS.plus) {
       return new PlusTerm(rollTerm, this.modifierTerm);
-    } else if (this.modifierType == '=') {
+    } else if (this.modifierType == MODIFIERS.equal) {
       return this.modifierTerm;
     }
     throw `Modfier Type '${this.modifierType}' unknown cannot create Term!`;
@@ -58,16 +59,16 @@ class GroupCallModifierTerm implements Term {
   static create(modifierType: string, modifier: number): GroupCallModifierTerm {
     let result;
     switch (modifierType) {
-      case 'unmodified':
+      case MODIFIERS.none:
         result = GroupCallModifierTerm.createUnmodified();
         break;
-      case '=':
+      case MODIFIERS.equal:
         result = GroupCallModifierTerm.createFixedValue(new IntTerm(modifier));
         break;
-      case '+':
+      case MODIFIERS.plus:
         result = GroupCallModifierTerm.createPlus(new IntTerm(modifier));
         break;
-      case '-':
+      case MODIFIERS.minus:
         result = GroupCallModifierTerm.createMinus(new IntTerm(modifier));
         break;
       default:
@@ -82,7 +83,7 @@ class GroupCallModifierTerm implements Term {
    * @returns Minus Groupcall modifier.
    */
   static createMinus(modifierTerm: Term): GroupCallModifierTerm {
-    return new GroupCallModifierTerm('-', modifierTerm);
+    return new GroupCallModifierTerm(MODIFIERS.minus, modifierTerm);
   }
 
   /**
@@ -91,7 +92,7 @@ class GroupCallModifierTerm implements Term {
    * @returns Plus Groupcall modifier.
    */
   static createPlus(modifierTerm: Term): GroupCallModifierTerm {
-    return new GroupCallModifierTerm('+', modifierTerm);
+    return new GroupCallModifierTerm(MODIFIERS.plus, modifierTerm);
   }
 
   /**
@@ -100,7 +101,7 @@ class GroupCallModifierTerm implements Term {
    * @returns Fixe Value Groupcall modifier.
    */
   static createFixedValue(fixedValueTerm: Term): GroupCallModifierTerm {
-    return new GroupCallModifierTerm('=', fixedValueTerm);
+    return new GroupCallModifierTerm(MODIFIERS.equal, fixedValueTerm);
   }
 
   /**
@@ -108,7 +109,7 @@ class GroupCallModifierTerm implements Term {
    * @returns Modifier to leave roll as is.
    */
   static createUnmodified(): GroupCallModifierTerm {
-    return new GroupCallModifierTerm('unmodified', new IntTerm(0));
+    return new GroupCallModifierTerm(MODIFIERS.none, new IntTerm(0));
   }
 }
 

@@ -1,0 +1,24 @@
+{{#each parameters}}
+  {{#if this.isPrompt}}
+    <div class="form-group">
+      <label for="{{this.variable}}">{{this.prompt}}</label>
+      <input type="text" data-dtype="String" name="{{this.variable}}" id="{{this.variable}}" value="{{this.defaultValue}}" />
+    </div>
+  {{/if}}
+  {{#if this.isList}}
+    <div class="form-group">
+      <label for="{{this.variable}}">{{this.prompt}}</label>
+      <select name="{{this.variable}}" id="{{this.variable}}">
+        {{selectOptions this.options selected=this.defaultValue nameAttr="index" labelAttr="value"}}
+      </select>
+    </div>
+  {{/if}}
+  {{#if this.isMultiList}}
+    <div class="form-group stacked">
+      <label for="{{this.variable}}">{{this.prompt}}</label>
+      <select name="{{this.variable}}" id="{{this.variable}}" multiple>
+        {{selectOptions this.options selected=this.selectedMultiList nameAttr="index" labelAttr="value"}}
+      </select>
+    </div>
+  {{/if}}
+{{/each}}

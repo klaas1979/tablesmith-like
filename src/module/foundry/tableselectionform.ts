@@ -3,7 +3,7 @@ import { TableParameter, TSTable } from '../tablesmith/tstable';
 import { tstables } from '../tablesmith/tstables';
 import { TABLESMITH_ID } from './helper';
 import { Logger } from './logger';
-import TableCallValues from './tablecallvalues';
+import { TableCallValues } from './tablecallvalues';
 
 const TABLESMITH_SELECTOR = `modules/${TABLESMITH_ID}/templates/tablesmithselector.hbs`;
 
@@ -41,6 +41,7 @@ class TableSelectionForm extends FormApplication<TableSelectionOptions, FormData
 
     const overrides = {
       height: 'auto',
+      width: '720',
       id: 'tablesmith-selector',
       template: TABLESMITH_SELECTOR,
       title: 'Tablesmith', // getGame().i18n.localize('TABLESMITH.evaluation-form') <- Game not initialized

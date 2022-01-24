@@ -1,8 +1,8 @@
 {
   "TABLESMITH": {
-    "evaluation-form": "Tablesmith - eval",
-    "add-table": "Add to Tables",
+    "evaluation-form": "Tablesmith - Evaluation",
     "evaluate-table": "Evaluate",
+    "result": "Result",
     "table": "Table"
   }
 }

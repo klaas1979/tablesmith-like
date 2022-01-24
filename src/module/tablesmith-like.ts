@@ -16,6 +16,7 @@ import { getTablesmithApi, setTablesmithApi, TABLESMITH_ID } from './foundry/hel
 import { Logger, DevModeApi, LOG_LEVEL } from './foundry/logger';
 import TablesmithApi from './foundry/tablesmithapi';
 import { libWrapper } from './foundry/shims/libwrappershim';
+import ParamInputForm, { FormData } from './foundry/paraminput';
 
 // Initialize module
 Hooks.once('init', async () => {
@@ -42,14 +43,45 @@ Hooks.once('setup', async () => {
 Hooks.once('ready', async () => {
   // Do anything once the module is ready
   setTablesmithApi(new TablesmithApi());
-  //libWrapper.register(TABLESMITH_ID, 'RollTable.prototype.draw', drawWrapper, 'WRAPPER');
+  // libWrapper.register(TABLESMITH_ID, 'RollTable.prototype.draw', drawWrapper, 'WRAPPER');
   libWrapper.register(TABLESMITH_ID, 'TableResult.prototype.getChatText', tableResultChatTextWrapper, 'WRAPPER');
 });
 
+// async function drawWrapper(
+//   this: RollTable,
+//   wrapped: (options: {
+//     roll: Roll;
+//     recursive: boolean;
+//     results: Array<TableResult>;
+//     displayChat: boolean;
+//     rollMode: string;
+//   }) => Promise<RollTableDraw>,
+//   options: {
+//     roll: Roll;
+//     recursive: boolean;
+//     results: Array<TableResult>;
+//     displayChat: boolean;
+//     rollMode: string;
+//   },
+// ) {
+//   const result = await wrapped(options);
+//   Logger.debug(false, 'RollTableDraw', result);
+//   return result;
+// }
+
 function tableResultChatTextWrapper(this: TableResult, wrapped: () => string): string {
   const originalResult = wrapped();
-  const replacedResult = getTablesmithApi().replaceTablesmithCalls(originalResult);
-  Logger.debug(false, 'Original and replaced result', originalResult, replacedResult);
+  let replacedResult = originalResult;
+  const tableCallValues = getTablesmithApi().parseEvaluateExpression(originalResult);
+  if (tableCallValues) {
+    if (tableCallValues.table && tableCallValues.needsParameters()) {
+      const form = new ParamInputForm(new FormData(tableCallValues.table));
+      // TODO wait for Discord if any ideas bubble to have the data retrieved here
+      form.render(true);
+    }
+    replacedResult = getTablesmithApi().evaluateTable(tableCallValues);
+    Logger.debug(false, 'Original and replaced result', originalResult, replacedResult);
+  }
   return replacedResult;
 }
 

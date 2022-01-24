@@ -1,26 +1,18 @@
-<form>
-  <label for="tablename">{{localize "TABLESMITH.table"}}:</label>
-  <select name="tablename" id="tablename">
-      {{selectOptions tables selected=selected.name nameAttr="name" labelAttr="name"}}
-  </select>
-  {{#each parameters}}
-    {{#if this.isPrompt}}
-      {{this.prompt}} <input type="text" data-dtype="String" name="{{this.variable}}" id="{{this.variable}}" value="{{this.defaultValue}}" />
-    {{/if}}
-    {{#if this.isList}}
-      {{this.prompt}}
-      <select name="{{this.variable}}" id="{{this.variable}}">
-        {{selectOptions this.options selected=this.defaultValue nameAttr="index" labelAttr="value"}}
+<form class="editable flexcol" autocomplete="off">
+  <section style="flex1">
+    <div class="form-group">
+      <label for="tablename">{{localize "TABLESMITH.table"}}:</label>
+      <select name="tablename" id="tablename">
+        {{selectOptions tables selected=selected.name nameAttr="name" labelAttr="name"}}
       </select>
+    </div>
+    {{> modules/tablesmith-like/templates/paramspartial.hbs}}
+    <button type="button" data-action="evaluate"><i class="flex0 fas fa-dice-d20"></i> {{localize "TABLESMITH.evaluate-table"}}</button>
+  </section>
+  <section style="flex0">
+    {{#if result}}
+      <h1>{{localize "TABLESMITH.result"}}</h1>
+      <div>{{{result}}}</div>
     {{/if}}
-    {{#if this.isMultiList}}
-      {{this.prompt}}
-      <select name="{{this.variable}}" id="{{this.variable}}" multiple>
-        {{selectOptions this.options selected=this.selectedMultiList nameAttr="index" labelAttr="value"}}
-      </select>
-    {{/if}}
-  {{/each}}
-  <button type="button" data-action="evaluate"><i class="fas fa-plus"></i> {{localize "TABLESMITH.evaluate-table"}}</button>
-  <button type="button" data-action="addtable"><i class="fas fa-plus"></i> {{localize "TABLESMITH.add-table"}}</button>
-  <p>{{{result}}}</p>
+  </section>
 </form>

@@ -1,7 +1,7 @@
 import JournalTables from './journaltables';
 import { tablesmith } from '../tablesmith/tablesmithinstance';
 import { Logger } from './logger';
-import TableCallValues from './tablecallvalues';
+import { TableCallValues } from './tablecallvalues';
 import { tableSelectionForm } from './tableselectionform';
 
 export default class TablesmithApi {
@@ -33,6 +33,21 @@ export default class TablesmithApi {
   }
 
   /**
+   * Parses Table call values from string and returns parse object.
+   * @param expression to parse.
+   * @returns TableCallValues for expression.
+   */
+  parseEvaluateExpression(expression: string): TableCallValues | undefined {
+    let result = undefined;
+    try {
+      result = tablesmith.parseEvaluateExpression(expression);
+    } catch (error) {
+      Logger.info(false, `Could not parse Expression '${expression}'`);
+    }
+    return result;
+  }
+
+  /**
    * Evaluates / rolls on given Tablesmith Table and posts result to chat.
    * @param name of table to evaluate.
    */
@@ -44,23 +59,6 @@ export default class TablesmithApi {
       const chatMessage = new ChatMessage({ flavor: `Table: ${expression}`, content: result });
       ui.chat?.postOne(chatMessage);
     }
-    return result;
-  }
-
-  /**
-   * Evaluates / rolls on given Tablesmith Table and posts result to chat.
-   * @param name of table to evaluate.
-   */
-  replaceTablesmithCalls(input: string): string {
-    const chatState = this.chatResults;
-    this.disableChat();
-    let result = input;
-    try {
-      result = this.evaluateTable(`${input}`);
-    } catch (error) {
-      Logger.info(false, `Could not evaluate '${input}', error: `, error);
-    }
-    this.chatResults = chatState;
     return result;
   }
 }

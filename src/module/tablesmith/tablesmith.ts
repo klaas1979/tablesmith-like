@@ -2,11 +2,11 @@ import { TSTable } from './tstable';
 import TSParserFactory from './parser/tsparserfactory';
 import { evalcontext } from './expressions/evaluationcontextinstance';
 import GroupCallModifierTerm from './expressions/terms/groupcallmodifierterm';
-import TSGroup from './tsgroup';
 import { tstables } from './tstables';
 import { tableparser } from './parser/tableparser';
 import { callparser } from './parser/callparser';
 import { html2text } from './parser/html2text';
+import { TableCallValues } from '../foundry/tablecallvalues';
 
 /**
  * The Tablesmith class to setup the Tablesmith environment, contains all parsed tables and provides needed functionality
@@ -30,15 +30,16 @@ class Tablesmith {
    * @returns result from Table as text.
    */
   evaluate(expression: string, parameters: { name: string; value: string | undefined }[] = []): string {
-    const options = { table: '', group: '', modType: 'unmodified', modNumber: 0, params: [] };
-    const tableAndGroup = this.parseEvaluateExpression(expression, options);
-    if (!tableAndGroup.group)
-      throw `TSTable for name='${options.table}' does not contain Group='${options.group}'! Expression was '${expression}'`;
-    const modifier = GroupCallModifierTerm.create(options.modType, options.modNumber);
+    const tableCallValues = this.parseEvaluateExpression(expression);
+    if (!tableCallValues.group)
+      throw `TSTable for name='${tableCallValues.tablename}' does not contain Group='${tableCallValues.groupname}'! Expression was '${expression}'`;
+    const modifier = GroupCallModifierTerm.create(tableCallValues.modifier, tableCallValues.modifierValue);
     this.resetEvaluationContext();
-    if (options.params) tableAndGroup.table?.setParametersForEvaluationByIndex(options.params);
-    tableAndGroup.table?.setParametersForEvaluationByName(parameters);
-    const result = tableAndGroup.group.roll(modifier);
+    evalcontext.pushCurrentCallTablename(tableCallValues.tablename);
+    if (tableCallValues.parameters)
+      tableCallValues.table?.setParametersForEvaluationByIndex(tableCallValues.parameters);
+    tableCallValues.table?.setParametersForEvaluationByName(parameters);
+    const result = tableCallValues.group.roll(modifier);
     evalcontext.popCurrentCallTablename();
     return result;
   }
@@ -46,20 +47,16 @@ class Tablesmith {
   /**
    * Parses an evaluate expressions for Tablesmith.
    * @param expression to parse.
-   * @param options given to the parser, where results are added to.
-   * @returns TSGroup to evaluate or undefined, if it does not exists.
+   * @returns TableCallValues to evaluate.
    */
-  private parseEvaluateExpression(
-    expression: string,
-    options: { table: string; group: string; modType: string; modNumber: number; params: string[] },
-  ): { table: TSTable | undefined; group: TSGroup | undefined } {
-    callparser.parse(expression, options);
-    const evaluateTable = this.tableForName(options.table);
-    if (!evaluateTable) throw `TSTable for name='${options.table}' not defined! Expression was '${expression}'`;
-    evalcontext.pushCurrentCallTablename(options.table);
-    _setDefaultGroup(options);
-    const group = evaluateTable.groupForName(options.group);
-    return { table: evaluateTable, group: group };
+  parseEvaluateExpression(expression: string): TableCallValues {
+    const tableCallValues = new TableCallValues();
+    callparser.parse(expression, tableCallValues);
+    tableCallValues.table = this.tableForName(tableCallValues.tablename);
+    if (!tableCallValues.table)
+      throw `TSTable for name='${tableCallValues.tablename}' not defined! Expression was '${expression}'`;
+    tableCallValues.group = tableCallValues.table.groupForName(tableCallValues.groupname);
+    return tableCallValues;
   }
 
   /**
@@ -99,14 +96,6 @@ class Tablesmith {
   tableForName(name: string): TSTable | undefined {
     return tstables.tableForName(name);
   }
-}
-
-/**
- * Tests if Group to call in options is set or sets it to default Group for any Table "Start".
- * @param options definining a Table call, with Group to set to default if undefined.
- */
-function _setDefaultGroup(options: { group: string }): void {
-  if (!options.group || options.group.length == 0) options.group = 'Start';
 }
 
 function _stripPathAndExtensions(filename: string): string {

@@ -15,9 +15,9 @@ function toInt(text) {
 GroupFunction
   = '[' _ table:Name group:('.' @Name)? _ Modifier? _ params:Params? _ ']' {
         if (options == undefined) throw 'Could not parse Call no options provided!';
-        options.table = table;
-        options.group = group;
-        options.params = params;
+        options.tablename = table;
+        if (group && group.length > 0) options.groupname = group;
+        options.parameters = params;
       }
 
 Params
@@ -26,8 +26,8 @@ Params
 Modifier
   = modType:ModifierType _ modifier:int {
           if (options == undefined) throw 'Could not parse Call no options provided!';
-          options.modType = modType;
-          options.modNumber = toInt(modifier);
+          options.modifier = modType;
+          options.modifierValue = toInt(modifier);
         }
 
 ModifierType
