@@ -19,11 +19,13 @@ class FormData {
   selected: TSTable | undefined;
   parameters: TableParameter[];
   tables: TSTable[];
+  chatResults: boolean;
   result: string;
   constructor() {
     this.parameters = [];
     this.tables = [];
     this.result = '';
+    this.chatResults = true;
   }
 }
 
@@ -87,14 +89,20 @@ export default class TableSelectionForm extends FormApplication<TableSelectionOp
     // foundry.utils.expandObject(formData); <- for later
     if (formData) {
       Logger.debug(false, 'formData', formData);
-      const keyValues = Object.entries(formData) as [string, string][];
+      const entries = Object.entries(formData) as [string, string][];
+      this.data.chatResults =
+        entries.find(([key]) => {
+          return key == 'chatResults';
+        })?.[1] +
+          '' ==
+        'true';
       this._selectTable(
-        keyValues.find(([key]) => {
+        entries.find(([key]) => {
           return key == 'tablename';
         })?.[1],
       );
       this.data.result = '';
-      this._updateParameters(keyValues);
+      this._updateParameters(entries);
       Logger.debug(false, 'data updated', this.data);
     }
     this.render(true);
@@ -136,10 +144,14 @@ export default class TableSelectionForm extends FormApplication<TableSelectionOp
   }
 
   _evaluateTable() {
-    Logger.debug(false, 'Evaluating table');
+    Logger.debug(false, 'Evaluating table', this.data);
     if (this.data.selected) {
       this.data.result = tablesmith.evaluate(`[${this.data.selected.name}]`, this._mapParameter());
       this.render(true);
+      if (this.data.chatResults) {
+        const chatMessage = new ChatMessage({ flavor: `Table: ${this.data.selected.name}`, content: this.data.result });
+        ui.chat?.postOne(chatMessage);
+      }
     } else Logger.warn(false, 'No table selected!');
   }
   _mapParameter() {

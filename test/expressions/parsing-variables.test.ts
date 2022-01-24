@@ -23,7 +23,21 @@ describe('Parsing variables', () => {
   });
 
   it('declared variable can be referenced with table and name from Group', () => {
-    simpleTable = `%varname%,value\n:Start\n1,%${filename}.varname%\n`;
+    simpleTable = `%varname%,value\n:Start\n1,%${filename}!varname%\n`;
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('value');
+  });
+
+  it('declared variable can be referenced from other table', () => {
+    tablesmith.addTable('other', '%varname%,othervalue\n:Start\n1,other');
+    simpleTable = `%varname%,value\n:Start\n1,%other!varname%\n`;
+    tablesmith.addTable(filename, simpleTable);
+    expect(tablesmith.evaluate(`[${filename}]`)).toBe('othervalue');
+  });
+
+  it('declared variable can be set from other table', () => {
+    tablesmith.addTable('other', '%varname%,othervalue\n:Start\n1,other');
+    simpleTable = `%varname%,value\n:Start\n1,|other!varname=%varname%|%other!varname%\n`;
     tablesmith.addTable(filename, simpleTable);
     expect(tablesmith.evaluate(`[${filename}]`)).toBe('value');
   });

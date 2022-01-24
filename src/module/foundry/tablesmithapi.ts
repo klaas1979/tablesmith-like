@@ -4,10 +4,8 @@ import { Logger } from './logger';
 import { TableCallValues } from './tablecallvalues';
 import TableSelectionForm from './tableselectionform';
 export default class TablesmithApi {
-  chatResults: boolean;
   constructor() {
     JournalTables.loadTablesFromJournal();
-    this.chatResults = true;
   }
 
   /**
@@ -29,20 +27,6 @@ export default class TablesmithApi {
   }
 
   /**
-   * Disables posting results to chat.
-   */
-  disableChat(): void {
-    this.chatResults = false;
-  }
-
-  /**
-   * Enables posting results to chat.
-   */
-  enableChat(): void {
-    this.chatResults = true;
-  }
-
-  /**
    * Parses Table call values from string and returns parse object.
    * @param expression to parse.
    * @returns TableCallValues for expression.
@@ -61,11 +45,11 @@ export default class TablesmithApi {
    * Evaluates / rolls on given Tablesmith Table and posts result to chat.
    * @param name of table to evaluate.
    */
-  evaluateTable(call: TableCallValues | string): string {
+  evaluateTable(call: TableCallValues | string, chatResults = true): string {
     const expression = typeof call != 'string' ? call.createExpression() : call;
     const result = tablesmith.evaluate(`${expression}`);
     Logger.debug(false, `Result for: ${expression}`, result);
-    if (this.chatResults) {
+    if (chatResults) {
       const chatMessage = new ChatMessage({ flavor: `Table: ${expression}`, content: result });
       ui.chat?.postOne(chatMessage);
     }

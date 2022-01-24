@@ -1,12 +1,27 @@
 /**
- * This is your TypeScript entry file for Foundry VTT Tablesmith module.
- * Register custom settings, sheets, and constants using the Foundry API.
  * Author: Klaas Reineke
- * Content License: [copyright and-or license] If using an existing system
- * 					you may want to put a (link to a) license or copyright
- * 					notice here (e.g. the OGL).
- * Software License: [your license] Put your desired license here, which
- * 					 determines how others may use and modify your module.
+ * Software License:
+ * MIT License
+ *
+ * Copyright (c) 2022 Klaas Reineke
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 // Import TypeScript modules
@@ -34,50 +49,21 @@ Hooks.once('init', async () => {
 
 // Setup module
 Hooks.once('setup', async () => {
-  // Do anything after initialization but before
-  // ready
+  // Do anything after initialization but before ready
 });
 
 // When ready
 Hooks.once('ready', async () => {
   // Do anything once the module is ready
   setTablesmithApi(new TablesmithApi());
-  // libWrapper.register(TABLESMITH_ID, 'RollTable.prototype.draw', drawWrapper, 'WRAPPER');
   libWrapper.register(TABLESMITH_ID, 'TableResult.prototype.getChatText', tableResultChatTextWrapper, 'WRAPPER');
 });
-
-// async function drawWrapper(
-//   this: RollTable,
-//   wrapped: (options: {
-//     roll: Roll;
-//     recursive: boolean;
-//     results: Array<TableResult>;
-//     displayChat: boolean;
-//     rollMode: string;
-//   }) => Promise<RollTableDraw>,
-//   options: {
-//     roll: Roll;
-//     recursive: boolean;
-//     results: Array<TableResult>;
-//     displayChat: boolean;
-//     rollMode: string;
-//   },
-// ) {
-//   const result = await wrapped(options);
-//   Logger.debug(false, 'RollTableDraw', result);
-//   return result;
-// }
 
 function tableResultChatTextWrapper(this: TableResult, wrapped: () => string): string {
   const originalResult = wrapped();
   let replacedResult = originalResult;
   const tableCallValues = getTablesmithApi().parseEvaluateExpression(originalResult);
   if (tableCallValues) {
-    // if (tableCallValues.table && tableCallValues.needsParameters()) {
-    //   const form = new ParamInputForm(new FormData(tableCallValues.table));
-    //   // TODO wait for Discord if any ideas bubble to have the data retrieved here
-    //   form.render(true);
-    // }
     replacedResult = getTablesmithApi().evaluateTable(tableCallValues);
     Logger.debug(false, 'Original and replaced result', originalResult, replacedResult);
   }

@@ -92,7 +92,6 @@ AfterValue
             options?.pf.addAfter();
           }); }
 
-
 VariableGet
   = StartVariableGet VariableIdentifier '%' { errorHandling(() => {
             options?.pf.createVariable();
@@ -120,7 +119,7 @@ VariableSetType
 
 /* Call of another group within this Table or within another. Table */
 GroupCall
-  = StartGroupCall _ VariableIdentifier _ Modifier? _ CallParameters? _ !'/' ']' { errorHandling(() => {
+  = StartGroupCall _ GroupIdentifier _ Modifier? _ CallParameters? _ !'/' ']' { errorHandling(() => {
             options?.pf.createGroupCall();
           }); }
 StartGroupCall
@@ -257,7 +256,12 @@ IfExpressionPart
   / VariableGet IfExpressionPart*
   / ValueIfPart IfExpressionPart*
 
-VariableIdentifier
+GroupIdentifier
+  = GroupCall GroupIdentifier*
+  / TsFunction GroupIdentifier*
+  / ValueGroupIdentifier GroupIdentifier*
+
+  VariableIdentifier
   = GroupCall VariableIdentifier*
   / TsFunction VariableIdentifier*
   / ValueVariableIdentifier VariableIdentifier*
@@ -455,6 +459,14 @@ ValueVariableIdentifier
           }); }
 
 PlainTextVariableExpression
+ = text:([^-+\\*&.=<>,?/(){}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']')+ { return text.join(''); }
+
+ ValueGroupIdentifier
+  = text:PlainTextGroupExpression { errorHandling(() => {
+            options?.pf.createText(text);
+          }); }
+
+PlainTextGroupExpression
  = text:([^-+\\*&!=<>,?/(){}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']')+ { return text.join(''); }
 
 ValueIfSlash

@@ -1,6 +1,6 @@
 import TSGroup from '../tsgroup';
 import { evalcontext } from './evaluationcontextinstance';
-import groupcallsplitter from './groupcallsplitter';
+import CallSplitter from './callsplitter';
 import TSExpression from './tsexpression';
 
 /**
@@ -20,7 +20,7 @@ class TSVariableSetExpression implements TSExpression {
 
   evaluate(): string {
     const evaluated = this.varNameExpression.evaluate();
-    this.call = groupcallsplitter.split(evaluated);
+    this.call = CallSplitter.forVariable().split(evaluated);
     const value = this.valueExpression.evaluate();
     const currentValue = evalcontext.getVar(this.call.tablename, this.call.variablename);
     switch (this.type) {
@@ -58,7 +58,8 @@ class TSVariableSetExpression implements TSExpression {
   }
 
   private evaluateSet(currentValue: string | number | undefined, value: string) {
-    this.assign(Number.parseFloat(value));
+    const num = Number.parseFloat(value);
+    this.assign(Number.isNaN(num) ? value : num);
   }
 
   private evaluatePlus(currentValue: string | number | undefined, value: string) {

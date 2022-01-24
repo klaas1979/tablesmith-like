@@ -1,8 +1,24 @@
 import { evalcontext } from './evaluationcontextinstance';
 
-class GroupCallSplitter {
+enum TYPE {
+  variable = '!',
+  group = '.',
+}
+
+export default class CallSplitter {
+  type: TYPE;
+  private constructor(type: TYPE) {
+    this.type = type;
+  }
+  static forVariable(): CallSplitter {
+    return new CallSplitter(TYPE.variable);
+  }
+  static forGroup(): CallSplitter {
+    return new CallSplitter(TYPE.group);
+  }
+
   split(input: string): { tablename: string; variablename: string } {
-    const tableGroup = input.trim().split('.');
+    const tableGroup = input.trim().split(this.type);
     const result = { tablename: '', variablename: '' };
     switch (tableGroup.length) {
       case 1:
@@ -19,6 +35,3 @@ class GroupCallSplitter {
     return result;
   }
 }
-const groupcallsplitter = new GroupCallSplitter();
-
-export default groupcallsplitter;

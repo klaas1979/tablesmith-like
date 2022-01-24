@@ -1,6 +1,7 @@
 import TablesmithApi from './tablesmithapi';
 
 export const TABLESMITH_ID = 'tablesmith-like';
+export const SETTING_CHAT = 'default-chat';
 
 /**
  * Returns game instance if initialized.

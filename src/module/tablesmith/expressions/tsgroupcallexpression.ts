@@ -1,7 +1,7 @@
 import { tstables } from '../tstables';
 import TSGroup from '../tsgroup';
 import { evalcontext } from './evaluationcontextinstance';
-import groupcallsplitter from './groupcallsplitter';
+import CallSplitter from './callsplitter';
 import GroupCallModifierTerm from './terms/groupcallmodifierterm';
 import InnerDiceTerm from './terms/innerdiceterm';
 import IntTerm from './terms/intterm';
@@ -29,7 +29,7 @@ class TSGroupCallExpression implements TSExpression {
 
   evaluate(): string {
     const tableAndGroup = this.tableAndGroupExpression.evaluate();
-    const splitted = groupcallsplitter.split(tableAndGroup);
+    const splitted = CallSplitter.forGroup().split(tableAndGroup);
     const tsTable = tstables.tableForName(splitted.tablename);
     if (!tsTable) throw `Table '${splitted.tablename}' is not defined cannot evaluate!`;
     const tsGroup = tsTable.groupForName(splitted.variablename);
@@ -53,7 +53,7 @@ class TSGroupCallExpression implements TSExpression {
   getExpression(): string {
     let tablePrefix = '';
     const tableAndGroup = this.tableAndGroupExpression.evaluate();
-    const splitted = groupcallsplitter.split(tableAndGroup);
+    const splitted = CallSplitter.forGroup().split(tableAndGroup);
     if (evalcontext.getCurrentCallTablename() != splitted.tablename) tablePrefix = `${splitted.tablename}.`;
     return `[${tablePrefix}${splitted.variablename}${this.groupCallModifier.getTerm()}]`;
   }

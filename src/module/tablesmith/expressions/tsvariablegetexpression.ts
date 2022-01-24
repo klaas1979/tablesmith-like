@@ -1,7 +1,7 @@
 import TSGroup from '../tsgroup';
 import Evalcontext from './evaluationcontext';
 import { evalcontext } from './evaluationcontextinstance';
-import groupcallsplitter from './groupcallsplitter';
+import GroupCallSplitter from './callsplitter';
 import Term from './terms/term';
 import TermResult from './terms/termresult';
 import TSExpression from './tsexpression';
@@ -30,7 +30,7 @@ class TSVariableGetExpression implements TSExpression, Term {
 
   evaluate(): string {
     const evaluated = this.tableGroupExpression.evaluate();
-    const splitted = groupcallsplitter.split(evaluated);
+    const splitted = GroupCallSplitter.forVariable().split(evaluated);
     return `${evalcontext.getVar(splitted.tablename, splitted.variablename)}`;
   }
 

@@ -1,77 +1,203 @@
 # tablesmith-like
 
-Use Tablesmith-like tables in FoundryVTT and create complex nested tables.
+Use Tablesmith-like tables in FoundryVTT and create complex nested tables. For more about Tablesmith see the [Tablesmiths Homepage](http://www.mythosa.net/p/tablesmith.html) and the [Forum for TableSmith](https://groups.io/g/tablesmith).
 
-## Installation
+Tablesmith table syntax allows it to create anything from simple tables and nested tables as in Foundry, to complex linked tables with loops, conditionals, parameters and more.
 
-Add your installation instructions here.
+## Implemented Features
 
-## Development
+Following are all implemented features of Tablesmith 5.2.
 
-### Prerequisites
+### Variables
 
-In order to build this module, recent versions of `node` and `npm` are
-required. Most likely using `yarn` also works but only `npm` is officially
-supported. We recommend using the latest lts version of `node`. If you use `nvm`
-to manage your `node` versions, you can simply run
+Variables must be declared before first use:
+`%VariableName%,x` where the `%` donates beginning and end of the variable name and the `,` shows start of default value `x`. The default value may be omitted.
 
-```
-nvm install
-```
+#### Scope
 
-in the project's root directory.
+Variables are scoped to the context of the enclosing Table (not the group) so each Table file has its own context and can name variables the same.
 
-You also need to install the the project's dependencies. To do so, run
+#### Using Variables
 
-```
-npm install
-```
+Variables can be accessed by using the syntax `%variableName%`. The reference is replaced by the current value. References can be used in nearly any place, withing functions and Group calls.
+**Note:** As Tablesmith 5.2 provides no comphrehensive documentation where variables can be referenced this implementation may act differently.
 
-### Building
+#### Assignment
 
-You can build the project by running
+Variables can be assigned in Groups by using the syntax `|variableName?X|`. The variable name without `%` must belong to a declared variable. The `?`is the operator for the assignment:
 
-```
-npm run build
-```
+* |A+5| - Adds 5 to "A" (Ex: If "A" was 3, it is now 8)
+* |hp-3| - Subtracts 3 from "hp" (Ex: If "hp" was 4, it is now 1)
+* |gp*2| - Multiplies "gp" by 2 (Ex: If "gp" was 50, it is now 100)
+* |dmg/2| - Divides "dmg" by 2 (Ex: If "dmg" was 10, it is now 5)
+* |attr\2| - Divides "attr" by 2, rounds fractions (Ex: If "attr" was 5, it is now 2)
+* |A>35| - Assigns 35 to "A", if 35 is greater than A's value
+* |A<14| - Assigns 14 to "A", if 14 is less than A's value
+* |A& III| - Concatenates the text " III" to A's value (Ex: If "A" was "Smith", it is now "Smith III")
+* |A=orc| - Sets "A" equal to the word "orc"
 
-Alternatively, you can run
+## Parameters
 
-```
-npm run build:watch
-```
+## Tablesmith functions
 
-to watch for changes and automatically build as necessary.
+The list below is grouped in line with the Tablesmith documentation and shows all implemented or not yet implemented functions that can be used. For a more in depth documentation see the Tablesmith documentation linked on the Tablesmith Homepage.
 
-### Linking the built project to Foundry VTT
+### Conditional
 
-In order to provide a fluent development experience, it is recommended to link
-the built module to your local Foundry VTT installation's data folder. In
-order to do so, first add a file called `foundryconfig.json` to the project root
-with the following content:
+* If (Choose one option or another, ternary operator with *expr ? value 1 **/** value 1*)
+* IIf (Choose one option or another, ternary operator with *expr ? value 1 **:** value 1*)
+* Loop (Repeat something a number of times)
+* Select (Choose one option of many)
+* While (While loop)
 
-```
-{
-  "dataPath": "/absolute/path/to/your/FoundryVTT"
-}
-```
+### Datasets
 
-(if you are using Windows, make sure to use `\` as a path separator instead of
-`/`)
+**Not implemented:**
 
-Then run
+* DSAdd (Add item)
+* DSCalc (Calculate on items)
+* DSCount (Count items)
+* DSCreate (Create dataset)
+* DSFind (Find an item)
+* DSGet (Get a value from an item)
+* DSRandomize (Randomize items)
+* DSRead (Read in a dataset file)
+* DSRemove (Remove an item)
+* DSRoll (Roll for an item)
+* DSSet (Set a value in an item)
+* DSSort (Sort items)
+* DSWrite (Write dataset to a file)
 
-```
-npm run link-project
-```
+### Group and Tables
 
-On Windows, creating symlinks requires administrator privileges so unfortunately
-you need to run the above command in an administrator terminal for it to work.
+* Count (Count group entries)
+* LastRoll (Gets the last value generated on a group roll)
+* Lockout (Lockout entries in a non-repeating group)
+* MinVal (Minimum value of entry)
+* MaxVal (Maximum value of entry)
+* Reset (Reset group)
+* Unlock (Unlock entry)
 
-### Running the tests
+**Not implemented:**
 
-You can run the tests with the following command:
+* Stop (Stop table generation)
+* Used (Used already)
 
-```
-npm test
-```
+### Interface
+
+**Not implemented:**
+
+* Generate (Generation link)
+* InputList (Input a list option from the user)
+* InputText (Input a value from the user)
+* Iteration (Get the current roll the table is on)
+* Msg (Message box)
+* Note (Notation)
+* Status (Display status)
+
+### Logical
+
+* And (Logical And) **Extension**: accepts 2 to n parameters not just 2 as in Tablesmith 5.2
+* IsNumber (Determines if a value is a number or not)
+* Or (Logical OR) **Extension**: accepts 2 to n parameters not just 2 as in Tablesmith 5.2
+* Xor (Logical exclusive OR) **Extension**: accepts 2 to n parameters not just 2 as in Tablesmith 5.2
+
+### Math
+
+* Abs (Absolute value)
+* Calc (Calculate)
+* Ceil (Ceiling integer)
+* Floor (Floor integer)
+* Max (Maximum value) **Extension**: accepts 2 to n parameters not just 2 as in Tablesmith 5.2
+* Min (Minimum value) **Extension**: accepts 2 to n parameters not just 2 as in Tablesmith 5.2
+* Mod (Remainder)
+* Power (Raise to a power)
+* Round (Rounding)
+* Sqrt (Square root)
+* Trunc (Truncate)
+
+### Miscellaneous
+
+* Dice (Roll dice) **Extension**: accepts all Calc expressions and multiply dice not only a modificator (+, -) as inTablesmith 5.2. The 'd' binds first, only braces bind before. Is interchangeable with *Calc*
+* Calc (Mathematical calculations with +, -, \*, /, ^ and braces) **Extension**: is interchangeable with *Dice*
+* Param (Parameter item)
+
+**Not implemented:**
+
+* Debug (Debug)
+* Extern (External call)
+* GroupExists (Does a group exist)
+* Log (Append to a log file)
+* LogNew (Write to a new log file)
+* OrderAsc (Order ascending)
+* OrderDesc (Order descending)
+* TableExists (Does a table exist)
+* Version (Version)
+
+### Formatting and Layout
+
+* Bold (Boldface)
+* CR (Carriage return)
+* Line (Insert a horizontal line) **Note:** is printed in HTML but does nothing in Foundry as the base formatting rules it out.
+
+**Not implemented:**
+
+* Italic (Italicize text)
+* Color (Color text)
+* Picture (Display picture)
+
+### Text
+
+* AorAn (A or An)
+* Cap (Capitalize)
+* CapEachWord (Capitalize each word)
+* Char (Retrieve a single character)
+* CommaReplace (Replace or insert commas)
+* Find (Find text within other text)
+* LCase (Lower case)
+* Left (Retrieve leftmost characters)
+* Length (Get the length of some text)
+* Mid (Retrieve middle characters)
+* Ordinal (Ordinal number)
+* Plural (Make string plural)
+* PluralIf (Conditional make string plural)
+* Replace (Replace text)
+* UCase (Upper case)
+* Right (Retrieve rightmost characters)
+* Space (Insert spaces)
+* Split (Split)
+* Trim (Trim spaces)
+* VowelStart (Vowel starts)
+
+## Foundry integration
+
+Basically Tablesmith Tables can be used in the following ways:
+
+1. **API** that is exposed on the module.
+2. A **Group Call expression within a Table Result** of type text, that is dynamically evaluated.
+3. With the **Tablesmith form** to select Tables and roll on them.
+
+### API
+
+TODO
+
+### Foundry Table integration
+
+TODO
+
+### Tablesmith Form
+
+Via Macro TODO
+
+## Special Appreciations
+
+* **Bruce Gulke** to create Tablesmith in the first place and give me a thumbs up to create this plugin. Check [Tablesmith](http://www.mythosa.net/p/tablesmith.html) out and buy him a coffee be licensing the shareware version.  
+* **FoundryVTT Discord** for supporting with all my questions about Foundry development. Especially @ghost and @LukeAbby for helping me with all starting questions.
+* **League of Extraordinary FoundryVTT Developers** and all the other people for cool support documentation and tools to make this development possible in the first place.
+* Thanks to @ghost-fvtt for the ![foundry-factory](https://github.com/ghost-fvtt/foundry-factory) as bootstrapping start.
+
+## Licensing
+
+<img alt="GitHub" src="https://img.shields.io/github/license/moerill/token-mold?style=flat-square">
+
+This work is licensed under Foundry Virtual Tabletop [EULA - Limited License Agreement for module development](https://foundryvtt.com/article/license/).

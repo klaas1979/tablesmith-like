@@ -1,7 +1,11 @@
 <form class="editable flexcol" autocomplete="off">
   <section style="flex1">
     <div class="form-group">
-      <label for="tablename">{{localize "TABLESMITH.table"}}:</label>
+      <label for="chatResults">{{localize "TABLESMITH.chatresults"}}</label>
+      <input type="checkbox" name="chatResults" id="chatResults" {{checked chatResults}} />
+    </div>
+    <div class="form-group">
+      <label for="tablename">{{localize "TABLESMITH.table"}}</label>
       <select name="tablename" id="tablename">
         {{selectOptions tables selected=selected.name nameAttr="name" labelAttr="name"}}
       </select>
