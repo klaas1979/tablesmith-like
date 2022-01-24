@@ -2,20 +2,30 @@ import JournalTables from './journaltables';
 import { tablesmith } from '../tablesmith/tablesmithinstance';
 import { Logger } from './logger';
 import { TableCallValues } from './tablecallvalues';
-import { tableSelectionForm } from './tableselectionform';
-
+import TableSelectionForm from './tableselectionform';
 export default class TablesmithApi {
   chatResults: boolean;
   constructor() {
-    JournalTables.loadTablesFromJournal(tablesmith);
+    JournalTables.loadTablesFromJournal();
     this.chatResults = true;
   }
 
   /**
-   * Shows the selector form to select and execute Tables.
+   * Reloads all tables and deletes table that has been removed.
    */
-  showForm(): void {
-    tableSelectionForm.render(true);
+  reloadTables(): void {
+    JournalTables.reloadTablesFromJournal();
+  }
+
+  /**
+   * Shows the selector form to select and execute Tables.
+   * @param callValues to prefill for with or undefined to start with emtpy form.
+   * @returns TableSelectionForm that has already been rendered.
+   */
+  showForm(callValues: TableCallValues = new TableCallValues()): TableSelectionForm {
+    const form = new TableSelectionForm(callValues);
+    form.render(true);
+    return form;
   }
 
   /**

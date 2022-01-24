@@ -1,7 +1,8 @@
 import { tablesmith } from '../tablesmith/tablesmithinstance';
 import { TableParameter, TSTable } from '../tablesmith/tstable';
 import { tstables } from '../tablesmith/tstables';
-import { TABLESMITH_ID } from './helper';
+import { getGame, TABLESMITH_ID } from './helper';
+import JournalTables from './journaltables';
 import { Logger } from './logger';
 import { TableCallValues } from './tablecallvalues';
 
@@ -26,13 +27,11 @@ class FormData {
   }
 }
 
-const tableCallValues = new TableCallValues();
-const data = new FormData();
-
 /**
  * Selection form for a Tablesmith call.
  */
-class TableSelectionForm extends FormApplication<TableSelectionOptions, FormData, TableCallValues> {
+export default class TableSelectionForm extends FormApplication<TableSelectionOptions, FormData, TableCallValues> {
+  data = new FormData();
   /**
    * Adds additional options to default options.
    */
@@ -44,23 +43,22 @@ class TableSelectionForm extends FormApplication<TableSelectionOptions, FormData
       width: '720',
       id: 'tablesmith-selector',
       template: TABLESMITH_SELECTOR,
-      title: 'Tablesmith', // getGame().i18n.localize('TABLESMITH.evaluation-form') <- Game not initialized
+      title: getGame().i18n.localize('TABLESMITH.evaluation-form'),
       closeOnSubmit: false,
       submitOnChange: true,
     };
 
     const mergedOptions = foundry.utils.mergeObject(defaults, overrides);
-
     return mergedOptions;
   }
 
   async getData(): Promise<FormData> {
-    data.tables = tstables.getTSTables();
-    if (!data.selected) {
+    this.data.tables = tstables.getTSTables();
+    if (!this.data.selected) {
       this._selectTable(undefined);
     }
     // data.parameters <- to store parameter in, read from selected table and set to default on init then to selected
-    return data;
+    return this.data;
   }
 
   /**
@@ -68,18 +66,18 @@ class TableSelectionForm extends FormApplication<TableSelectionOptions, FormData
    * @param table table or name to select, if undefined selects first table in list of tables.
    */
   protected _selectTable(table: TSTable | string | undefined): void {
-    table = !table ? data.tables[0] : table;
+    table = !table ? this.data.tables[0] : table;
     const tstable =
       typeof table == 'string'
-        ? data.tables.find((tab) => {
+        ? this.data.tables.find((tab) => {
             return tab.name == table;
           })
         : table;
     if (!tstable) throw `Cannot select table '${table}', not found in loaded tables`;
 
-    if (data.selected != tstable) {
-      data.selected = tstable;
-      data.parameters = tstable.parameters.map((param) => {
+    if (this.data.selected != tstable) {
+      this.data.selected = tstable;
+      this.data.parameters = tstable.parameters.map((param) => {
         return Object.create(param);
       });
     }
@@ -95,16 +93,16 @@ class TableSelectionForm extends FormApplication<TableSelectionOptions, FormData
           return key == 'tablename';
         })?.[1],
       );
-      data.result = '';
+      this.data.result = '';
       this._updateParameters(keyValues);
-      Logger.debug(false, 'data updated', data);
+      Logger.debug(false, 'data updated', this.data);
     }
-    this.render();
+    this.render(true);
   }
 
   _updateParameters(keyValues: [string, string][]): void {
     keyValues.forEach(([key, value]) => {
-      const found = data.parameters.find((param) => {
+      const found = this.data.parameters.find((param) => {
         return param.variable == key;
       });
 
@@ -129,6 +127,9 @@ class TableSelectionForm extends FormApplication<TableSelectionOptions, FormData
       case 'evaluate':
         this._evaluateTable();
         break;
+      case 'reload-tables':
+        this._reloadTables();
+        break;
       default:
         Logger.error(true, 'Unknown action', action);
     }
@@ -136,16 +137,20 @@ class TableSelectionForm extends FormApplication<TableSelectionOptions, FormData
 
   _evaluateTable() {
     Logger.debug(false, 'Evaluating table');
-    if (data.selected) {
-      data.result = tablesmith.evaluate(`[${data.selected.name}]`, this._mapParameter());
-      this.render();
+    if (this.data.selected) {
+      this.data.result = tablesmith.evaluate(`[${this.data.selected.name}]`, this._mapParameter());
+      this.render(true);
     } else Logger.warn(false, 'No table selected!');
   }
   _mapParameter() {
-    return data.parameters.map((param) => {
+    return this.data.parameters.map((param) => {
       return { name: param.variable, value: param.defaultValue };
     });
   }
-}
 
-export const tableSelectionForm = new TableSelectionForm(tableCallValues);
+  _reloadTables() {
+    JournalTables.reloadTablesFromJournal();
+    this.render(true);
+    ui.notifications?.info(getGame().i18n.localize('TABLESMITH.tables-reloaded'));
+  }
+}

@@ -2,6 +2,8 @@
   "TABLESMITH": {
     "evaluation-form": "Tablesmith - Evaluation",
     "evaluate-table": "Evaluate",
+    "reload-tables": "Reload Tables",
+    "tables-reloaded": "Tables have been reloaded!",
     "result": "Result",
     "table": "Table"
   }

@@ -7,7 +7,10 @@
       </select>
     </div>
     {{> modules/tablesmith-like/templates/paramspartial.hbs}}
-    <button type="button" data-action="evaluate"><i class="flex0 fas fa-dice-d20"></i> {{localize "TABLESMITH.evaluate-table"}}</button>
+    <div class="flexrow">
+      <button type="button" data-action="evaluate"><i class="fas fa-dice-d20"></i> {{localize "TABLESMITH.evaluate-table"}}</button>
+      <button type="button" data-action="reload-tables"><i class="fas fa-undo"></i> {{localize "TABLESMITH.reload-tables"}}</button>
+    </div>
   </section>
   <section style="flex0">
     {{#if result}}

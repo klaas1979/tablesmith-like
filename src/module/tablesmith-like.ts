@@ -16,7 +16,6 @@ import { getTablesmithApi, setTablesmithApi, TABLESMITH_ID } from './foundry/hel
 import { Logger, DevModeApi, LOG_LEVEL } from './foundry/logger';
 import TablesmithApi from './foundry/tablesmithapi';
 import { libWrapper } from './foundry/shims/libwrappershim';
-import ParamInputForm, { FormData } from './foundry/paraminput';
 
 // Initialize module
 Hooks.once('init', async () => {
@@ -74,11 +73,11 @@ function tableResultChatTextWrapper(this: TableResult, wrapped: () => string): s
   let replacedResult = originalResult;
   const tableCallValues = getTablesmithApi().parseEvaluateExpression(originalResult);
   if (tableCallValues) {
-    if (tableCallValues.table && tableCallValues.needsParameters()) {
-      const form = new ParamInputForm(new FormData(tableCallValues.table));
-      // TODO wait for Discord if any ideas bubble to have the data retrieved here
-      form.render(true);
-    }
+    // if (tableCallValues.table && tableCallValues.needsParameters()) {
+    //   const form = new ParamInputForm(new FormData(tableCallValues.table));
+    //   // TODO wait for Discord if any ideas bubble to have the data retrieved here
+    //   form.render(true);
+    // }
     replacedResult = getTablesmithApi().evaluateTable(tableCallValues);
     Logger.debug(false, 'Original and replaced result', originalResult, replacedResult);
   }

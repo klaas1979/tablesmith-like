@@ -1,11 +1,12 @@
 import Tablesmith from '../tablesmith/tablesmith';
+import { tablesmith } from '../tablesmith/tablesmithinstance';
 import { getJournal } from './helper';
 import { Logger } from './logger';
 
 const tablesmithExtension = 'tab';
 class JournalTables {
   /** Loads all tables from Tablesmith Journal Folder. */
-  static async loadTablesFromJournal(tablesmith: Tablesmith) {
+  static async loadTablesFromJournal() {
     getJournal().contents.forEach((entry) => {
       if (JournalTables.isTablesmithTable(entry.name)) {
         Logger.info(false, `Found Tablesmith table '${entry.name}'`);
@@ -13,6 +14,14 @@ class JournalTables {
         JournalTables.addTableHandleErrors(tablesmith, tablename, entry.data.content);
       }
     });
+  }
+
+  /**
+   * Reloads all tables from journal and removes table that do not exist anymore in journal.
+   */
+  static async reloadTablesFromJournal() {
+    tablesmith.reset();
+    this.loadTablesFromJournal();
   }
 
   /**
