@@ -74,7 +74,6 @@ class Tablesmith {
   addTable(filename: string, fileContent: string, contentType: 'plain' | 'html' = 'plain'): TSTable {
     const tstable = new TSTable(_stripPathAndExtensions(filename));
     const content = _convertContentType(fileContent, contentType);
-    tstable.setContent(content);
     tableparser.parse(content, this._parseOptions(tstable));
     tstables.addTable(tstable);
     return tstable;
@@ -110,7 +109,13 @@ function _stripPathAndExtensions(filename: string): string {
 function _convertContentType(content: string, type: 'plain' | 'html'): string {
   let converted = content;
   if (type == 'html') {
-    converted = html2text.convert(content);
+    let replaced = html2text.convert(content);
+    // replace nbsp char 160 to normal space char -> for matching in grammar
+    replaced = replaced.replace(String.fromCharCode(160), ' ');
+    do {
+      converted = replaced;
+      replaced = converted.replace('\n\n', '\n');
+    } while (converted != replaced);
   }
   return converted;
 }

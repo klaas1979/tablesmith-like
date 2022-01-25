@@ -122,8 +122,6 @@ export class TableParameter {
  * A single table or tablesmith file, tables can contain many groups to be rolled upon.
  */
 export class TSTable {
-  /** The table definition plain text. */
-  content = '';
   groups: TSGroup[];
   name: string;
   variables: { name: string; value: string | undefined }[];
@@ -134,22 +132,6 @@ export class TSTable {
     this.name = name;
     this.variables = [];
     this.parameters = [];
-  }
-
-  /**
-   * Gets content the table is defined by.
-   * @returns content plain text table is defined from.
-   */
-  getContent(): string {
-    return this.content;
-  }
-
-  /**
-   * Sets content the table is defined from.
-   * @param content to set.
-   */
-  setContent(content: string) {
-    this.content = content;
   }
 
   /**

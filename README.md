@@ -26,6 +26,22 @@ TODO
 
 Via Macro TODO
 
+### Tablesmith Tables
+
+Tables are created as Journal entries. Journal entries provide an easy way to add and edit a long text document, as needed.
+
+#### Loaded tables
+
+All Journal entries where there name ends with `.tab` are loaded. The resulting name is omitting the extension, i.e. `Monsters.tab` results in the Table name `Monsters`.
+
+#### Tables in different Journals or Folders
+
+Note that the tablename must be unique over all folders and journals as of now.
+
+#### Formatting Tips for Journal Tables
+
+For long tables it is recommended to use `SHIFT+Enter` instead of `Enter` to save some space. This is purely cosmetic, the parser has no problem with mixed newlines.
+
 ## Implemented Tablesmith Features
 
 Following are all implemented features of Tablesmith 5.2 and explanations about possible changes and incompatibilites.
@@ -116,9 +132,28 @@ Variables can be assigned in Group entries by using the syntax `|variableName?X|
 * **|A& III|** - Concatenates the text " III" to A's value (Ex: If "A" was "Smith", it is now "Smith III")
 * **|A=orc|** - Sets "A" equal to the word "orc"
 
-## Advanced Group Features
-
 ## Parameters
+
+Tablesmith supports parameters for tables. This can be either passed internally or be gathered as user input before a table is evaluated.
+
+### Parameter Types
+
+Tablesmith supports three types of Parameters:
+
+1. Text
+2. List
+3. Multi-List
+
+## Miscellaneous
+
+### Printing Special Character
+
+The custom build parser allows a lot of characters. For compatibility the following special characters must be escaped to be printed:
+
+* percent sign `%` or
+* square brackets `[` or `]`
+
+Precede the character with the slash character `/`.
 
 ## Tablesmith functions
 
@@ -198,7 +233,7 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 * Sqrt (Square root)
 * Trunc (Truncate)
 
-### Miscellaneous
+### Miscellaneous Functions
 
 * Dice (Roll dice) **Extension**: accepts all Calc expressions and multiply dice not only a modificator (+, -) as inTablesmith 5.2. The 'd' binds first, only braces bind before. Is interchangeable with *Calc*
 * Calc (Mathematical calculations with +, -, \*, /, ^ and braces) **Extension**: is interchangeable with *Dice*
