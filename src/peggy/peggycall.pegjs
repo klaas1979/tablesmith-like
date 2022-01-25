@@ -13,11 +13,12 @@ function toInt(text) {
 }}
 
 GroupFunction
-  = '[' _ table:Name group:('.' @Name)? _ Modifier? _ params:Params? _ ']' {
+  = '[' _ table:Name group:('.' @Name)? _ Modifier? _ params:Params? _ ']' count:Count? {
         if (options == undefined) throw 'Could not parse Call no options provided!';
         options.tablename = table;
         if (group && group.length > 0) options.groupname = group;
         options.parameters = params;
+        if (count && count.length > 0) options.rollCount = count;
       }
 
 Params
@@ -32,6 +33,9 @@ Modifier
 
 ModifierType
   = $[=+-]
+
+Count
+  = ':' first:[1-9] tail:[0-9]* { return [first, ...tail].join(''); }
 
 Name
   = $[a-z0-9 _]i+

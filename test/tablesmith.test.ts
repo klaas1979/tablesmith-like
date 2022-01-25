@@ -97,6 +97,30 @@ describe('Tablesmith#evaluate with params', () => {
   });
 });
 
+describe('Tablesmith#evaluate with count of execution', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('[tablename.Group(p1,p2)]:2 rollCounts', () => {
+    simpleTable = '%p2%,\n@p2,d,Prompt\n%p1%,\n@p1,d,Prompt\n:Start\n1,%p1%-%p2%';
+    tablesmith.addTable(filename, simpleTable);
+    const expression = `[${filename}.Start(p1,p2)]:2`;
+    const result = tablesmith.evaluate(expression);
+    expect(result).toStrictEqual(['p2-p1', 'p2-p1']);
+  });
+  it('[tablename]:100 big roll counts', () => {
+    simpleTable = ':Start\n1,1';
+    tablesmith.addTable(filename, simpleTable);
+    const expression = `[${filename}]:100`;
+    const result = tablesmith.evaluate(expression);
+    const expected = [];
+    for (let index = 0; index < 100; index++) expected.push('1');
+    expect(result).toStrictEqual(expected);
+  });
+});
+
 describe('Tablesmith#evaluate Group calls', () => {
   beforeEach(() => {
     tablesmith.reset();

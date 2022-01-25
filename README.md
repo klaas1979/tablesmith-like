@@ -16,7 +16,7 @@ Basically Tablesmith Tables can be used in the following ways:
 
 ### API
 
-TODO
+The main method to use in the API is `evaluateTable(expression: string)` where the expression is a valid Table call, that may donate the Group to call, define Parameters and the roll count. I.e. `evaluateTable('[Char.name(1,name)]:5')`.
 
 ### Foundry Table integration
 
@@ -174,6 +174,10 @@ Other valid calls are:
 It is not possible to assign values to variables, without a parameter defined.
 
 ## Miscellaneous
+
+### Number of Rolls
+
+A Table call can donate how many rolls should be done by using the syntax `[TableCall]:X` where `TableCall` can be any valid call and `X` donates the number of roles to make.
 
 ### Re Roll Tag
 

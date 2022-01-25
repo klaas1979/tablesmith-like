@@ -29,19 +29,22 @@ class Tablesmith {
    * added modifier in the form "=int", "+int" or "-int".
    * @returns result from Table as text.
    */
-  evaluate(expression: string, parameters: { name: string; value: string | undefined }[] = []): string {
+  evaluate(expression: string, parameters: { name: string; value: string | undefined }[] = []): string | string[] {
     const tableCallValues = this.parseEvaluateExpression(expression);
     if (!tableCallValues.group)
       throw `TSTable for name='${tableCallValues.tablename}' does not contain Group='${tableCallValues.groupname}'! Expression was '${expression}'`;
     const modifier = GroupCallModifierTerm.create(tableCallValues.modifier, tableCallValues.modifierValue);
-    this.resetEvaluationContext();
-    evalcontext.pushCurrentCallTablename(tableCallValues.tablename);
-    if (tableCallValues.parameters)
-      tableCallValues.table?.setParametersForEvaluationByIndex(tableCallValues.parameters);
-    tableCallValues.table?.setParametersForEvaluationByName(parameters);
-    const result = tableCallValues.group.roll(modifier);
-    evalcontext.popCurrentCallTablename();
-    return result;
+    const result = [];
+    for (let count = 0; count < tableCallValues.rollCount; count++) {
+      this.resetEvaluationContext();
+      evalcontext.pushCurrentCallTablename(tableCallValues.tablename);
+      if (tableCallValues.parameters)
+        tableCallValues.table?.setParametersForEvaluationByIndex(tableCallValues.parameters);
+      tableCallValues.table?.setParametersForEvaluationByName(parameters);
+      result.push(tableCallValues.group.roll(modifier));
+      evalcontext.popCurrentCallTablename();
+    }
+    return result.length == 1 ? result[0] : result;
   }
 
   /**

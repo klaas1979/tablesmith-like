@@ -19,12 +19,14 @@ export class TableCallValues {
   modifier: MODIFIERS;
   modifierValue: number;
   parameters: string[] | undefined;
+  rollCount: number;
   constructor() {
     this.tablename = '';
     this.groupname = 'Start';
     this.modifier = MODIFIERS.none;
     this.modifierValue = 0;
     this.parameters = [];
+    this.rollCount = 1;
   }
 
   /**
