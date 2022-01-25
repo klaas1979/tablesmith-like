@@ -9,7 +9,14 @@
   "scripts": [],
   "esmodules": ["module/tablesmith-like.js"],
   "styles": ["styles/tablesmith-like.css"],
-  "packs": [],
+  "packs": [
+    {
+      "name": "tablesmith-like-macros",
+      "label": "Tablesmith Macros",
+      "path": "./packs/tablesmith-like-macros.db",
+      "type": "Macro"
+    }
+  ],
   "dependencies": [
     {
       "name": "lib-wrapper"
