@@ -1,6 +1,6 @@
 # tablesmith-like
 
-![CI](https://github.com/klaas1979/tablesmith-like/actions/workflows/node.js.yml/badge.svg) [![GitHub release](https://img.shields.io/github/release/klaas1979/tablesmith-like?include_prereleases=&sort=semver&color=blue)](https://github.com/klaas1979/tablesmith-like/releases/) [![issues - tablesmith-like](https://img.shields.io/github/issues/klaas1979/tablesmith-like)](https://github.com/klaas1979/tablesmith-like/issues) [![License](https://img.shields.io/badge/License-MIT-blue)](#license)
+![CI](https://github.com/klaas1979/tablesmith-like/actions/workflows/node.js.yml/badge.svg) [![GitHub release](https://img.shields.io/github/release/klaas1979/tablesmith-like?include_prereleases=&sort=semver&color=blue)](https://github.com/klaas1979/tablesmith-like/releases/) [![issues - tablesmith-like](https://img.shields.io/github/issues/klaas1979/tablesmith-like)](https://github.com/klaas1979/tablesmith-like/issues) [![License](https://img.shields.io/badge/License-MIT-blue)](https://github.com/klaas1979/tablesmith-like/blob/main/LICENSE.txt)
 
 Use Tablesmith-like tables in FoundryVTT and create complex nested tables. For more about Tablesmith see the [Tablesmiths Homepage](http://www.mythosa.net/p/tablesmith.html) and the [Forum for TableSmith](https://groups.io/g/tablesmith).
 
@@ -260,6 +260,6 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 
 ## Licensing
 
-<img alt="GitHub" src="https://img.shields.io/github/license/klaas1979/tablesmith-like?style=flat-square">
+#[![License](https://img.shields.io/badge/License-MIT-blue)](https://github.com/klaas1979/tablesmith-like/blob/main/LICENSE.txt)
 
 This work is licensed under Foundry Virtual Tabletop [EULA - Limited License Agreement for module development](https://foundryvtt.com/article/license/).
