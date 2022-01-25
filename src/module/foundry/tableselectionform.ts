@@ -146,7 +146,13 @@ export default class TableSelectionForm extends FormApplication<TableSelectionOp
   _evaluateTable() {
     Logger.debug(false, 'Evaluating table', this.data);
     if (this.data.selected) {
-      this.data.result = tablesmith.evaluate(`[${this.data.selected.name}]`, this._mapParameter());
+      const result = tablesmith.evaluate(`[${this.data.selected.name}]`, this._mapParameter());
+      if (typeof result == 'string') {
+        this.data.result = result;
+      } else {
+        this.data.result = result[0];
+        Logger.error(false, 'Should not happen rollCount > 1 not implemented yet!', this.data);
+      }
       this.render(true);
       if (this.data.chatResults) {
         const chatMessage = new ChatMessage({ flavor: `Table: ${this.data.selected.name}`, content: this.data.result });
