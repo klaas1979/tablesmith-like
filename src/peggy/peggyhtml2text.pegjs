@@ -9,7 +9,7 @@ Content = (BalancedTag / SelfClosingTag / Text / EscapedChar)*
 
 BalancedTag = startTag:StartTag content:Content endTag:EndTag {
     
-    if (startTag == 'p') return `\n${content.join('')}\n`;
+    if (startTag == 'p') return `${content.join('')}\n`;
     return content.join('');
   }
 
@@ -31,10 +31,12 @@ UnquotedAttributeValue = value:decimalDigit*
  
 TagName = chars:[a-zA-Z0-9]+ { return chars.join(''); }
 
-Text = chars:[^<>&'']+  { return chars.join(''); }
+Text = chars:[^<>&''\n]+  { return chars.join(''); }
 
 EscapedChar
-  = '&gt;' { return '>'; }
+  = '\n'  { return ''; }
+  / '&gt;' { return '>'; }
+  / '&nbsp;' { return ' '; }
   / '&lt;'{ return '<'; }
   / '&amp;'{ return '&'; }
   / '&quot;'{ return '"'; }

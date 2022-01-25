@@ -63,7 +63,7 @@ Group
   = GroupName GroupContent+
 /* The name for a group, this is the name without dot. */
 GroupName
-  = type:[:;] repeat:'!'? name:Name EmptyLine { errorHandling(() => {
+  = type:[:;] repeat:'!'? name:Name LineEnd { errorHandling(() => {
             let rangeAsProbability = type === ';';
             let nonRepeating = repeat === '!';
             options?.pf.addGroup(name, rangeAsProbability, nonRepeating);
@@ -72,10 +72,10 @@ GroupName
 
 /* Range is a single line in a group donating the lower and upper end for the result, i.e. 1-2,Result */
 GroupContent
-  = RangeValue Expression+ EmptyLine?
-  / BeforeValue Expression+ EmptyLine?
-  / AfterValue Expression+ EmptyLine?
-  / Ignore
+  = RangeValue Expression+ LineEnd?
+  / BeforeValue Expression+ LineEnd?
+  / AfterValue Expression+ LineEnd?
+  / Comment
 /* Only the range expression with the colon ',' */
 RangeValue
   = (int __ '-' __)? up:int __ [,] { errorHandling(() => {
@@ -83,12 +83,12 @@ RangeValue
           }); }
 /* Only the before expression  */
 BeforeValue
-  = '<' _ { errorHandling(() => {
+  = '<' { errorHandling(() => {
             options?.pf.addBefore();
           }); }
 /* Only the after expression  */
 AfterValue
-  = '>' _ { errorHandling(() => {
+  = '>' { errorHandling(() => {
             options?.pf.addAfter();
           }); }
 
@@ -233,11 +233,11 @@ IfColonSeparator
 
 /* Expressions are all supported values or results for a Range. The Tablesmith functions are defined here. */
 Expression
-  = GroupCall Value? _ Expression*
-  / TsFunction Value? _ Expression*
-  / VariableGet Value? _ Expression*
-  / VariableSet Value? _ Expression*
-  / Value Expression*
+  = _ GroupCall Value? Expression*
+  / _ TsFunction Value? Expression*
+  / _ VariableGet Value? Expression*
+  / _ VariableSet Value? Expression*
+  / _ Value Expression*
 
 /* Expressions that are allowed in a set Variable expression. */
 VariableSetExpressions
@@ -526,7 +526,7 @@ int
  = $([0-9]+)
 
 /** A break within a before, after or Range of a group to make the table more human readable. */
-_ 'Multi Line Whitespace with _'
+ _'Multi Line Whitespace with _'
 = __ ([\n] '_' __)?
 
 __ 'Whitspace'
@@ -534,10 +534,10 @@ __ 'Whitspace'
 
 /* Stuff to ignore within a Table file. */
 Ignore
-  = (EmptyLine / Comment)+
+  = (LineEnd / Comment)+
 
-EmptyLine
- = _ [\n]
+LineEnd
+ = __ '\n'
 
 /* The only allowed comments in Tablesmith */
 Comment

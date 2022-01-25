@@ -9,7 +9,7 @@ class JournalTables {
   static async loadTablesFromJournal() {
     getJournal().contents.forEach((entry) => {
       if (JournalTables.isTablesmithTable(entry.name)) {
-        Logger.info(false, `Found Tablesmith table '${entry.name}'`);
+        Logger.info(false, `Found Tablesmith table '${entry.name}'`, entry.data.content);
         const tablename = JournalTables.tableBasename(entry.name);
         JournalTables.addTableHandleErrors(tablesmith, tablename, entry.data.content);
       }
