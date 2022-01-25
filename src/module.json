@@ -2,7 +2,7 @@
   "name": "tablesmith-like",
   "title": "Tablesmith like Tables",
   "description": "Use Tablesmith-like tables in FoundryVTT and create complex nested tables",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "author": "Klaas Reineke",
   "minimumCoreVersion": "0.9.242",
   "compatibleCoreVersion": "0.9.242",
