@@ -43,16 +43,28 @@ export default class TablesmithApi {
 
   /**
    * Evaluates / rolls on given Tablesmith Table and posts result to chat.
-   * @param name of table to evaluate.
+   * @param call of table to evaluate, may be a call expression or a already parsed
+   * TableCallValues object.
+   * @param chatResults defaults to true, boolean value if results should be added to chat.
    */
-  evaluateTable(call: TableCallValues | string, chatResults = true): string {
+  evaluateTable(call: TableCallValues | string, chatResults = true): string | string[] {
     const expression = typeof call != 'string' ? call.createExpression() : call;
     const result = tablesmith.evaluate(`${expression}`);
     Logger.debug(false, `Result for: ${expression}`, result);
     if (chatResults) {
-      const chatMessage = new ChatMessage({ flavor: `Table: ${expression}`, content: result });
-      ui.chat?.postOne(chatMessage);
+      if (typeof result == 'string') {
+        this._chatResult(expression, result);
+      } else {
+        result.forEach((res) => {
+          this._chatResult(expression, res);
+        });
+      }
     }
     return result;
+  }
+
+  _chatResult(expression: string, result: string) {
+    const chatMessage = new ChatMessage({ flavor: `Table: ${expression}`, content: result });
+    ui.chat?.postOne(chatMessage);
   }
 }

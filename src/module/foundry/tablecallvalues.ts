@@ -44,14 +44,17 @@ export class TableCallValues {
   }
 
   /**
-   * Creates a Tablesmith call expression in format: '['[tablename].[groupname]([modifier][modifiervalue])?(param1,..,param-n)?']'
+   * Creates a Tablesmith call expression in format:
+   * '['[tablename].[groupname]([modifier][modifiervalue])?(param1,..,param-n)?']:rollCount'
    * @returns Expression for Tablesmith evaluate.
    */
   createExpression(): string {
     let mod = '';
     let params = '';
+    let count = '';
     if (this.modifier != MODIFIERS.none) mod = `${this.modifier}${this.modifierValue}`;
     if (this.parameters && this.parameters.length > 0) params = `(${this.parameters.join(',')})`;
-    return `[${this.tablename}.${this.groupname}${mod}${params}]`;
+    if (this.rollCount && this.rollCount > 1) count = `:${this.rollCount}`;
+    return `[${this.tablename}.${this.groupname}${mod}${params}]${count}`;
   }
 }
