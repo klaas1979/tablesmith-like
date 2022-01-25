@@ -106,7 +106,7 @@ will result in:
 ### Variables
 
 Variables must be declared before first use:
-`%VariableName%,x` where the `%` donates beginning and end of the variable name and the `,` shows start of default value `x`. The default value may be omitted.
+`%VariableName%,x` where the `%` donates beginning and end of the variable name and the `,` shows start of default value `x`. The default value may be omitted, but the `,`must be present.
 Note that the variable default value is not evaluated. A group call to like `%var%,[Group]`will lead to the variable containing the string `[Group]` and not the evaluation of the group.
 
 #### Scope
@@ -116,6 +116,9 @@ Variables are scoped to the context of the enclosing Table (not the group) so ea
 #### Using Variables
 
 Variables can be accessed by using the syntax `%variableName%`. The reference is replaced by the current value. References can be used in nearly any place, withing functions and Group calls.
+
+Variables in other tables can be referenced as well using the Syntax `%Tablename!Variablename%`, i.e. `%Char.name%` to reference the variable `name` in Table `Char`.
+
 **Note:** As Tablesmith 5.2 provides no comphrehensive documentation where variables can be referenced this implementation may act differently.
 
 #### Assignment
@@ -132,6 +135,8 @@ Variables can be assigned in Group entries by using the syntax `|variableName?X|
 * **|A& III|** - Concatenates the text " III" to A's value (Ex: If "A" was "Smith", it is now "Smith III")
 * **|A=orc|** - Sets "A" equal to the word "orc"
 
+As with reference Variables in other tables may be assigned using the syntax  `|Tablename!Variablename?Value|`, i.e. `|Char.name=Brognar|` to assign the variable `name` the value `Brognar` in Table `Char`.
+
 ## Parameters
 
 Tablesmith supports parameters for tables. This can be either passed internally or be gathered as user input before a table is evaluated.
@@ -144,7 +149,35 @@ Tablesmith supports three types of Parameters:
 2. List
 3. Multi-List
 
+### Passing Parameters to Tables
+
+Parameters may be passed to tables in group calls. This is optional, but if you pass them, the list must match the number of parameters of the table. To pass parameters, you use parentheses after the call `[Table.Start(1,Amelia)]`
+
+The called table is expected to have to parameters declared in the order as listed in parenthesis, i.e:
+
+```tab
+%number%,
+@number,1,Times?,1,2,3
+%name%,
+@name,Brognar,Enter name:
+```
+
+The parameter `number` is assigned the `1` and the parameter `name` is assigned `Amelia`.
+
+Other valid calls are:
+
+* `[Table.Start(,Amelia)]` number default, name `Amelia`
+* `[Table.Start(1,)]` number `1`, name default
+* `[Table.Start(,)]` both default
+* `[Table.Start]` both default
+
+It is not possible to assign values to variables, without a parameter defined.
+
 ## Miscellaneous
+
+### Re Roll Tag
+
+The re roll Tag for a Table-Group call `[~Table.Group]` is not implemented.
 
 ### Printing Special Character
 
@@ -154,6 +187,10 @@ The custom build parser allows a lot of characters. For compatibility the follow
 * square brackets `[` or `]`
 
 Precede the character with the slash character `/`.
+
+### Pre-Generation Directives
+
+No pre generation directives are implemented.
 
 ## Tablesmith functions
 
