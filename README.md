@@ -4,14 +4,92 @@ Use Tablesmith-like tables in FoundryVTT and create complex nested tables. For m
 
 Tablesmith table syntax allows it to create anything from simple tables and nested tables as in Foundry, to complex linked tables with loops, conditionals, parameters and more.
 
-## Implemented Features
+## Foundry integration
 
-Following are all implemented features of Tablesmith 5.2.
+Basically Tablesmith Tables can be used in the following ways:
+
+1. **API** that is exposed on the module.
+2. A **Group Call expression within a Table Result** of type text, that is dynamically evaluated.
+3. With the **Tablesmith form** to select Tables and roll on them.
+
+### API
+
+TODO
+
+### Foundry Table integration
+
+TODO
+
+### Tablesmith Form
+
+Via Macro TODO
+
+## Implemented Tablesmith Features
+
+Following are all implemented features of Tablesmith 5.2 and explanations about possible changes and incompatibilites.
+
+### Groups
+
+Groups have the format `:GroupName` for a group with ranges where the number declares their final value or the format `;GroupName` for groups with probability ranges, where the number declares the probability.
+
+```tab
+# Standard group
+:Group
+1,One
+2,Two
+3-4,Three-Four
+```
+
+results in the same table as:
+
+```tab
+;Group
+1,One
+1,Two
+2,Three-Four
+```
+
+#### Splitting Group Entries / Ranges
+
+Group entries can be split over multiply lines, by prefixing the next line with an underscore `_`.
+
+```tab
+:Group
+1,First Second
+```
+
+is equal to
+
+```tab
+:Group
+1,First
+_ Second
+```
+
+#### Dynamic Probabilities
+
+Dynamic Probabilities are not implemented.
+
+#### Defaults Pre- or Postfix
+
+Groups can contain a pre- and/or postfix, that is added to all results:
+
+```tab
+:Group
+<,There are
+>, in the woods
+1, Orcs
+2, Goblins
+```
+
+will result in:
+`There are Orcs in the woods` or `There are Goblins in the woods`
 
 ### Variables
 
 Variables must be declared before first use:
 `%VariableName%,x` where the `%` donates beginning and end of the variable name and the `,` shows start of default value `x`. The default value may be omitted.
+Note that the variable default value is not evaluated. A group call to like `%var%,[Group]`will lead to the variable containing the string `[Group]` and not the evaluation of the group.
 
 #### Scope
 
@@ -24,17 +102,19 @@ Variables can be accessed by using the syntax `%variableName%`. The reference is
 
 #### Assignment
 
-Variables can be assigned in Groups by using the syntax `|variableName?X|`. The variable name without `%` must belong to a declared variable. The `?`is the operator for the assignment:
+Variables can be assigned in Group entries by using the syntax `|variableName?X|`. The assignment is taking place and the assignment reference is replaced by an empty string, i.e. leaves no trace in the output. The variable name without `%` must belong to a declared variable. The `?`is the operator for the assignment:
 
-* |A+5| - Adds 5 to "A" (Ex: If "A" was 3, it is now 8)
-* |hp-3| - Subtracts 3 from "hp" (Ex: If "hp" was 4, it is now 1)
-* |gp*2| - Multiplies "gp" by 2 (Ex: If "gp" was 50, it is now 100)
-* |dmg/2| - Divides "dmg" by 2 (Ex: If "dmg" was 10, it is now 5)
-* |attr\2| - Divides "attr" by 2, rounds fractions (Ex: If "attr" was 5, it is now 2)
-* |A>35| - Assigns 35 to "A", if 35 is greater than A's value
-* |A<14| - Assigns 14 to "A", if 14 is less than A's value
-* |A& III| - Concatenates the text " III" to A's value (Ex: If "A" was "Smith", it is now "Smith III")
-* |A=orc| - Sets "A" equal to the word "orc"
+* **|A+5|** - Adds 5 to "A" (Ex: If "A" was 3, it is now 8)
+* **|hp-3|** - Subtracts 3 from "hp" (Ex: If "hp" was 4, it is now 1)
+* **|gp*2|** - Multiplies "gp" by 2 (Ex: If "gp" was 50, it is now 100)
+* **|dmg/2|** - Divides "dmg" by 2 (Ex: If "dmg" was 10, it is now 5)
+* **|attr\2|** - Divides "attr" by 2, rounds fractions (Ex: If "attr" was 5, it is now 2)
+* **|A>35|** - Assigns 35 to "A", if 35 is greater than A's value
+* **|A<14|** - Assigns 14 to "A", if 14 is less than A's value
+* **|A& III|** - Concatenates the text " III" to A's value (Ex: If "A" was "Smith", it is now "Smith III")
+* **|A=orc|** - Sets "A" equal to the word "orc"
+
+## Advanced Group Features
 
 ## Parameters
 
@@ -111,7 +191,7 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 * Max (Maximum value) **Extension**: accepts 2 to n parameters not just 2 as in Tablesmith 5.2
 * Min (Minimum value) **Extension**: accepts 2 to n parameters not just 2 as in Tablesmith 5.2
 * Mod (Remainder)
-* Power (Raise to a power)
+* Power (Raise to a power) **Note**: *Calc* and *Dice* can use the Power sign '^'.
 * Round (Rounding)
 * Sqrt (Square root)
 * Trunc (Truncate)
@@ -138,7 +218,7 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 
 * Bold (Boldface)
 * CR (Carriage return)
-* Line (Insert a horizontal line) **Note:** is printed in HTML but does nothing in Foundry as the base formatting rules it out.
+* Line (Insert a horizontal line) **Note:** is printed in HTML, but does nothing in Foundry as the css formatting standard does not display anything.
 
 **Not implemented:**
 
@@ -169,26 +249,6 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 * Trim (Trim spaces)
 * VowelStart (Vowel starts)
 
-## Foundry integration
-
-Basically Tablesmith Tables can be used in the following ways:
-
-1. **API** that is exposed on the module.
-2. A **Group Call expression within a Table Result** of type text, that is dynamically evaluated.
-3. With the **Tablesmith form** to select Tables and roll on them.
-
-### API
-
-TODO
-
-### Foundry Table integration
-
-TODO
-
-### Tablesmith Form
-
-Via Macro TODO
-
 ## Special Appreciations
 
 * **Bruce Gulke** to create Tablesmith in the first place and give me a thumbs up to create this plugin. Check [Tablesmith](http://www.mythosa.net/p/tablesmith.html) out and buy him a coffee be licensing the shareware version.  
@@ -198,6 +258,6 @@ Via Macro TODO
 
 ## Licensing
 
-<img alt="GitHub" src="https://img.shields.io/github/license/moerill/token-mold?style=flat-square">
+<img alt="GitHub" src="https://img.shields.io/github/license/klaas1979/tablesmith-like?style=flat-square">
 
 This work is licensed under Foundry Virtual Tabletop [EULA - Limited License Agreement for module development](https://foundryvtt.com/article/license/).
