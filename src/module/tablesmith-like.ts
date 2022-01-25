@@ -64,7 +64,12 @@ function tableResultChatTextWrapper(this: TableResult, wrapped: () => string): s
   let replacedResult = originalResult;
   const tableCallValues = getTablesmithApi().parseEvaluateExpression(originalResult);
   if (tableCallValues) {
-    replacedResult = getTablesmithApi().evaluateTable(tableCallValues);
+    const result = getTablesmithApi().evaluateTable(tableCallValues);
+    if (typeof result == 'string') {
+      replacedResult = result;
+    } else {
+      replacedResult = result.join('br />');
+    }
     Logger.debug(false, 'Original and replaced result', originalResult, replacedResult);
   }
   return replacedResult;
