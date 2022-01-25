@@ -23,12 +23,12 @@
     }
   ],
   "socket": false,
-  "url": "",
+  "url": "https://github.com/klaas1979/tablesmith-like",
   "manifest": "",
   "download": "https://host/path/to/0.0.0.zip",
-  "license": "",
-  "readme": "",
-  "bugs": "",
+  "license": "https://github.com/klaas1979/tablesmith-like/blob/main/LICENSE.txt",
+  "readme": "https://github.com/klaas1979/tablesmith-like/blob/main/README.md",
+  "bugs": "https://github.com/klaas1979/tablesmith-like/issues",
   "changelog": "",
   "system": [],
   "library": false
