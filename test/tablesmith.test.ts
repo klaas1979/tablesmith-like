@@ -189,15 +189,3 @@ describe('Tablesmith#evaluate Calling Groups', () => {
     expect(result).toBe('Third');
   });
 });
-
-// eslint:disable
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
-//import Roll from '@league-of-foundry-developers/foundry-vtt-types';
-//import { MockProxy, mockDeep } from 'jest-mock-extended';
-// eslint-disable-next-line jest/no-commented-out-tests
-//it('#mockDeep Test', () => {
-//  const rollMock: MockProxy<Roll> = mockDeep<Roll>();
-//  rollMock.total.mockReturnValue(12);
-//  expect(rollMock.total()).toEqual(12);
-//});
