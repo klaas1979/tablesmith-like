@@ -11,3 +11,5 @@ The release process is build upon [standard-version](https://github.com/conventi
 ### Github Integration
 
 The github process is bootstraped from [foundryvtt-gmScreen](https://github.com/ElfFriend-DnD/foundryvtt-gmScreen) workflows to automatically build and release on a push of a version tag with a semantic version prefixed by a `v`.
+
+For the release process to work the secrects `FOUNDRY_ADMIN_USER` and `FOUNDRY_ADMIN_PW` must be set.
