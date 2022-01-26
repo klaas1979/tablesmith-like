@@ -1,6 +1,7 @@
 import { tablesmith } from '../tablesmith/tablesmithinstance';
 import { TableParameter, TSTable } from '../tablesmith/tstable';
 import { tstables } from '../tablesmith/tstables';
+import ChatResults from './chatresults';
 import { getGame, TABLESMITH_ID } from './helper';
 import JournalTables from './journaltables';
 import { Logger } from './logger';
@@ -16,15 +17,16 @@ interface TableSelectionOptions extends FormApplication.Options {
  * Data class used within the Form.
  */
 class FormData {
-  selected: TSTable | undefined;
-  parameters: TableParameter[];
   tables: TSTable[];
+  callValues: TableCallValues;
+  parameters: TableParameter[];
   chatResults: boolean;
-  result: string;
+  results: string[];
   constructor() {
+    this.callValues = new TableCallValues();
     this.parameters = [];
     this.tables = [];
-    this.result = '';
+    this.results = [];
     this.chatResults = true;
   }
 }
@@ -55,9 +57,11 @@ export default class TableSelectionForm extends FormApplication<TableSelectionOp
   }
 
   async getData(): Promise<FormData> {
+    Logger.debug(false, 'getData', this.data);
     this.data.tables = tstables.getTSTables();
-    if (!this.data.selected) {
+    if (!this.data.callValues.table) {
       this._selectTable(undefined);
+      Logger.debug(false, 'getData -> _selectTable(undefined)');
     }
     // data.parameters <- to store parameter in, read from selected table and set to default on init then to selected
     return this.data;
@@ -67,7 +71,8 @@ export default class TableSelectionForm extends FormApplication<TableSelectionOp
    * Selects given table and set parameters for form.
    * @param table table or name to select, if undefined selects first table in list of tables.
    */
-  protected _selectTable(table: TSTable | string | undefined): void {
+  private _selectTable(table: TSTable | string | undefined): void {
+    Logger.debug(false, 'selectTable', table, this.data);
     table = !table ? this.data.tables[0] : table;
     const tstable =
       typeof table == 'string'
@@ -77,8 +82,9 @@ export default class TableSelectionForm extends FormApplication<TableSelectionOp
         : table;
     if (!tstable) throw `Cannot select table '${table}', not found in loaded tables`;
 
-    if (this.data.selected != tstable) {
-      this.data.selected = tstable;
+    if (this.data.callValues.table != tstable) {
+      this.data.callValues.table = tstable;
+      this.data.callValues.tablename = tstable.name;
       this.data.parameters = tstable.parameters.map((param) => {
         return Object.create(param);
       });
@@ -96,12 +102,17 @@ export default class TableSelectionForm extends FormApplication<TableSelectionOp
         })?.[1] +
           '' ==
         'true';
+      this.data.callValues.rollCount = Number.parseInt(
+        entries.find(([key]) => {
+          return key == 'rollCount';
+        })?.[1] + '',
+      );
       this._selectTable(
         entries.find(([key]) => {
           return key == 'tablename';
         })?.[1],
       );
-      this.data.result = '';
+      this.data.results = [];
       this._updateParameters(entries);
       Logger.debug(false, 'data updated', this.data);
     }
@@ -123,7 +134,7 @@ export default class TableSelectionForm extends FormApplication<TableSelectionOp
 
   activateListeners(html: JQuery): void {
     super.activateListeners(html);
-    Logger.debug(false, 'Listeners', this);
+    Logger.debug(false, 'Listeners', this, this.data);
     html.on('click', '[data-action]', this._handleButtonClick.bind(this));
   }
 
@@ -133,6 +144,7 @@ export default class TableSelectionForm extends FormApplication<TableSelectionOp
     const action = clickedElement.data().action;
     switch (action) {
       case 'evaluate':
+        Logger.debug(false, 'pre evaluateTable call', this.data.callValues);
         this._evaluateTable();
         break;
       case 'reload-tables':
@@ -145,24 +157,19 @@ export default class TableSelectionForm extends FormApplication<TableSelectionOp
 
   _evaluateTable() {
     Logger.debug(false, 'Evaluating table', this.data);
-    if (this.data.selected) {
-      const result = tablesmith.evaluate(`[${this.data.selected.name}]`, this._mapParameter());
-      if (typeof result == 'string') {
-        this.data.result = result;
-      } else {
-        this.data.result = result[0];
-        Logger.error(false, 'Should not happen rollCount > 1 not implemented yet!', this.data);
-      }
+    if (this.data.callValues.table) {
+      this.data.callValues.parameters = this._mapParameter();
+      const results = tablesmith.evaluate(this.data.callValues);
+      this.data.results = typeof results == 'string' ? [results] : results;
       this.render(true);
       if (this.data.chatResults) {
-        const chatMessage = new ChatMessage({ flavor: `Table: ${this.data.selected.name}`, content: this.data.result });
-        ui.chat?.postOne(chatMessage);
+        new ChatResults().chatResults(this.data.callValues, this.data.results);
       }
     } else Logger.warn(false, 'No table selected!');
   }
-  _mapParameter() {
+  _mapParameter(): string[] {
     return this.data.parameters.map((param) => {
-      return { name: param.variable, value: param.defaultValue };
+      return param.defaultValue;
     });
   }
 

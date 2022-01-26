@@ -49,6 +49,7 @@ export class TableCallValues {
    * @returns Expression for Tablesmith evaluate.
    */
   createExpression(): string {
+    this.updateNames();
     let mod = '';
     let params = '';
     let count = '';
@@ -56,5 +57,14 @@ export class TableCallValues {
     if (this.parameters && this.parameters.length > 0) params = `(${this.parameters.join(',')})`;
     if (this.rollCount && this.rollCount > 1) count = `:${this.rollCount}`;
     return `[${this.tablename}.${this.groupname}${mod}${params}]${count}`;
+  }
+
+  /**
+   * Updates Table and group name from set Table and group object, if objects are not set leaves
+   * text values as is.
+   */
+  updateNames(): void {
+    this.tablename = this.table ? this.table.name : this.tablename;
+    this.groupname = this.group ? this.group.name : this.groupname;
   }
 }

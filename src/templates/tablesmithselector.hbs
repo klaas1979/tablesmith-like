@@ -1,13 +1,17 @@
 <form class="editable flexcol" autocomplete="off">
   <section style="flex1">
     <div class="form-group">
+      <label for="rollCount">{{localize "TABLESMITH.rollcount"}}</label>
+      <input name="rollCount" id="rollCount" type="number" min="1" max="100" value="{{callValues.rollCount}}" />
+    </div>
+    <div class="form-group">
       <label for="chatResults">{{localize "TABLESMITH.chatresults"}}</label>
       <input type="checkbox" name="chatResults" id="chatResults" {{checked chatResults}} />
     </div>
     <div class="form-group">
       <label for="tablename">{{localize "TABLESMITH.table"}}</label>
       <select name="tablename" id="tablename">
-        {{selectOptions tables selected=selected.name nameAttr="name" labelAttr="name"}}
+        {{selectOptions tables selected=callValues.table.name nameAttr="name" labelAttr="name"}}
       </select>
     </div>
     {{> modules/tablesmith-like/templates/paramspartial.hbs}}
@@ -17,9 +21,12 @@
     </div>
   </section>
   <section style="flex0">
-    {{#if result}}
+    {{#if results}}
       <h1>{{localize "TABLESMITH.result"}}</h1>
-      <div>{{{result}}}</div>
+      {{#each results}}
+        <h2>#{{ts-add @index 1}} of {{../callValues.rollCount}}</h2>
+        <div>{{{this}}}</div>
+      {{/each}}
     {{/if}}
   </section>
 </form>

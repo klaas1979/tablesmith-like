@@ -25,14 +25,17 @@ class Tablesmith {
   /**
    * Roll on a Table and Group and returns evaluated string. Roll can be preset with optional modifier '=' or
    * roll can be modified by a value using '+' or '-' to add modifier to the roll.
-   * @param expression Expression to get evaluated Text Result for, form is [Table.Group] or [Group] with potential
-   * added modifier in the form "=int", "+int" or "-int".
+   * @param call TableCallValues or Expression to get evaluated Text Result for,
+   * form is [Table.Group] or [Group] with potential added modifier in the form "=int", "+int" or "-int".
    * @returns result from Table as text.
    */
-  evaluate(expression: string, parameters: { name: string; value: string | undefined }[] = []): string | string[] {
-    const tableCallValues = this.parseEvaluateExpression(expression);
+  evaluate(
+    call: TableCallValues | string,
+    parameters: { name: string; value: string | undefined }[] = [],
+  ): string | string[] {
+    const tableCallValues = this.parseEvaluateCall(call);
     if (!tableCallValues.group)
-      throw `TSTable for name='${tableCallValues.tablename}' does not contain Group='${tableCallValues.groupname}'! Expression was '${expression}'`;
+      throw `TSTable for name='${tableCallValues.tablename}' does not contain Group='${tableCallValues.groupname}'! call was '${call}'`;
     const modifier = GroupCallModifierTerm.create(tableCallValues.modifier, tableCallValues.modifierValue);
     const result = [];
     for (let count = 0; count < tableCallValues.rollCount; count++) {
@@ -52,14 +55,23 @@ class Tablesmith {
    * @param expression to parse.
    * @returns TableCallValues to evaluate.
    */
-  parseEvaluateExpression(expression: string): TableCallValues {
-    const tableCallValues = new TableCallValues();
-    callparser.parse(expression, tableCallValues);
+  parseEvaluateCall(call: TableCallValues | string): TableCallValues {
+    const tableCallValues = this._createCallValues(call);
     tableCallValues.table = this.tableForName(tableCallValues.tablename);
     if (!tableCallValues.table)
-      throw `TSTable for name='${tableCallValues.tablename}' not defined! Expression was '${expression}'`;
+      throw `TSTable for name='${tableCallValues.tablename}' not defined! Expression was '${call}'`;
     tableCallValues.group = tableCallValues.table.groupForName(tableCallValues.groupname);
     return tableCallValues;
+  }
+
+  private _createCallValues(call: TableCallValues | string): TableCallValues {
+    if (typeof call == 'string') {
+      const callValues = new TableCallValues();
+      callparser.parse(call, callValues);
+      return callValues;
+    } else {
+      return call;
+    }
   }
 
   /**

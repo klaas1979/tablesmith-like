@@ -3,6 +3,7 @@ import { tablesmith } from '../tablesmith/tablesmithinstance';
 import { Logger } from './logger';
 import { TableCallValues } from './tablecallvalues';
 import TableSelectionForm from './tableselectionform';
+import ChatResults from './chatresults';
 export default class TablesmithApi {
   constructor() {
     JournalTables.loadTablesFromJournal();
@@ -31,12 +32,12 @@ export default class TablesmithApi {
    * @param expression to parse.
    * @returns TableCallValues for expression.
    */
-  parseEvaluateExpression(expression: string): TableCallValues | undefined {
+  parseEvaluateCall(call: TableCallValues | string): TableCallValues | undefined {
     let result = undefined;
     try {
-      result = tablesmith.parseEvaluateExpression(expression);
+      result = tablesmith.parseEvaluateCall(call);
     } catch (error) {
-      Logger.info(false, `Could not parse Expression '${expression}'`);
+      Logger.info(false, `Could not parse Expression '${call}'`);
     }
     return result;
   }
@@ -48,23 +49,15 @@ export default class TablesmithApi {
    * @param chatResults defaults to true, boolean value if results should be added to chat.
    */
   evaluateTable(call: TableCallValues | string, chatResults = true): string | string[] {
-    const expression = typeof call != 'string' ? call.createExpression() : call;
-    const result = tablesmith.evaluate(`${expression}`);
-    Logger.debug(false, `Result for: ${expression}`, result);
-    if (chatResults) {
-      if (typeof result == 'string') {
-        this._chatResult(expression, result);
-      } else {
-        result.forEach((res) => {
-          this._chatResult(expression, res);
-        });
+    let result: string | string[] = '';
+    const callValues = this.parseEvaluateCall(call);
+    if (callValues) {
+      result = tablesmith.evaluate(call);
+      Logger.debug(false, 'Result for', callValues, result);
+      if (chatResults) {
+        new ChatResults().chatResults(callValues, result);
       }
     }
     return result;
-  }
-
-  _chatResult(expression: string, result: string) {
-    const chatMessage = new ChatMessage({ flavor: `Table: ${expression}`, content: result });
-    ui.chat?.postOne(chatMessage);
   }
 }

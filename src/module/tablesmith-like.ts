@@ -50,6 +50,9 @@ Hooks.once('init', async () => {
 // Setup module
 Hooks.once('setup', async () => {
   // Do anything after initialization but before ready
+  Handlebars.registerHelper('ts-add', function (a: string, b: string): number {
+    return Number.parseInt(a) + Number.parseInt(b);
+  });
 });
 
 // When ready
@@ -62,7 +65,7 @@ Hooks.once('ready', async () => {
 function tableResultChatTextWrapper(this: TableResult, wrapped: () => string): string {
   const originalResult = wrapped();
   let replacedResult = originalResult;
-  const tableCallValues = getTablesmithApi().parseEvaluateExpression(originalResult);
+  const tableCallValues = getTablesmithApi().parseEvaluateCall(originalResult);
   if (tableCallValues) {
     const result = getTablesmithApi().evaluateTable(tableCallValues);
     if (typeof result == 'string') {
