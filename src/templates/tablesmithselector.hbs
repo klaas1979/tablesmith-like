@@ -2,15 +2,21 @@
   <section style="flex1">
     <div class="form-group">
       <label for="rollCount">{{localize "TABLESMITH.rollcount"}}</label>
-      <input name="rollCount" id="rollCount" type="number" min="1" max="100" value="{{callValues.rollCount}}" />
+      <input name="callValues.rollCount" id="rollCount" type="number" min="1" max="100" value="{{callValues.rollCount}}" />
     </div>
     <div class="form-group">
       <label for="chatResults">{{localize "TABLESMITH.chatresults"}}</label>
       <input type="checkbox" name="chatResults" id="chatResults" {{checked chatResults}} />
     </div>
     <div class="form-group">
-      <label for="tablename">{{localize "TABLESMITH.table"}}</label>
-      <select name="tablename" id="tablename">
+      <label for="foldername">{{localize "TABLESMITH.folder"}}</label>
+      <select name="folder.name" id="foldername">
+        {{selectOptions folders selected=folder.name nameAttr="name" labelAttr="name"}}
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="callValues.tablename">{{localize "TABLESMITH.table"}}</label>
+      <select name="callValues.tablename" id="callValues.tablename">
         {{selectOptions tables selected=callValues.table.name nameAttr="name" labelAttr="name"}}
       </select>
     </div>

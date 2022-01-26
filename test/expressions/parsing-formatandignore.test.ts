@@ -37,7 +37,7 @@ describe('Parsing Html-Formatted tables escaped chars', () => {
   });
   it('br expression correct simple text', () => {
     simpleTable = '<p>:Start<br />1,{Bold~One}</p>';
-    tablesmith.addTable(filename, simpleTable, 'html');
+    tablesmith.addTable('folder', filename, simpleTable, 'html');
     expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Bold~One}');
   });
 });
@@ -49,18 +49,18 @@ describe('Parsing html line breaks', () => {
   });
   it('newline in html is deleted and needs no _', () => {
     simpleTable = '#stuff before<br/>:Start<br/>1,{Bold~One\n}';
-    tablesmith.addTable(filename, simpleTable, 'html');
+    tablesmith.addTable('folder', filename, simpleTable, 'html');
     expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Bold~One}');
   });
   it('Multi p and br become a single newline', () => {
     simpleTable = ':Start<br/><br/><br/>1,<p>{Bold~</p><br/><p>_One}</p>';
-    tablesmith.addTable(filename, simpleTable, 'html');
+    tablesmith.addTable('folder', filename, simpleTable, 'html');
     expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Bold~One}');
   });
 
   it('Multi Line html', () => {
     simpleTable = '<p> </p>\n<p>:Start</p>\n<p>1,One</p>\n<p>_1<br />_2</p>\n<p>_3</p>\n<p>2,two</p>';
-    tablesmith.addTable(filename, simpleTable, 'html');
+    tablesmith.addTable('folder', filename, simpleTable, 'html');
     expect(tstables.getLastTSTable()?.groupForName('Start')?.firstRange()?.getExpression()).toBe('One123');
   });
 });
@@ -73,31 +73,31 @@ describe('Parsing text ignore stuff', () => {
 
   it('empty line beginning', () => {
     simpleTable = '  \n  \n:Start\n1,One';
-    tablesmith.addTable(filename, simpleTable);
-    expect(tablesmith.addTable(filename, simpleTable)).toBeInstanceOf(TSTable);
+    tablesmith.addTable('folder', filename, simpleTable);
+    expect(tablesmith.addTable('folder', filename, simpleTable)).toBeInstanceOf(TSTable);
   });
 
   it('empty lines between comments', () => {
     simpleTable = '\n\n\n#comment\n\n\n:Start\n1,One';
-    tablesmith.addTable(filename, simpleTable);
-    expect(tablesmith.addTable(filename, simpleTable)).toBeInstanceOf(TSTable);
+    tablesmith.addTable('folder', filename, simpleTable);
+    expect(tablesmith.addTable('folder', filename, simpleTable)).toBeInstanceOf(TSTable);
   });
 
   it('empty lines between var declarations', () => {
     simpleTable = '\n\n\n%var1%,\n\n\n%var2%,\n\n\n:Start\n1,One';
-    tablesmith.addTable(filename, simpleTable);
-    expect(tablesmith.addTable(filename, simpleTable)).toBeInstanceOf(TSTable);
+    tablesmith.addTable('folder', filename, simpleTable);
+    expect(tablesmith.addTable('folder', filename, simpleTable)).toBeInstanceOf(TSTable);
   });
 
   it('empty lines between groups', () => {
     simpleTable = ':Start\n1,One\n\n\n:next\n1,One';
-    tablesmith.addTable(filename, simpleTable);
-    expect(tablesmith.addTable(filename, simpleTable)).toBeInstanceOf(TSTable);
+    tablesmith.addTable('folder', filename, simpleTable);
+    expect(tablesmith.addTable('folder', filename, simpleTable)).toBeInstanceOf(TSTable);
   });
 
   it('emtpyline with spaces and tab ignored', () => {
     simpleTable = '#stuff before\n  \t \n:Start\n#\tcomment\t\n1,{Bold~One}';
-    tablesmith.addTable(filename, simpleTable);
+    tablesmith.addTable('folder', filename, simpleTable);
     expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Bold~One}');
   });
 });

@@ -17,17 +17,92 @@ interface TableSelectionOptions extends FormApplication.Options {
  * Data class used within the Form.
  */
 class FormData {
-  tables: TSTable[];
-  callValues: TableCallValues;
-  parameters: TableParameter[];
-  chatResults: boolean;
-  results: string[];
-  constructor() {
-    this.callValues = new TableCallValues();
-    this.parameters = [];
-    this.tables = [];
-    this.results = [];
-    this.chatResults = true;
+  folder: { name: string } = { name: '' };
+  folders: Array<{ name: string }> = [];
+  tables: TSTable[] = [];
+  callValues: TableCallValues = new TableCallValues();
+  parameters: TableParameter[] = [];
+  chatResults = true;
+  results: string[] = [];
+
+  constructor(folders: string[]) {
+    this.folders = folders.map((f) => {
+      return { name: f };
+    });
+    if (this.folders.length > 0) this.setFoldername(folders[0]);
+    if (this.tables.length > 0) this.setTablename(this.tables[0].name);
+  }
+
+  /**
+   * Handles setting of folder including change of underlying tables.
+   * @param name of selected folder.
+   */
+  setFoldername(name: string) {
+    if (this.foldersContains(name)) {
+      this.folder.name = name;
+      this.tables = tstables.tablesForFolder(name);
+    }
+  }
+
+  /**
+   * Checks if folder is contained in data.
+   * @param folder to check if contained.
+   * @returns true if folders contains a folder with given name, false otherwise.
+   */
+  foldersContains(folder: { name: string } | string): boolean {
+    const name = typeof folder == 'string' ? folder : folder.name;
+    return (
+      this.folders.find((f) => {
+        return name == f.name;
+      }) != undefined
+    );
+  }
+
+  setTablename(tablename: string): void {
+    const table = this.findTable(tablename);
+    if (table) {
+      if (table != this.callValues.table) {
+        this._updateTable(table);
+      }
+    } else if (this.tables.length > 0) {
+      this._updateTable(this.tables[0]);
+    }
+  }
+  private _updateTable(table: TSTable) {
+    this.callValues.tablename = table.name;
+    this.callValues.table = table;
+    this.parameters = table.parameters.map((param) => {
+      return Object.create(param);
+    });
+  }
+
+  /**
+   * Checks if tablename is contained in data.
+   * @param tablename to check if contained.
+   * @returns table if it is contained, undefined if not.
+   */
+  findTable(tablename: string): TSTable | undefined {
+    return this.tables.find((t) => {
+      return tablename == t.name;
+    });
+  }
+
+  /**
+   * Updates parameters for selection and input in form.
+   * @param parameters to update values from.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  updateParameters(parameters: any | undefined): void {
+    Logger.debug(false, 'start updateParameters', parameters);
+    if (parameters) {
+      this.parameters.forEach((param) => {
+        const value = parameters[param.variable];
+        if (value) {
+          param.setDefaultValue(value);
+        }
+      });
+    }
+    Logger.debug(false, 'end updateParameters');
   }
 }
 
@@ -35,7 +110,11 @@ class FormData {
  * Selection form for a Tablesmith call.
  */
 export default class TableSelectionForm extends FormApplication<TableSelectionOptions, FormData, TableCallValues> {
-  data = new FormData();
+  data: FormData;
+  constructor(tableCallValues: TableCallValues, options?: TableSelectionOptions) {
+    super(tableCallValues, options);
+    this.data = new FormData(tstables.folders);
+  }
   /**
    * Adds additional options to default options.
    */
@@ -58,78 +137,22 @@ export default class TableSelectionForm extends FormApplication<TableSelectionOp
 
   async getData(): Promise<FormData> {
     Logger.debug(false, 'getData', this.data);
-    this.data.tables = tstables.getTSTables();
-    if (!this.data.callValues.table) {
-      this._selectTable(undefined);
-      Logger.debug(false, 'getData -> _selectTable(undefined)');
-    }
-    // data.parameters <- to store parameter in, read from selected table and set to default on init then to selected
     return this.data;
   }
 
-  /**
-   * Selects given table and set parameters for form.
-   * @param table table or name to select, if undefined selects first table in list of tables.
-   */
-  private _selectTable(table: TSTable | string | undefined): void {
-    Logger.debug(false, 'selectTable', table, this.data);
-    table = !table ? this.data.tables[0] : table;
-    const tstable =
-      typeof table == 'string'
-        ? this.data.tables.find((tab) => {
-            return tab.name == table;
-          })
-        : table;
-    if (!tstable) throw `Cannot select table '${table}', not found in loaded tables`;
-
-    if (this.data.callValues.table != tstable) {
-      this.data.callValues.table = tstable;
-      this.data.callValues.tablename = tstable.name;
-      this.data.parameters = tstable.parameters.map((param) => {
-        return Object.create(param);
-      });
-    }
-  }
-
   protected async _updateObject(event: Event, formData?: Map<string, string>) {
-    // foundry.utils.expandObject(formData); <- for later
     if (formData) {
-      Logger.debug(false, 'formData', formData);
-      const entries = Object.entries(formData) as [string, string][];
-      this.data.chatResults =
-        entries.find(([key]) => {
-          return key == 'chatResults';
-        })?.[1] +
-          '' ==
-        'true';
-      this.data.callValues.rollCount = Number.parseInt(
-        entries.find(([key]) => {
-          return key == 'rollCount';
-        })?.[1] + '',
-      );
-      this._selectTable(
-        entries.find(([key]) => {
-          return key == 'tablename';
-        })?.[1],
-      );
+      const expanded = foundry.utils.expandObject(formData);
+      Logger.debug(false, 'expandedFormData', expanded);
+      this.data.chatResults = expanded['chatResults'];
+      this.data.setFoldername(expanded['folder']['name']);
+      this.data.setTablename(expanded['callValues']['tablename']);
+      this.data.callValues.rollCount = expanded['callValues']['rollCount'];
       this.data.results = [];
-      this._updateParameters(entries);
-      Logger.debug(false, 'data updated', this.data);
+      this.data.updateParameters(expanded['parameters']);
+      Logger.debug(false, 'updatedFormData', this.data);
     }
-    this.render(true);
-  }
-
-  _updateParameters(keyValues: [string, string][]): void {
-    keyValues.forEach(([key, value]) => {
-      const found = this.data.parameters.find((param) => {
-        return param.variable == key;
-      });
-
-      if (found) {
-        Logger.debug(false, 'setDefaultValue', found.variable, value);
-        found.setDefaultValue(value);
-      }
-    });
+    this.render();
   }
 
   activateListeners(html: JQuery): void {
@@ -161,7 +184,7 @@ export default class TableSelectionForm extends FormApplication<TableSelectionOp
       this.data.callValues.parameters = this._mapParameter();
       const results = tablesmith.evaluate(this.data.callValues);
       this.data.results = typeof results == 'string' ? [results] : results;
-      this.render(true);
+      this.render();
       if (this.data.chatResults) {
         new ChatResults().chatResults(this.data.callValues, this.data.results);
       }
@@ -175,7 +198,7 @@ export default class TableSelectionForm extends FormApplication<TableSelectionOp
 
   _reloadTables() {
     JournalTables.reloadTablesFromJournal();
-    this.render(true);
+    this.render();
     ui.notifications?.info(getGame().i18n.localize('TABLESMITH.tables-reloaded'));
   }
 }

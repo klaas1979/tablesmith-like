@@ -13,13 +13,13 @@ describe('Parsing {LastRoll~', () => {
 
   it('expression representation uses correct function name', () => {
     simpleTable = ':Start\n1,{LastRoll~}\n';
-    tablesmith.addTable(filename, simpleTable);
+    tablesmith.addTable('folder', filename, simpleTable);
     expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{LastRoll~}');
   });
 
   it('returns roll result for the group it is called from', () => {
     simpleTable = ':Start\n1,One{LastRoll~}[Other=2]\n:Other\n1,notused\n2,Two{LastRoll~}';
-    tablesmith.addTable(filename, simpleTable);
+    tablesmith.addTable('folder', filename, simpleTable);
     const result = tablesmith.evaluate(`[${filename}]`);
     expect(result).toBe('One1Two2');
   });
@@ -33,20 +33,20 @@ describe('Parsing {MinVal~', () => {
 
   it('expression representation uses correct function name', () => {
     simpleTable = ':Start\n1,{MinVal~Start,1}\n';
-    tablesmith.addTable(filename, simpleTable);
+    tablesmith.addTable('folder', filename, simpleTable);
     expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{MinVal~Start,1}');
   });
 
   it('min value from first range', () => {
     simpleTable = ':Start\n1-49,{MinVal~Start,1}\n50-100,{MinVal~Start,1}';
-    tablesmith.addTable(filename, simpleTable);
+    tablesmith.addTable('folder', filename, simpleTable);
     const result = tablesmith.evaluate(`[${filename}]`);
     expect(result).toBe('1');
   });
 
   it('min value from second range', () => {
     simpleTable = ':Start\n1-49,{MinVal~Start,2}\n50-100,{MinVal~Start,2}';
-    tablesmith.addTable(filename, simpleTable);
+    tablesmith.addTable('folder', filename, simpleTable);
     const result = tablesmith.evaluate(`[${filename}]`);
     expect(result).toBe('50');
   });
@@ -58,18 +58,18 @@ describe('Parsing {MaxVal~', () => {
   });
   it('expression representation uses correct function name', () => {
     simpleTable = ':Start\n1,{MaxVal~Start,1}\n';
-    tablesmith.addTable(filename, simpleTable);
+    tablesmith.addTable('folder', filename, simpleTable);
     expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{MaxVal~Start,1}');
   });
   it('max value from first range', () => {
     simpleTable = ':Start\n1-49,{MaxVal~Start,1}\n50-100,{MaxVal~Start,1}';
-    tablesmith.addTable(filename, simpleTable);
+    tablesmith.addTable('folder', filename, simpleTable);
     const result = tablesmith.evaluate(`[${filename}]`);
     expect(result).toBe('49');
   });
   it('max value from second range', () => {
     simpleTable = ':Start\n1-49,{MaxVal~Start,2}\n50-100,{MaxVal~Start,2}';
-    tablesmith.addTable(filename, simpleTable);
+    tablesmith.addTable('folder', filename, simpleTable);
     const result = tablesmith.evaluate(`[${filename}]`);
     expect(result).toBe('100');
   });
@@ -82,13 +82,13 @@ describe('Parsing {Reset~', () => {
   });
   it('expression representation uses correct function name', () => {
     simpleTable = ':Start\n1,{Reset~other}\n';
-    tablesmith.addTable(filename, simpleTable);
+    tablesmith.addTable('folder', filename, simpleTable);
     const result = tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression();
     expect(result).toBe('{Reset~other}');
   });
   it('max value from first range', () => {
     simpleTable = ':Start\n1,{Lockout~other,1,2}{Reset~other}\n:!other\n1,One\n2,One\n';
-    tablesmith.addTable(filename, simpleTable);
+    tablesmith.addTable('folder', filename, simpleTable);
     const group = tstables.getLastTSTable().groupForName('other');
     const firstRange = group?.firstRange();
     const lastRange = group?.lastRange();
@@ -105,12 +105,12 @@ describe('Parsing {Lockout~', () => {
   });
   it('expression representation uses correct function name', () => {
     simpleTable = ':Start\n1,{Lockout~other,1}\n';
-    tablesmith.addTable(filename, simpleTable);
+    tablesmith.addTable('folder', filename, simpleTable);
     expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Lockout~other,1}');
   });
   it('{Lockout~other,1} simple value', () => {
     simpleTable = ':Start\n1,{Lockout~other,1}\n:!other\n1-5,One\n6-10,One\n';
-    tablesmith.addTable(filename, simpleTable);
+    tablesmith.addTable('folder', filename, simpleTable);
     const group = tstables.getLastTSTable().groupForName('other');
     const firstRange = group?.firstRange();
     const lastRange = group?.lastRange();
@@ -120,7 +120,7 @@ describe('Parsing {Lockout~', () => {
   });
   it('{Lockout~other,1-5} simple range', () => {
     simpleTable = ':Start\n1,{Lockout~other,1-5}\n:!other\n1-5,One\n6-10,One\n';
-    tablesmith.addTable(filename, simpleTable);
+    tablesmith.addTable('folder', filename, simpleTable);
     const group = tstables.getLastTSTable().groupForName('other');
     const firstRange = group?.firstRange();
     const lastRange = group?.lastRange();
@@ -130,7 +130,7 @@ describe('Parsing {Lockout~', () => {
   });
   it('{Lockout~other,1,2,3,4,5} list of values', () => {
     simpleTable = ':Start\n1,{Lockout~other,1,2,3,4,5}\n:!other\n1-5,One\n6-10,One\n';
-    tablesmith.addTable(filename, simpleTable);
+    tablesmith.addTable('folder', filename, simpleTable);
     const group = tstables.getLastTSTable().groupForName('other');
     const firstRange = group?.firstRange();
     const lastRange = group?.lastRange();
@@ -140,7 +140,7 @@ describe('Parsing {Lockout~', () => {
   });
   it('{Lockout~other,1,2-4,5} list of values and ranges', () => {
     simpleTable = ':Start\n1,{Lockout~other,1,2-4,5}\n:!other\n1-5,One\n6-10,One\n';
-    tablesmith.addTable(filename, simpleTable);
+    tablesmith.addTable('folder', filename, simpleTable);
     const group = tstables.getLastTSTable().groupForName('other');
     const firstRange = group?.firstRange();
     const lastRange = group?.lastRange();
@@ -150,7 +150,7 @@ describe('Parsing {Lockout~', () => {
   });
   it('{Lockout~other,5-6} range hits more than one Group.range', () => {
     simpleTable = ':Start\n1,{Lockout~other,5-6}\n:!other\n1-5,One\n6-10,One\n';
-    tablesmith.addTable(filename, simpleTable);
+    tablesmith.addTable('folder', filename, simpleTable);
     const group = tstables.getLastTSTable().groupForName('other');
     const firstRange = group?.firstRange();
     const lastRange = group?.lastRange();
@@ -160,7 +160,7 @@ describe('Parsing {Lockout~', () => {
   });
   it('{Lockout~other,5-12} no error for out of bounds', () => {
     simpleTable = ':Start\n1,{Lockout~other,5-6}\n:!other\n1-5,One\n6-10,One\n';
-    tablesmith.addTable(filename, simpleTable);
+    tablesmith.addTable('folder', filename, simpleTable);
     const group = tstables.getLastTSTable().groupForName('other');
     const firstRange = group?.firstRange();
     const lastRange = group?.lastRange();
@@ -177,12 +177,12 @@ describe('Parsing {Unlock~', () => {
   });
   it('expression representation uses correct function name', () => {
     simpleTable = ':Start\n1,{Unlock~other,1}\n';
-    tablesmith.addTable(filename, simpleTable);
+    tablesmith.addTable('folder', filename, simpleTable);
     expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Unlock~other,1}');
   });
   it('{Unlock~other,1} simple value', () => {
     simpleTable = ':Start\n1,{Lockout~other,1,6}{Unlock~other,1}\n:!other\n1-5,One\n6-10,One\n';
-    tablesmith.addTable(filename, simpleTable);
+    tablesmith.addTable('folder', filename, simpleTable);
     const group = tstables.getLastTSTable().groupForName('other');
     const firstRange = group?.firstRange();
     const lastRange = group?.lastRange();
@@ -192,7 +192,7 @@ describe('Parsing {Unlock~', () => {
   });
   it('{LocUnlockkout~other,1-5} simple range', () => {
     simpleTable = ':Start\n1,{Lockout~other,1,6}{Unlock~other,1-5}\n:!other\n1-5,One\n6-10,One\n';
-    tablesmith.addTable(filename, simpleTable);
+    tablesmith.addTable('folder', filename, simpleTable);
     const group = tstables.getLastTSTable().groupForName('other');
     const firstRange = group?.firstRange();
     const lastRange = group?.lastRange();
@@ -202,7 +202,7 @@ describe('Parsing {Unlock~', () => {
   });
   it('{Unlock~other,1,2,3,4,5} list of values', () => {
     simpleTable = ':Start\n1,{Lockout~other,1,6}{Unlock~other,1,2,3,4,5}\n:!other\n1-5,One\n6-10,One\n';
-    tablesmith.addTable(filename, simpleTable);
+    tablesmith.addTable('folder', filename, simpleTable);
     const group = tstables.getLastTSTable().groupForName('other');
     const firstRange = group?.firstRange();
     const lastRange = group?.lastRange();
@@ -212,7 +212,7 @@ describe('Parsing {Unlock~', () => {
   });
   it('{Unlock~other,1,2-4,5} list of values and ranges', () => {
     simpleTable = ':Start\n1,{Lockout~other,1,6}{Unlock~other,1,2-4,5}\n:!other\n1-5,One\n6-10,One\n';
-    tablesmith.addTable(filename, simpleTable);
+    tablesmith.addTable('folder', filename, simpleTable);
     const group = tstables.getLastTSTable().groupForName('other');
     const firstRange = group?.firstRange();
     const lastRange = group?.lastRange();
@@ -222,7 +222,7 @@ describe('Parsing {Unlock~', () => {
   });
   it('{Unlock~other,5-6} range hits more than one Group.range', () => {
     simpleTable = ':Start\n1,{Lockout~other,1,6}{Unlock~other,5-6}\n:!other\n1-5,One\n6-10,One\n';
-    tablesmith.addTable(filename, simpleTable);
+    tablesmith.addTable('folder', filename, simpleTable);
     const group = tstables.getLastTSTable().groupForName('other');
     const firstRange = group?.firstRange();
     const lastRange = group?.lastRange();
@@ -232,7 +232,7 @@ describe('Parsing {Unlock~', () => {
   });
   it('{Unlock~other,5-12} no error for out of bounds', () => {
     simpleTable = ':Start\n1,{Lockout~other,1,6}{Unlock~other,5-6}\n:!other\n1-5,One\n6-10,One\n';
-    tablesmith.addTable(filename, simpleTable);
+    tablesmith.addTable('folder', filename, simpleTable);
     const group = tstables.getLastTSTable().groupForName('other');
     const firstRange = group?.firstRange();
     const lastRange = group?.lastRange();

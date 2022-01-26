@@ -4,7 +4,7 @@ import { TSTable } from '../src/module/tablesmith/tstable';
 let tstable: TSTable;
 describe('TSTable', () => {
   beforeEach(() => {
-    tstable = new TSTable('tablename');
+    tstable = new TSTable('folder', 'tablename');
   });
 
   it('#addGroup with same name throws', () => {
@@ -14,7 +14,7 @@ describe('TSTable', () => {
 });
 describe('TSTable#groupForName', () => {
   beforeEach(() => {
-    tstable = new TSTable('tablename');
+    tstable = new TSTable('folder', 'tablename');
   });
 
   it('returns group with name', () => {
@@ -25,7 +25,7 @@ describe('TSTable#groupForName', () => {
 
 describe('TSTable#resetEvaluationContext', () => {
   beforeEach(() => {
-    tstable = new TSTable('tablename');
+    tstable = new TSTable('folder', 'tablename');
     tstable.declareVariable('name', '1');
     const tsgroup = tstable.addGroup('Start', false, true);
     const tsrange = tsgroup.addRange(1);

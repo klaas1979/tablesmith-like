@@ -82,12 +82,18 @@ class Tablesmith {
   }
   /**
    * Parses table and stores it with given filename as Tablename.
+   * @param foldername name of folder table is contained in.
    * @param filename name of file, used as Table name for evaluation.
    * @param fileContent file as a single string to be parsed.
    * @param contentType one of 'plain' default for plain text or 'html' for html text.
    */
-  addTable(filename: string, fileContent: string, contentType: 'plain' | 'html' = 'plain'): TSTable {
-    const tstable = new TSTable(_stripPathAndExtensions(filename));
+  addTable(
+    foldername: string,
+    filename: string,
+    fileContent: string,
+    contentType: 'plain' | 'html' = 'plain',
+  ): TSTable {
+    const tstable = new TSTable(foldername, _stripPathAndExtensions(filename));
     const content = _convertContentType(fileContent, contentType);
     tableparser.parse(content, this._parseOptions(tstable));
     tstables.addTable(tstable);

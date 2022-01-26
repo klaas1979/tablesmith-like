@@ -1,5 +1,6 @@
 {
   "TABLESMITH": {
+    "default-folder": "Default",
     "evaluation-form": "Tablesmith - Evaluation",
     "evaluate-table": "Evaluate",
     "reload-tables": "Reload Tables",
@@ -7,6 +8,7 @@
     "rollcount": "Number of rolls",
     "chatresults": "Add Results to Chat",
     "result": "Result",
+    "folder": "Folder",
     "table": "Table"
   }
 }

@@ -5,7 +5,9 @@ import { TSTable } from './tstable';
  */
 class TSTables {
   tables: TSTable[];
+  folders: string[];
   constructor() {
+    this.folders = [];
     this.tables = [];
   }
 
@@ -21,15 +23,37 @@ class TSTables {
   addTable(table: TSTable): void {
     this.tables.push(table);
     this.tables.sort((a, b) => a.name.localeCompare(b.name));
+    this.addFolder(table.folder);
   }
 
   /**
-   * Searches all tables for table with given name and returns it.
+   * Adds folder ensuring order and not duplicates.
+   * @param folder to add to collection of folders.
+   */
+  private addFolder(folder: string) {
+    if (!this.folders.includes(folder)) {
+      this.folders.push(folder);
+      this.folders.sort((a, b) => a.localeCompare(b));
+    }
+  }
+
+  /**
+   * Searches table with given name and returns it.
    * @param name of table to retrieve.
    * @returns Table for name or undefined if no table was found.
    */
   tableForName(name: string): TSTable | undefined {
     return this.tables.find((current) => current.getName() === name);
+  }
+
+  /**
+   * Searches all tables for given folder and returns them.
+   * @param folder to get tables for.
+   * @returns Table for name or undefined if no table was found.
+   */
+  tablesForFolder(folder: { name: string } | string): TSTable[] {
+    const name = typeof folder == 'string' ? folder : folder.name;
+    return this.tables.filter((current) => current.folder === name);
   }
 
   /**

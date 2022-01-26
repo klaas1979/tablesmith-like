@@ -123,12 +123,14 @@ export class TableParameter {
  */
 export class TSTable {
   groups: TSGroup[];
+  folder: string;
   name: string;
   variables: { name: string; value: string | undefined }[];
   parameters: TableParameter[];
 
-  constructor(name: string) {
+  constructor(folder: string, name: string) {
     this.groups = [];
+    this.folder = folder;
     this.name = name;
     this.variables = [];
     this.parameters = [];

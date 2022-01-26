@@ -1,4 +1,4 @@
-# Tablesmith like Tables
+# Tablesmith like Tables <!-- omit in TOC -->
 
 ![CI](https://github.com/klaas1979/tablesmith-like/actions/workflows/node.js.yml/badge.svg) [![GitHub release](https://img.shields.io/github/release/klaas1979/tablesmith-like?include_prereleases=&sort=semver&color=blue)](https://github.com/klaas1979/tablesmith-like/releases/) [![issues - tablesmith-like](https://img.shields.io/github/issues/klaas1979/tablesmith-like)](https://github.com/klaas1979/tablesmith-like/issues) [![License](https://img.shields.io/badge/License-MIT-blue)](https://github.com/klaas1979/tablesmith-like/blob/main/LICENSE.txt)
 
@@ -6,9 +6,45 @@ Use Tablesmith-like tables in FoundryVTT and create complex nested tables. For m
 
 Tablesmith table syntax allows it to create anything from simple tables and nested tables as in Foundry, to complex linked tables with loops, conditionals, parameters and more.
 
-## Table of Contents
+## Table of Contents <!-- omit in TOC -->
 
-[TOC]
+- [Foundry integration](#foundry-integration)
+  - [API](#api)
+  - [Foundry Table integration](#foundry-table-integration)
+  - [Tablesmith Form](#tablesmith-form)
+  - [Tablesmith Tables](#tablesmith-tables)
+    - [Loaded tables](#loaded-tables)
+    - [Tables in different Journals or Folders](#tables-in-different-journals-or-folders)
+    - [Formatting Tips for Journal Tables](#formatting-tips-for-journal-tables)
+- [Implemented Tablesmith Features](#implemented-tablesmith-features)
+  - [Groups](#groups)
+    - [Splitting Group Entries / Ranges](#splitting-group-entries--ranges)
+    - [Dynamic Probabilities](#dynamic-probabilities)
+    - [Defaults Pre- or Postfix](#defaults-pre--or-postfix)
+  - [Variables](#variables)
+    - [Scope](#scope)
+    - [Using Variables](#using-variables)
+    - [Assignment](#assignment)
+- [Parameters](#parameters)
+  - [Parameter Types](#parameter-types)
+  - [Passing Parameters to Tables](#passing-parameters-to-tables)
+- [Miscellaneous](#miscellaneous)
+  - [Number of Rolls](#number-of-rolls)
+  - [Re Roll Tag](#re-roll-tag)
+  - [Printing Special Character](#printing-special-character)
+  - [Pre-Generation Directives](#pre-generation-directives)
+- [Tablesmith functions](#tablesmith-functions)
+  - [Conditional](#conditional)
+  - [Datasets](#datasets)
+  - [Group and Tables](#group-and-tables)
+  - [Interface](#interface)
+  - [Logical](#logical)
+  - [Math](#math)
+  - [Miscellaneous Functions](#miscellaneous-functions)
+  - [Formatting and Layout](#formatting-and-layout)
+  - [Text](#text)
+- [Special Appreciations](#special-appreciations)
+- [Licensing](#licensing)
 
 ## Foundry integration
 
@@ -37,6 +73,7 @@ Tables are created as Journal entries. Journal entries provide an easy way to ad
 #### Loaded tables
 
 All Journal entries where there name ends with `.tab` are loaded. The resulting name is omitting the extension, i.e. `Monsters.tab` results in the Table name `Monsters`.
+Each table is placed in a folder named after the folder they are contained in. If a table is in no folder it is placed in a `Default` folder.
 
 #### Tables in different Journals or Folders
 
@@ -129,15 +166,15 @@ Variables in other tables can be referenced as well using the Syntax `%Tablename
 
 Variables can be assigned in Group entries by using the syntax `|variableName?X|`. The assignment is taking place and the assignment reference is replaced by an empty string, i.e. leaves no trace in the output. The variable name without `%` must belong to a declared variable. The `?`is the operator for the assignment:
 
-* **|A+5|** - Adds 5 to "A" (Ex: If "A" was 3, it is now 8)
-* **|hp-3|** - Subtracts 3 from "hp" (Ex: If "hp" was 4, it is now 1)
-* **|gp*2|** - Multiplies "gp" by 2 (Ex: If "gp" was 50, it is now 100)
-* **|dmg/2|** - Divides "dmg" by 2 (Ex: If "dmg" was 10, it is now 5)
-* **|attr\2|** - Divides "attr" by 2, rounds fractions (Ex: If "attr" was 5, it is now 2)
-* **|A>35|** - Assigns 35 to "A", if 35 is greater than A's value
-* **|A<14|** - Assigns 14 to "A", if 14 is less than A's value
-* **|A& III|** - Concatenates the text " III" to A's value (Ex: If "A" was "Smith", it is now "Smith III")
-* **|A=orc|** - Sets "A" equal to the word "orc"
+- **|A+5|** - Adds 5 to "A" (Ex: If "A" was 3, it is now 8)
+- **|hp-3|** - Subtracts 3 from "hp" (Ex: If "hp" was 4, it is now 1)
+- **|gp*2|** - Multiplies "gp" by 2 (Ex: If "gp" was 50, it is now 100)
+- **|dmg/2|** - Divides "dmg" by 2 (Ex: If "dmg" was 10, it is now 5)
+- **|attr\2|** - Divides "attr" by 2, rounds fractions (Ex: If "attr" was 5, it is now 2)
+- **|A>35|** - Assigns 35 to "A", if 35 is greater than A's value
+- **|A<14|** - Assigns 14 to "A", if 14 is less than A's value
+- **|A& III|** - Concatenates the text " III" to A's value (Ex: If "A" was "Smith", it is now "Smith III")
+- **|A=orc|** - Sets "A" equal to the word "orc"
 
 As with reference Variables in other tables may be assigned using the syntax  `|Tablename!Variablename?Value|`, i.e. `|Char.name=Brognar|` to assign the variable `name` the value `Brognar` in Table `Char`.
 
@@ -170,10 +207,10 @@ The parameter `number` is assigned the `1` and the parameter `name` is assigned 
 
 Other valid calls are:
 
-* `[Table.Start(,Amelia)]` number default, name `Amelia`
-* `[Table.Start(1,)]` number `1`, name default
-* `[Table.Start(,)]` both default
-* `[Table.Start]` both default
+- `[Table.Start(,Amelia)]` number default, name `Amelia`
+- `[Table.Start(1,)]` number `1`, name default
+- `[Table.Start(,)]` both default
+- `[Table.Start]` both default
 
 It is not possible to assign values to variables, without a parameter defined.
 
@@ -191,8 +228,8 @@ The re roll Tag for a Table-Group call `[~Table.Group]` is not implemented.
 
 The custom build parser allows a lot of characters. For compatibility the following special characters must be escaped to be printed:
 
-* percent sign `%` or
-* square brackets `[` or `]`
+- percent sign `%` or
+- square brackets `[` or `]`
 
 Precede the character with the slash character `/`.
 
@@ -206,137 +243,137 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 
 ### Conditional
 
-* If (Choose one option or another, ternary operator with *expr ? value 1 **/** value 1*)
-* IIf (Choose one option or another, ternary operator with *expr ? value 1 **:** value 1*)
-* Loop (Repeat something a number of times)
-* Select (Choose one option of many)
-* While (While loop)
+- If (Choose one option or another, ternary operator with *expr ? value 1 **/** value 1*)
+- IIf (Choose one option or another, ternary operator with *expr ? value 1 **:** value 1*)
+- Loop (Repeat something a number of times)
+- Select (Choose one option of many)
+- While (While loop)
 
 ### Datasets
 
 **Not implemented:**
 
-* DSAdd (Add item)
-* DSCalc (Calculate on items)
-* DSCount (Count items)
-* DSCreate (Create dataset)
-* DSFind (Find an item)
-* DSGet (Get a value from an item)
-* DSRandomize (Randomize items)
-* DSRead (Read in a dataset file)
-* DSRemove (Remove an item)
-* DSRoll (Roll for an item)
-* DSSet (Set a value in an item)
-* DSSort (Sort items)
-* DSWrite (Write dataset to a file)
+- DSAdd (Add item)
+- DSCalc (Calculate on items)
+- DSCount (Count items)
+- DSCreate (Create dataset)
+- DSFind (Find an item)
+- DSGet (Get a value from an item)
+- DSRandomize (Randomize items)
+- DSRead (Read in a dataset file)
+- DSRemove (Remove an item)
+- DSRoll (Roll for an item)
+- DSSet (Set a value in an item)
+- DSSort (Sort items)
+- DSWrite (Write dataset to a file)
 
 ### Group and Tables
 
-* Count (Count group entries)
-* LastRoll (Gets the last value generated on a group roll)
-* Lockout (Lockout entries in a non-repeating group)
-* MinVal (Minimum value of entry)
-* MaxVal (Maximum value of entry)
-* Reset (Reset group)
-* Unlock (Unlock entry)
+- Count (Count group entries)
+- LastRoll (Gets the last value generated on a group roll)
+- Lockout (Lockout entries in a non-repeating group)
+- MinVal (Minimum value of entry)
+- MaxVal (Maximum value of entry)
+- Reset (Reset group)
+- Unlock (Unlock entry)
 
 **Not implemented:**
 
-* Stop (Stop table generation)
-* Used (Used already)
+- Stop (Stop table generation)
+- Used (Used already)
 
 ### Interface
 
 **Not implemented:**
 
-* Generate (Generation link)
-* InputList (Input a list option from the user)
-* InputText (Input a value from the user)
-* Iteration (Get the current roll the table is on)
-* Msg (Message box)
-* Note (Notation)
-* Status (Display status)
+- Generate (Generation link)
+- InputList (Input a list option from the user)
+- InputText (Input a value from the user)
+- Iteration (Get the current roll the table is on)
+- Msg (Message box)
+- Note (Notation)
+- Status (Display status)
 
 ### Logical
 
-* And (Logical And) **Extension**: accepts 2 to n parameters not just 2 as in Tablesmith 5.2
-* IsNumber (Determines if a value is a number or not)
-* Or (Logical OR) **Extension**: accepts 2 to n parameters not just 2 as in Tablesmith 5.2
-* Xor (Logical exclusive OR) **Extension**: accepts 2 to n parameters not just 2 as in Tablesmith 5.2
+- And (Logical And) **Extension**: accepts 2 to n parameters not just 2 as in Tablesmith 5.2
+- IsNumber (Determines if a value is a number or not)
+- Or (Logical OR) **Extension**: accepts 2 to n parameters not just 2 as in Tablesmith 5.2
+- Xor (Logical exclusive OR) **Extension**: accepts 2 to n parameters not just 2 as in Tablesmith 5.2
 
 ### Math
 
-* Abs (Absolute value)
-* Calc (Calculate)
-* Ceil (Ceiling integer)
-* Floor (Floor integer)
-* Max (Maximum value) **Extension**: accepts 2 to n parameters not just 2 as in Tablesmith 5.2
-* Min (Minimum value) **Extension**: accepts 2 to n parameters not just 2 as in Tablesmith 5.2
-* Mod (Remainder)
-* Power (Raise to a power) **Note**: *Calc* and *Dice* can use the Power sign '^'.
-* Round (Rounding)
-* Sqrt (Square root)
-* Trunc (Truncate)
+- Abs (Absolute value)
+- Calc (Calculate)
+- Ceil (Ceiling integer)
+- Floor (Floor integer)
+- Max (Maximum value) **Extension**: accepts 2 to n parameters not just 2 as in Tablesmith 5.2
+- Min (Minimum value) **Extension**: accepts 2 to n parameters not just 2 as in Tablesmith 5.2
+- Mod (Remainder)
+- Power (Raise to a power) **Note**: *Calc* and *Dice* can use the Power sign '^'.
+- Round (Rounding)
+- Sqrt (Square root)
+- Trunc (Truncate)
 
 ### Miscellaneous Functions
 
-* Dice (Roll dice) **Extension**: accepts all Calc expressions and multiply dice not only a modificator (+, -) as inTablesmith 5.2. The 'd' binds first, only braces bind before. Is interchangeable with *Calc*
-* Calc (Mathematical calculations with +, -, \*, /, ^ and braces) **Extension**: is interchangeable with *Dice*
-* Param (Parameter item)
+- Dice (Roll dice) **Extension**: accepts all Calc expressions and multiply dice not only a modificator (+, -) as inTablesmith 5.2. The 'd' binds first, only braces bind before. Is interchangeable with *Calc*
+- Calc (Mathematical calculations with +, -, \*, /, ^ and braces) **Extension**: is interchangeable with *Dice*
+- Param (Parameter item)
 
 **Not implemented:**
 
-* Debug (Debug)
-* Extern (External call)
-* GroupExists (Does a group exist)
-* Log (Append to a log file)
-* LogNew (Write to a new log file)
-* OrderAsc (Order ascending)
-* OrderDesc (Order descending)
-* TableExists (Does a table exist)
-* Version (Version)
+- Debug (Debug)
+- Extern (External call)
+- GroupExists (Does a group exist)
+- Log (Append to a log file)
+- LogNew (Write to a new log file)
+- OrderAsc (Order ascending)
+- OrderDesc (Order descending)
+- TableExists (Does a table exist)
+- Version (Version)
 
 ### Formatting and Layout
 
-* Bold (Boldface)
-* CR (Carriage return)
-* Line (Insert a horizontal line) **Note:** is printed in HTML, but does nothing in Foundry as the css formatting standard does not display anything.
+- Bold (Boldface)
+- CR (Carriage return)
+- Line (Insert a horizontal line) **Note:** is printed in HTML, but does nothing in Foundry as the css formatting standard does not display anything.
 
 **Not implemented:**
 
-* Italic (Italicize text)
-* Color (Color text)
-* Picture (Display picture)
+- Italic (Italicize text)
+- Color (Color text)
+- Picture (Display picture)
 
 ### Text
 
-* AorAn (A or An)
-* Cap (Capitalize)
-* CapEachWord (Capitalize each word)
-* Char (Retrieve a single character)
-* CommaReplace (Replace or insert commas)
-* Find (Find text within other text)
-* LCase (Lower case)
-* Left (Retrieve leftmost characters)
-* Length (Get the length of some text)
-* Mid (Retrieve middle characters)
-* Ordinal (Ordinal number)
-* Plural (Make string plural)
-* PluralIf (Conditional make string plural)
-* Replace (Replace text)
-* UCase (Upper case)
-* Right (Retrieve rightmost characters)
-* Space (Insert spaces)
-* Split (Split)
-* Trim (Trim spaces)
-* VowelStart (Vowel starts)
+- AorAn (A or An)
+- Cap (Capitalize)
+- CapEachWord (Capitalize each word)
+- Char (Retrieve a single character)
+- CommaReplace (Replace or insert commas)
+- Find (Find text within other text)
+- LCase (Lower case)
+- Left (Retrieve leftmost characters)
+- Length (Get the length of some text)
+- Mid (Retrieve middle characters)
+- Ordinal (Ordinal number)
+- Plural (Make string plural)
+- PluralIf (Conditional make string plural)
+- Replace (Replace text)
+- UCase (Upper case)
+- Right (Retrieve rightmost characters)
+- Space (Insert spaces)
+- Split (Split)
+- Trim (Trim spaces)
+- VowelStart (Vowel starts)
 
 ## Special Appreciations
 
-* **Bruce Gulke** to create Tablesmith in the first place and give me a thumbs up to create this plugin. Check [Tablesmith](http://www.mythosa.net/p/tablesmith.html) out and buy him a coffee be licensing the shareware version.  
-* **FoundryVTT Discord** for supporting with all my questions about Foundry development. Especially @ghost and @LukeAbby for helping me with all starting questions.
-* **League of Extraordinary FoundryVTT Developers** and all the other people for cool support documentation and tools to make this development possible in the first place.
-* Thanks to @ghost-fvtt for the ![foundry-factory](https://github.com/ghost-fvtt/foundry-factory) as bootstrapping start.
+- **Bruce Gulke** to create Tablesmith in the first place and give me a thumbs up to create this plugin. Check [Tablesmith](http://www.mythosa.net/p/tablesmith.html) out and buy him a coffee be licensing the shareware version.  
+- **FoundryVTT Discord** for supporting with all my questions about Foundry development. Especially @ghost and @LukeAbby for helping me with all starting questions.
+- **League of Extraordinary FoundryVTT Developers** and all the other people for cool support documentation and tools to make this development possible in the first place.
+- Thanks to @ghost-fvtt for the ![foundry-factory](https://github.com/ghost-fvtt/foundry-factory) as bootstrapping start.
 
 ## Licensing
 
