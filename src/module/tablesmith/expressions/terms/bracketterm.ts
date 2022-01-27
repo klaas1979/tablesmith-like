@@ -1,24 +1,27 @@
-import Evalcontext from '../evaluationcontext';
-import Term from './term';
-import TermResult from './termresult';
+import TSGroup from '../../tsgroup';
+import TSExpression from '../tsexpression';
+import TSExpressionResult from '../tsexpressionresult';
 
 /**
  * A mathematical Bracket to order the evaluation of mathematical expressions.
  * All operations within the bracket are added to a single term.
  */
-class BracketTerm implements Term {
-  term: Term;
-  constructor(term: Term) {
+export default class BracketTerm implements TSExpression {
+  term: TSExpression;
+  constructor(term: TSExpression) {
     this.term = term;
   }
 
-  getTerm(): string {
-    return `(${this.term.getTerm()})`;
+  getExpression(): string {
+    return `(${this.term.getExpression()})`;
   }
 
-  roll(evalcontext: Evalcontext): TermResult {
-    return this.term.roll(evalcontext);
+  evaluate(): TSExpressionResult {
+    return this.term.evaluate();
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setGroup(group: TSGroup): void {
+    // empty nothing must be set for this expression
   }
 }
-
-export default BracketTerm;

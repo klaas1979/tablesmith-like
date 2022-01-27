@@ -1,4 +1,5 @@
 import TSExpression from './expressions/tsexpression';
+import TSExpressionResult from './expressions/tsexpressionresult';
 import TSExpressions from './expressions/tsexpressions';
 
 class TSRange {
@@ -42,7 +43,7 @@ class TSRange {
    * Text result for this range.
    * @returns strnig representing the evaluated expressions for this range.
    */
-  evaluate(): string {
+  evaluate(): TSExpressionResult {
     return this.expressions.evaluate();
   }
 

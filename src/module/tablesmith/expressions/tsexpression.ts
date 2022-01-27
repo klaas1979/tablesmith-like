@@ -1,4 +1,5 @@
 import TSGroup from '../tsgroup';
+import TSExpressionResult from './tsexpressionresult';
 
 /**
  * Tablesmith expressions make up the values of a Range. If a Range is rolled the TSExpression
@@ -8,7 +9,7 @@ interface TSExpression {
   /**
    * Returns the result for this expression.
    */
-  evaluate(): string;
+  evaluate(): TSExpressionResult;
 
   /**
    * Returns the definition of the expression without evaluating it's result.

@@ -1,6 +1,7 @@
 import TSGroup from '../tsgroup';
 import SelectTuple from './selecttuple';
 import TSExpression from './tsexpression';
+import TSExpressionResult from './tsexpressionresult';
 import TSExpressions from './tsexpressions';
 
 /**
@@ -15,13 +16,13 @@ class TSSelectExpression implements TSExpression {
     this.defaultValue = defaultValue;
     this.selectTuples = selectTuples;
   }
-  evaluate(): string {
-    const selectorValue = this.selector.evaluate().trim();
+  evaluate(): TSExpressionResult {
+    const selectorValue = this.selector.evaluate().asString().trim();
     let result;
     this.selectTuples.forEach((tuple) => {
-      if (tuple.key.evaluate().trim() == selectorValue) result = tuple.value.evaluate();
+      if (tuple.key.evaluate().asString().trim() == selectorValue) result = tuple.value.evaluate().asString();
     });
-    return result ? result : this.defaultValue.evaluate();
+    return new TSExpressionResult(result ? result : this.defaultValue.evaluate().asString());
   }
 
   getExpression(): string {

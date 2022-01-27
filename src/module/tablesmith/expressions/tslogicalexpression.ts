@@ -1,6 +1,7 @@
 import BooleanComparison from './booleancomparison';
 import TSExpression from './tsexpression';
 import TSGroup from '../tsgroup';
+import TSExpressionResult from './tsexpressionresult';
 
 /**
  * TS Function for chaining boolean expressions "And" or "Or".
@@ -13,11 +14,11 @@ class TSLogicalExpression implements TSExpression {
     this.comparisons = comparisons;
   }
 
-  evaluate(): string {
+  evaluate(): TSExpressionResult {
     let result = '-1';
     const results: string[] = [];
     this.comparisons.forEach((comparison) => {
-      results.push(comparison.evaluate());
+      results.push(comparison.evaluate().trim());
     });
     if (results.includes('-1')) {
       result = '-1';
@@ -29,7 +30,7 @@ class TSLogicalExpression implements TSExpression {
       const numTrueValue = results.reduce((sum, current) => sum + Number.parseInt(current), 0);
       result = numTrueValue == 1 ? '1' : '0';
     }
-    return result;
+    return new TSExpressionResult(result);
   }
 
   getExpression(): string {

@@ -1,6 +1,7 @@
 import { tstables } from '../tstables';
 import TSGroup from '../tsgroup';
 import TSExpression from './tsexpression';
+import TSExpressionResult from './tsexpressionresult';
 
 /**
  * Expression to give Count in a group.
@@ -12,11 +13,11 @@ class TSGroupCountExpression implements TSExpression {
     this.tablename = tablename;
     this.groupExpression = groupExpression;
   }
-  evaluate(): string {
-    const groupname = this.groupExpression.evaluate();
+  evaluate(): TSExpressionResult {
+    const groupname = this.groupExpression.evaluate().trim();
     const group = tstables.tableForName(this.tablename)?.groupForName(groupname);
     if (!group) throw `Cannot Count group '${groupname}' in table '${groupname}', not defined!`;
-    return `${group.count()}`;
+    return new TSExpressionResult(group.count());
   }
 
   getExpression(): string {

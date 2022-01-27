@@ -1,6 +1,7 @@
 import TSGroup from '../tsgroup';
 import { TableParameter } from '../tstable';
 import TSExpression from './tsexpression';
+import TSExpressionResult from './tsexpressionresult';
 
 /**
  * Param Expression that returns value for index of a param list.
@@ -16,8 +17,8 @@ class TSParamExpression implements TSExpression {
     this.parameters = parameters;
   }
 
-  evaluate(): string {
-    const variable = this.varExpression.evaluate().trim();
+  evaluate(): TSExpressionResult {
+    const variable = this.varExpression.evaluate().asString().trim();
     const index = this.evaluateIndex();
     const param = this.parameters.find((param) => {
       return param.variable == variable;
@@ -25,14 +26,11 @@ class TSParamExpression implements TSExpression {
     if (!param) throw `No param for variable name '${variable}'`;
     if (index < 1 || index > param.options.length)
       throw `Index for Options of variable '${variable}' out of bounds was '${index}' allowed '1-${param.options.length}'`;
-    return param.options[index - 1].value;
+    return new TSExpressionResult(param.options[index - 1].value);
   }
 
   private evaluateIndex(): number {
-    const index = this.indexExpression.evaluate();
-    const indexNum = Number.parseInt(index);
-    if (Number.isNaN(indexNum)) throw `Index was '${index}' must be integer from 1 to max number of selecteable values`;
-    return indexNum;
+    return this.indexExpression.evaluate().asInt();
   }
 
   getExpression(): string {

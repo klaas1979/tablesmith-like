@@ -1,12 +1,12 @@
+import TSExpression from '../tsexpression';
 import BaseMathTerm from './basemathterm';
-import Term from './term';
 import TermCalc from './termcalc';
 
 /**
  * Division term for the "/" operator.
  */
-class DivTerm extends BaseMathTerm implements TermCalc {
-  constructor(termA: Term, termB: Term) {
+export default class DivTerm extends BaseMathTerm implements TermCalc {
+  constructor(termA: TSExpression, termB: TSExpression) {
     super(termA, termB);
     super.termCalc = this;
   }
@@ -18,5 +18,3 @@ class DivTerm extends BaseMathTerm implements TermCalc {
     return '/';
   }
 }
-
-export default DivTerm;

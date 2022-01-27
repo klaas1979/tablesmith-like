@@ -1,5 +1,6 @@
 import TSGroup from '../tsgroup';
 import TSExpression from './tsexpression';
+import TSExpressionResult from './tsexpressionresult';
 import TSExpressions from './tsexpressions';
 
 /**
@@ -15,11 +16,11 @@ class BooleanComparison implements TSExpression {
     this.ifExpression2 = ifExpression2;
   }
 
-  evaluate(): string {
+  evaluate(): TSExpressionResult {
     let boolResult;
     try {
-      const e1 = this.ifExpression1.evaluate(),
-        e2 = this.ifExpression2.evaluate();
+      const e1 = this.ifExpression1.evaluate().asString(),
+        e2 = this.ifExpression2.evaluate().asString();
       switch (this.operator) {
         case '=':
           boolResult = e1 == e2;
@@ -40,11 +41,11 @@ class BooleanComparison implements TSExpression {
           boolResult = int(e1) >= int(e2);
           break;
         default:
-          return '-1'; // error should throw
+          return new TSExpressionResult('-1'); // error should throw
       }
-      return boolResult ? '1' : '0';
+      return new TSExpressionResult(boolResult ? '1' : '0');
     } catch (error) {
-      return '-1';
+      return new TSExpressionResult('-1');
     }
   }
 

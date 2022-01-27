@@ -1,6 +1,7 @@
 import { tstables } from '../tstables';
 import TSGroup from '../tsgroup';
 import TSExpression from './tsexpression';
+import TSExpressionResult from './tsexpressionresult';
 
 /**
  * Simple Text Expression as value of a Range in a Group or part of the value, i.e. prefix or suffix to a TermExpression.
@@ -16,15 +17,15 @@ class TSGroupLockExpression implements TSExpression {
     this.groupExpression = groupExpression;
     this.parameters = parameters;
   }
-  evaluate(): string {
+  evaluate(): TSExpressionResult {
     const table = tstables.tableForName(this.tablename);
-    const groupname = this.groupExpression.evaluate();
+    const groupname = this.groupExpression.evaluate().trim();
     const group = table?.groupForName(groupname);
     if (!group) throw `Cannot ${this.functionname} group '${groupname}' in table '${this.tablename}', not defined!`;
     let params = '';
     this.parameters.forEach((param) => {
       if (params.length > 0) params += ',';
-      params += param.evaluate();
+      params += param.evaluate().asString();
     });
     params.split(',').forEach((range) => {
       const splitted = range.trim().split('-');
@@ -41,7 +42,7 @@ class TSGroupLockExpression implements TSExpression {
         this.changeLockState(group, splitted[0]);
       }
     });
-    return '';
+    return new TSExpressionResult('');
   }
 
   private changeLockState(group: TSGroup, value: number | string): void {
@@ -62,7 +63,7 @@ class TSGroupLockExpression implements TSExpression {
     const gne = this.groupExpression.getExpression();
     let parameters = '';
     this.parameters.forEach((param) => {
-      parameters += `,${param.evaluate()}`;
+      parameters += `,${param.evaluate().asString()}`;
     });
     return `{${this.functionname}~${gne}${parameters}}`;
   }

@@ -1,12 +1,12 @@
+import TSExpression from '../tsexpression';
 import BaseMathTerm from './basemathterm';
-import Term from './term';
 import TermCalc from './termcalc';
 
 /**
  * MinusTerm is used for "-" calculations.
  */
-class MinusTerm extends BaseMathTerm implements TermCalc {
-  constructor(termA: Term, termB: Term) {
+export default class MinusTerm extends BaseMathTerm implements TermCalc {
+  constructor(termA: TSExpression, termB: TSExpression) {
     super(termA, termB);
     super.termCalc = this;
   }
@@ -18,5 +18,3 @@ class MinusTerm extends BaseMathTerm implements TermCalc {
     return '-';
   }
 }
-
-export default MinusTerm;

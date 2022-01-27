@@ -1,5 +1,6 @@
 import TSGroup from '../tsgroup';
 import TSExpression from './tsexpression';
+import TSExpressionResult from './tsexpressionresult';
 import TSExpressions from './tsexpressions';
 
 /**
@@ -12,17 +13,17 @@ class TSWhileExpression implements TSExpression {
     this.checkExpression = checkExpression;
     this.block = block;
   }
-  evaluate(): string {
+  evaluate(): TSExpressionResult {
     let result = '';
     let checkResult = this.checkExpression.evaluate();
     let counter = 0;
-    while (checkResult != '0') {
-      result += this.block.evaluate();
+    while (checkResult.asString() != '0') {
+      result += this.block.evaluate().asString();
       checkResult = this.checkExpression.evaluate();
       counter += 1;
       if (counter > 100000) throw `TSWhileExpression.evaluate() looped 100000 times, aborting: ${this.getExpression()}`;
     }
-    return result;
+    return new TSExpressionResult(result);
   }
 
   getExpression(): string {

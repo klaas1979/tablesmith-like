@@ -1,22 +1,24 @@
-import Evalcontext from '../evaluationcontext';
-import Term from './term';
-import TermResult from './termresult';
+import TSGroup from '../../tsgroup';
+import TSExpression from '../tsexpression';
+import TSExpressionResult from '../tsexpressionresult';
 
 /**
  * Represents an Integer number as Term.
  */
-class IntTerm implements Term {
+export default class IntTerm implements TSExpression {
   int: number;
   constructor(int: number) {
     this.int = int;
   }
-  getTerm(): string {
+  getExpression(): string {
     return `${this.int}`;
   }
+  evaluate(): TSExpressionResult {
+    return new TSExpressionResult(this.int);
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  roll(evalcontext: Evalcontext): TermResult {
-    return new TermResult(this.int, this.getTerm());
+  setGroup(group: TSGroup): void {
+    // empty nothing must be set for this expression
   }
 }
-
-export default IntTerm;

@@ -1,12 +1,13 @@
 import TSGroup from '../tsgroup';
 import TSExpression from './tsexpression';
+import TSExpressionResult from './tsexpressionresult';
 
 /**
  * Expression representing the "{CR~}" function.
  */
 class TSNewlineExpression implements TSExpression {
-  evaluate(): string {
-    return '<br/>';
+  evaluate(): TSExpressionResult {
+    return new TSExpressionResult('<br/>');
   }
   getExpression(): string {
     return '{CR~}';

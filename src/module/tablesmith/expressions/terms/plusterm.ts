@@ -1,12 +1,13 @@
+import TSGroup from '../../tsgroup';
+import TSExpression from '../tsexpression';
 import BaseMathTerm from './basemathterm';
-import Term from './term';
 import TermCalc from './termcalc';
 
 /**
  * PlusTerm is used for addtion "+" calculation.
  */
-class PlusTerm extends BaseMathTerm implements TermCalc {
-  constructor(termA: Term, termB: Term) {
+export default class PlusTerm extends BaseMathTerm implements TermCalc {
+  constructor(termA: TSExpression, termB: TSExpression) {
     super(termA, termB);
     super.termCalc = this;
   }
@@ -17,6 +18,9 @@ class PlusTerm extends BaseMathTerm implements TermCalc {
   operator(): string {
     return '+';
   }
-}
 
-export default PlusTerm;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setGroup(group: TSGroup): void {
+    // empty nothing must be set for this expression
+  }
+}

@@ -1,5 +1,6 @@
 import TSGroup from '../tsgroup';
 import TSExpression from './tsexpression';
+import TSExpressionResult from './tsexpressionresult';
 
 /**
  * Math Round function on contaned expression.
@@ -11,14 +12,11 @@ class TSMathRoundExpression implements TSExpression {
     this.param = param;
     this.decimalPlaces = decimalPlaces;
   }
-  evaluate(): string {
-    const valueString = this.param.evaluate();
-    const value = Number.parseFloat(valueString);
-    if (Number.isNaN(value)) throw `Could not get Round for non number value '${valueString}'!`;
-    const decimalPlacesString = this.decimalPlaces.evaluate();
+  evaluate(): TSExpressionResult {
+    const value = this.param.evaluate().asNumber();
+    const decimalPlacesString = this.decimalPlaces.evaluate().asString();
     const decimalPlaces = Number.parseInt(decimalPlacesString);
-    if (Number.isNaN(value)) throw `Could not get Round for non number decimalPlaces '${valueString}'!`;
-    return `${value.toFixed(decimalPlaces)}`;
+    return new TSExpressionResult(value.toFixed(decimalPlaces));
   }
   getExpression(): string {
     return `{Round~${this.decimalPlaces.getExpression()},${this.param.getExpression()}}`;

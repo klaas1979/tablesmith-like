@@ -1,5 +1,6 @@
 import TSGroup from '../tsgroup';
 import TSExpression from './tsexpression';
+import TSExpressionResult from './tsexpressionresult';
 
 /**
  * Simple Text Expression as value of a Range in a Group or part of the value, i.e. prefix or suffix to a TermExpression.
@@ -10,8 +11,8 @@ class TSTextExpression implements TSExpression {
     this.text = text;
   }
 
-  evaluate(): string {
-    return this.text;
+  evaluate(): TSExpressionResult {
+    return new TSExpressionResult(this.text);
   }
 
   getExpression(): string {

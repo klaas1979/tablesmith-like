@@ -1,5 +1,6 @@
 import TSGroup from '../tsgroup';
 import TSExpression from './tsexpression';
+import TSExpressionResult from './tsexpressionresult';
 
 /**
  * Math mod function to get remainder of division.
@@ -11,14 +12,10 @@ class TSMathModExpression implements TSExpression {
     this.param1 = param1;
     this.param2 = param2;
   }
-  evaluate(): string {
-    const p1String = this.param1.evaluate();
-    const value1 = Number.parseFloat(p1String);
-    if (Number.isNaN(value1)) throw `Could not get Min for non number value '${p1String}'!`;
-    const p2string = this.param2.evaluate();
-    const value2 = Number.parseFloat(p2string);
-    if (Number.isNaN(value2)) throw `Could not get Min for non number value '${p2string}'!`;
-    return `${value1 % value2}`;
+  evaluate(): TSExpressionResult {
+    const value1 = this.param1.evaluate().asNumber();
+    const value2 = this.param2.evaluate().asNumber();
+    return new TSExpressionResult(value1 % value2);
   }
   getExpression(): string {
     return `{Mod~${this.param1.getExpression()},${this.param2.getExpression()}}`;

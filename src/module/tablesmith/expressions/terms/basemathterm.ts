@@ -1,16 +1,16 @@
-import Evalcontext from '../evaluationcontext';
-import Term from './term';
+import TSGroup from '../../tsgroup';
+import TSExpression from '../tsexpression';
+import TSExpressionResult from '../tsexpressionresult';
 import TermCalc from './termcalc';
-import TermResult from './termresult';
 
 /**
  * Basic class for all Math Terms not directly instantiated but extended.
  */
-class BaseMathTerm implements Term {
-  termA: Term;
-  termB: Term;
+class BaseMathTerm implements TSExpression {
+  termA: TSExpression;
+  termB: TSExpression;
   termCalc: TermCalc | undefined;
-  constructor(termA: Term, termB: Term) {
+  constructor(termA: TSExpression, termB: TSExpression) {
     this.termA = termA;
     this.termB = termB;
   }
@@ -19,9 +19,9 @@ class BaseMathTerm implements Term {
    * The Term as string.
    * @returns the term's string representation, that is evaluated.
    */
-  getTerm(): string {
+  getExpression(): string {
     if (!this.termCalc) throw 'TermCalc not defined, cannot getTerm!';
-    return `${this.termA.getTerm()}${this.termCalc.operator()}${this.termB.getTerm()}`;
+    return `${this.termA.getExpression()}${this.termCalc.operator()}${this.termB.getExpression()}`;
   }
 
   /**
@@ -29,14 +29,16 @@ class BaseMathTerm implements Term {
    * @param evalcontext Roll support class to get random results.
    * @returns TermResult with math value and representation of calculation.
    */
-  roll(evalcontext: Evalcontext): TermResult {
+  evaluate(): TSExpressionResult {
     if (!this.termCalc) throw 'TermCalc not defined, cannot roll for result!';
-    const aResult = this.termA.roll(evalcontext),
-      bResult = this.termB.roll(evalcontext);
-    return new TermResult(
-      this.termCalc.calc(aResult.total, bResult.total),
-      `${aResult.result}${this.termCalc.operator()}${bResult.result}`,
-    );
+    const aResult = this.termA.evaluate(),
+      bResult = this.termB.evaluate();
+    return new TSExpressionResult(this.termCalc.calc(aResult.asNumber(), bResult.asNumber()));
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setGroup(group: TSGroup): void {
+    // empty nothing must be set for this expression
   }
 }
 

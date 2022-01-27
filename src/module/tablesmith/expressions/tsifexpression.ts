@@ -1,6 +1,7 @@
 import TSGroup from '../tsgroup';
 import BooleanComparison from './booleancomparison';
 import TSExpression from './tsexpression';
+import TSExpressionResult from './tsexpressionresult';
 import TSExpressions from './tsexpressions';
 
 /**
@@ -22,9 +23,10 @@ class TSIfExpression implements TSExpression {
     this.trueVal = trueVal;
     this.falseVal = falseVal;
   }
-  evaluate(): string {
-    const boolResult = this.booleanComparision.evaluate();
-    return boolResult == '1' ? this.trueVal.evaluate() : this.falseVal.evaluate();
+  evaluate(): TSExpressionResult {
+    const boolResult = this.booleanComparision.evaluate().asString();
+    const result = boolResult == '1' ? this.trueVal.evaluate() : this.falseVal.evaluate();
+    return new TSExpressionResult(result.asString());
   }
 
   getExpression(): string {

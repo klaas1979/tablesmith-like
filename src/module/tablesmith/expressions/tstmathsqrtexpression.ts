@@ -1,5 +1,6 @@
 import TSGroup from '../tsgroup';
 import TSExpression from './tsexpression';
+import TSExpressionResult from './tsexpressionresult';
 
 /**
  * Math Sqrt on given value.
@@ -9,11 +10,9 @@ class TSMathSqrtExpression implements TSExpression {
   constructor(param: TSExpression) {
     this.param = param;
   }
-  evaluate(): string {
-    const valueString = this.param.evaluate();
-    const value = Number.parseFloat(valueString);
-    if (Number.isNaN(value)) throw `Could not get Trunc for non number value '${valueString}'!`;
-    return `${Math.sqrt(value)}`;
+  evaluate(): TSExpressionResult {
+    const value = this.param.evaluate();
+    return new TSExpressionResult(Math.sqrt(value.asNumber()));
   }
   getExpression(): string {
     return `{Sqrt~${this.param.getExpression()}}`;

@@ -1,12 +1,12 @@
+import TSExpression from '../tsexpression';
 import BaseMathTerm from './basemathterm';
-import Term from './term';
 import TermCalc from './termcalc';
 
 /**
  * MultTerm is used for "*" calculations.
  */
 class MultTerm extends BaseMathTerm implements TermCalc {
-  constructor(termA: Term, termB: Term) {
+  constructor(termA: TSExpression, termB: TSExpression) {
     super(termA, termB);
     super.termCalc = this;
   }

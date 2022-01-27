@@ -1,5 +1,6 @@
 import TSGroup from '../tsgroup';
 import TSExpression from './tsexpression';
+import TSExpressionResult from './tsexpressionresult';
 import TSExpressions from './tsexpressions';
 
 /**
@@ -12,15 +13,13 @@ class TSLoopExpression implements TSExpression {
     this.counterExpression = counterExpression;
     this.block = block;
   }
-  evaluate(): string {
+  evaluate(): TSExpressionResult {
     let result = '';
-    const maxValueString = this.counterExpression.evaluate();
-    const maxValue = Number.parseInt(maxValueString);
-    if (Number.isNaN(maxValue)) throw `Loop counter does not evalute to integer value but to '${maxValueString}'`;
+    const maxValue = this.counterExpression.evaluate().asInt();
     for (let i = 0; i < maxValue; i++) {
-      result += this.block.evaluate();
+      result += this.block.evaluate().asString();
     }
-    return result;
+    return new TSExpressionResult(result);
   }
 
   getExpression(): string {

@@ -1,5 +1,6 @@
 import TSGroup from '../tsgroup';
 import TSExpression from './tsexpression';
+import TSExpressionResult from './tsexpressionresult';
 
 /**
  * Simple Line Expression that separates the Output via a Line or other visual cue.
@@ -12,10 +13,10 @@ class TSLineExpression implements TSExpression {
     this.alignExpression = alignExpression;
     this.widthExpression = widthExpression;
   }
-  evaluate(): string {
+  evaluate(): TSExpressionResult {
     this.evaluateAlign();
     this.evaluateWidth();
-    return `<br/>`;
+    return new TSExpressionResult(`<br/>`);
   }
 
   private evaluateAlign(): string {
@@ -26,10 +27,7 @@ class TSLineExpression implements TSExpression {
   }
 
   private evaluateWidth() {
-    const width = this.widthExpression.evaluate();
-    const widthNum = Number.parseInt(width);
-    if (Number.isNaN(widthNum)) throw `Width was '${width}', allowed values integer between 1-100`;
-    return widthNum;
+    return this.widthExpression.evaluate().asInt();
   }
 
   getExpression(): string {

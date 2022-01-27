@@ -6,20 +6,18 @@ import IntTerm from '../expressions/terms/intterm';
 import MinusTerm from '../expressions/terms/minusterm';
 import MultTerm from '../expressions/terms/multterm';
 import PlusTerm from '../expressions/terms/plusterm';
-import Term from '../expressions/terms/term';
 import TSExpression from '../expressions/tsexpression';
-import TSTermExpression from '../expressions/tstermexpression';
 import TSTextExpression from '../expressions/tstextexpression';
 import TSVariableGetExpression from '../expressions/tsvariablegetexpression';
 import Stack from './stack';
 
-type TermCreator = (a: Term, b: Term) => Term;
+type TermCreator = (a: TSExpression, b: TSExpression) => TSExpression;
 
 /**
  * Context for colleting parsing data of Math Terms, to create the resulting Expression from.
  */
 class MathTermContext {
-  terms: Array<Term | undefined>;
+  terms: Array<TSExpression | undefined>;
   termCreators: Array<TermCreator | undefined>;
   constructor() {
     this.terms = [];
@@ -41,7 +39,7 @@ class MathTermExpressionBuilder {
   }
 
   /**
-   * Sets the stack to retrieve expressions from when Term Stack is exhausted.
+   * Sets the stack to retrieve expressions from when TSExpression Stack is exhausted.
    * @param stack to get expressions from.
    */
   setStack(stack: Stack): void {
@@ -59,8 +57,8 @@ class MathTermExpressionBuilder {
 
   /**
    * Creates result for math expressions when parser finds ending of a Dice or Calc, pops current expression context.
-   * @param functionName the Tablesmith function the created term represents.
-   * @returns TSExpresion for current math term.
+   * @param functionName the Tablesmith function the created TSExpression represents.
+   * @returns TSExpresion for current math TSExpression.
    */
   create(functionName: string): TSExpression | undefined {
     let result;
@@ -69,7 +67,7 @@ class MathTermExpressionBuilder {
     if (this.isExpressionContextStacked()) {
       this.context.terms.push(term);
     } else {
-      result = new TSTermExpression(term);
+      result = term;
     }
     return result;
   }
@@ -77,14 +75,14 @@ class MathTermExpressionBuilder {
   /**
    * Create the term that includes all terms of this context.
    * @param functionName the Tablesmith function the created term represents.
-   * @returns Term the single Term that combines all parsed Terms for the context.
+   * @returns TSExpression the single TSExpression that combines all parsed Terms for the context.
    */
-  private createTermForContext(functionName: string): Term {
+  private createTermForContext(functionName: string): TSExpression {
     let termCreator = this.context.termCreators.pop();
     while (termCreator) {
       const termB = this.context.terms.pop();
       const termA = this.context.terms.pop();
-      if (!termA || !termB) throw `Cannot create Term missing terms got a=${termA} b=${termB}`;
+      if (!termA || !termB) throw `Cannot create TSExpression missing terms got a=${termA} b=${termB}`;
       this.context.terms.push(termCreator(termA, termB));
       termCreator = this.context.termCreators.pop();
     }
@@ -120,7 +118,7 @@ class MathTermExpressionBuilder {
   }
 
   /**
-   * Called by parser if variable reference is found in a Term.
+   * Called by parser if variable reference is found in a TSExpression.
    */
   addVariableGet(tablename: string | undefined, variablename: string): void {
     const tableVarNameExpression = new TSTextExpression(tablename ? `${tablename}.${variablename}` : variablename);
@@ -135,7 +133,7 @@ class MathTermExpressionBuilder {
   }
 
   /**
-   * Called by parser if number has been found for a Term.
+   * Called by parser if number has been found for a TSExpression.
    * @param int the number that has been parsed.
    */
   addNumber(int: number): void {
@@ -158,7 +156,7 @@ class MathTermExpressionBuilder {
   }
 
   /**
-   * Called by parser if closing bracket for math Term has been found.
+   * Called by parser if closing bracket for math TSExpression has been found.
    */
   closeBracket() {
     const term = this.context.terms.pop();
@@ -170,46 +168,46 @@ class MathTermExpressionBuilder {
   }
 
   /**
-   * Called by parser if addtion found for a math Term.
+   * Called by parser if addtion found for a math TSExpression.
    */
   addAddition() {
-    this.context.termCreators.push((a: Term, b: Term): Term => {
+    this.context.termCreators.push((a: TSExpression, b: TSExpression): TSExpression => {
       return new PlusTerm(a, b);
     });
   }
 
   /**
-   * Called by parser if subtraction found for a math Term.
+   * Called by parser if subtraction found for a math TSExpression.
    */
   addSubtraction() {
-    this.context.termCreators.push((a: Term, b: Term): Term => {
+    this.context.termCreators.push((a: TSExpression, b: TSExpression): TSExpression => {
       return new MinusTerm(a, b);
     });
   }
 
   /**
-   * Called by parser if multiplication found for a math Term.
+   * Called by parser if multiplication found for a math TSExpression.
    */
   addMultiplication() {
-    this.context.termCreators.push((a: Term, b: Term): Term => {
+    this.context.termCreators.push((a: TSExpression, b: TSExpression): TSExpression => {
       return new MultTerm(a, b);
     });
   }
 
   /**
-   * Called by parser if division found for a math Term.
+   * Called by parser if division found for a math TSExpression.
    */
   addDivision() {
-    this.context.termCreators.push((a: Term, b: Term): Term => {
+    this.context.termCreators.push((a: TSExpression, b: TSExpression): TSExpression => {
       return new DivTerm(a, b);
     });
   }
 
   /**
-   * Called by parser if dice definition found for a math Term.
+   * Called by parser if dice definition found for a math TSExpression.
    */
   addDice() {
-    this.context.termCreators.push((a: Term, b: Term): Term => {
+    this.context.termCreators.push((a: TSExpression, b: TSExpression): TSExpression => {
       return new InnerDiceTerm(a, b);
     });
   }

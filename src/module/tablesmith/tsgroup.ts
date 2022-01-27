@@ -1,8 +1,7 @@
-import { evalcontext } from './expressions/evaluationcontextinstance';
 import GroupCallModifierTerm from './expressions/terms/groupcallmodifierterm';
 import InnerDiceTerm from './expressions/terms/innerdiceterm';
 import IntTerm from './expressions/terms/intterm';
-import Term from './expressions/terms/term';
+import TSExpression from './expressions/tsexpression';
 import TSExpressions from './expressions/tsexpressions';
 import TSRange from './tsrange';
 /**
@@ -105,14 +104,14 @@ class TSGroup {
     let result: string | undefined = undefined;
     const roller = groupCallModifier.modify(this.rollTerm());
     for (let i = 0; result === undefined && i < this.ranges.length * 10; i++) {
-      const roll = roller.roll(evalcontext);
-      let range: TSRange | undefined = this.rangeFor(roll.total);
+      const roll = roller.evaluate();
+      let range: TSRange | undefined = this.rangeFor(roll.asInt());
       if (this.isNonRepeating()) {
         if (!range.isTaken()) range.lockout();
         else range = undefined;
       }
       if (range) {
-        result = this.result(roll.total);
+        result = this.result(roll.asInt());
       }
     }
     // check if group is really maxed out or the 10*ranges sets have not found a match
@@ -132,7 +131,7 @@ class TSGroup {
    * Creates a Term that can be rolled upon in this table with current state of non Repeating ranges.
    * @returns Term for roll on this group.
    */
-  private rollTerm(): Term {
+  private rollTerm(): TSExpression {
     return new InnerDiceTerm(new IntTerm(1), new IntTerm(this.getMaxValue()));
   }
 
@@ -146,7 +145,7 @@ class TSGroup {
   result(total: number): string {
     const result = this.rangeFor(total);
     this.lastRollTotal = total;
-    return `${this.before.evaluate()}${result.evaluate()}${this.after.evaluate()}`;
+    return `${this.before.evaluate().asString()}${result.evaluate().asString()}${this.after.evaluate().asString()}`;
   }
 
   /**

@@ -1,5 +1,6 @@
 import TSGroup from '../tsgroup';
 import TSExpression from './tsexpression';
+import TSExpressionResult from './tsexpressionresult';
 
 /**
  * Collection of expressions that make up the result of a TSRange or the Before and After parts within a Group.
@@ -14,12 +15,12 @@ class TSExpressions implements TSExpression {
    * Gets text result for this expressions.
    * @returns string resulting text, for evaluating all expressions contained.
    */
-  evaluate(): string {
+  evaluate(): TSExpressionResult {
     let result = '';
     this.expressions.forEach((expression) => {
-      result += expression.evaluate();
+      result += expression.evaluate().asString();
     });
-    return result;
+    return new TSExpressionResult(result);
   }
 
   /**

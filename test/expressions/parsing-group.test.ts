@@ -190,7 +190,7 @@ describe('Parsing {Unlock~', () => {
     expect(firstRange?.isTaken()).toBeFalsy();
     expect(lastRange?.isTaken()).toBeTruthy();
   });
-  it('{LocUnlockkout~other,1-5} simple range', () => {
+  it('{Unlock~other,1-5} simple range', () => {
     simpleTable = ':Start\n1,{Lockout~other,1,6}{Unlock~other,1-5}\n:!other\n1-5,One\n6-10,One\n';
     tablesmith.addTable('folder', filename, simpleTable);
     const group = tstables.getLastTSTable().groupForName('other');

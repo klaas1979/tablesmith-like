@@ -1,5 +1,6 @@
 import TSGroup from '../tsgroup';
 import TSExpression from './tsexpression';
+import TSExpressionResult from './tsexpressionresult';
 
 /**
  * Math Abs function on contaned expression.
@@ -9,11 +10,9 @@ class TSMathAbsExpression implements TSExpression {
   constructor(param: TSExpression) {
     this.param = param;
   }
-  evaluate(): string {
-    const valueString = this.param.evaluate();
-    const value = Number.parseFloat(valueString);
-    if (Number.isNaN(value)) throw `Could not get Abs for non number value '${valueString}'!`;
-    return `${Math.abs(value)}`;
+  evaluate(): TSExpressionResult {
+    const value = this.param.evaluate().asNumber();
+    return new TSExpressionResult(Math.abs(value));
   }
   getExpression(): string {
     return `{Abs~${this.param.getExpression()}}`;

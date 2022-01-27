@@ -1,5 +1,6 @@
 import TSGroup from '../tsgroup';
 import TSExpression from './tsexpression';
+import TSExpressionResult from './tsexpressionresult';
 
 /**
  * Math Ceil function on contaned expression.
@@ -9,11 +10,9 @@ class TSMathCeilExpression implements TSExpression {
   constructor(param: TSExpression) {
     this.param = param;
   }
-  evaluate(): string {
-    const valueString = this.param.evaluate();
-    const value = Number.parseFloat(valueString);
-    if (Number.isNaN(value)) throw `Could not get Ceil for non number value '${valueString}'!`;
-    return `${Math.ceil(value)}`;
+  evaluate(): TSExpressionResult {
+    const value = this.param.evaluate().asNumber();
+    return new TSExpressionResult(Math.ceil(value));
   }
   getExpression(): string {
     return `{Ceil~${this.param.getExpression()}}`;

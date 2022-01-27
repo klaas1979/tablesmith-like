@@ -1,5 +1,6 @@
 import TSGroup from '../tsgroup';
 import TSExpression from './tsexpression';
+import TSExpressionResult from './tsexpressionresult';
 
 /**
  * Math Ceil function on contaned expression.
@@ -9,11 +10,9 @@ class TSMathFloorExpression implements TSExpression {
   constructor(param: TSExpression) {
     this.param = param;
   }
-  evaluate(): string {
-    const valueString = this.param.evaluate();
-    const value = Number.parseFloat(valueString);
-    if (Number.isNaN(value)) throw `Could not get Floor for non number value '${valueString}'!`;
-    return `${Math.floor(value)}`;
+  evaluate(): TSExpressionResult {
+    const value = this.param.evaluate().asNumber();
+    return new TSExpressionResult(Math.floor(value));
   }
   getExpression(): string {
     return `{Floor~${this.param.getExpression()}}`;

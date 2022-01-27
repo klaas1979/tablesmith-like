@@ -1,5 +1,6 @@
 import TSGroup from '../tsgroup';
 import TSExpression from './tsexpression';
+import TSExpressionResult from './tsexpressionresult';
 
 /**
  * Math max function to get bigger of the two values.
@@ -9,11 +10,9 @@ class TSMathMaxExpression implements TSExpression {
   constructor(values: TSExpression[]) {
     this.values = values;
   }
-  evaluate(): string {
-    const nums = this.values.map((value) => Number.parseFloat(value.evaluate()));
-    if (nums.find((num) => Number.isNaN(num)) != undefined)
-      throw `Could not evaluate min not all values numbers '${nums.join(',')}'`;
-    return `${Math.max(...nums)}`;
+  evaluate(): TSExpressionResult {
+    const nums = this.values.map((value) => value.evaluate().asNumber());
+    return new TSExpressionResult(Math.max(...nums));
   }
   getExpression(): string {
     const expressions = this.values.reduce(

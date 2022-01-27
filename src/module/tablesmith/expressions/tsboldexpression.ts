@@ -1,5 +1,6 @@
 import TSGroup from '../tsgroup';
 import TSExpression from './tsexpression';
+import TSExpressionResult from './tsexpressionresult';
 import TSExpressions from './tsexpressions';
 
 /**
@@ -10,8 +11,8 @@ class TSBoldExpression implements TSExpression {
   constructor(expressions: TSExpressions) {
     this.expressions = expressions;
   }
-  evaluate(): string {
-    return `<b>${this.expressions.evaluate()}</b>`;
+  evaluate(): TSExpressionResult {
+    return new TSExpressionResult(`<b>${this.expressions.evaluate().asString()}</b>`);
   }
   getExpression(): string {
     return `{Bold~${this.expressions.getExpression()}}`;

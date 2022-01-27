@@ -2,6 +2,7 @@ import TSGroup from '../tsgroup';
 import { evalcontext } from './evaluationcontextinstance';
 import CallSplitter from './callsplitter';
 import TSExpression from './tsexpression';
+import TSExpressionResult from './tsexpressionresult';
 
 /**
  * Class representing a variable Set expression.
@@ -18,9 +19,9 @@ class TSVariableSetExpression implements TSExpression {
     this.call = { tablename: '', variablename: '' };
   }
 
-  evaluate(): string {
+  evaluate(): TSExpressionResult {
     const evaluated = this.varNameExpression.evaluate();
-    this.call = CallSplitter.forVariable().split(evaluated);
+    this.call = CallSplitter.forVariable().split(evaluated.asString());
     const value = this.valueExpression.evaluate();
     const currentValue = evalcontext.getVar(this.call.tablename, this.call.variablename);
     switch (this.type) {
@@ -54,48 +55,49 @@ class TSVariableSetExpression implements TSExpression {
       default:
         throw `Unknown Type '${this.type}' cannot set variable '${this.getExpression()}'`;
     }
-    return '';
+    return new TSExpressionResult('');
   }
 
-  private evaluateSet(currentValue: string | number | undefined, value: string) {
-    const num = Number.parseFloat(value);
-    this.assign(Number.isNaN(num) ? value : num);
+  private evaluateSet(currentValue: string | number | undefined, value: TSExpressionResult) {
+    const num = Number.parseFloat(value.asString());
+    this.assign(Number.isNaN(num) ? value.asString() : num);
   }
 
-  private evaluatePlus(currentValue: string | number | undefined, value: string) {
-    this.assign(Number.parseFloat(`${currentValue}`) + Number.parseFloat(value));
+  private evaluatePlus(currentValue: string | number | undefined, value: TSExpressionResult) {
+    this.assign(Number.parseFloat(`${currentValue}`) + value.asNumber());
   }
 
-  private evaluateMinus(currentValue: string | number | undefined, value: string) {
-    this.assign(Number.parseFloat(`${currentValue}`) - Number.parseFloat(value));
+  private evaluateMinus(currentValue: string | number | undefined, value: TSExpressionResult) {
+    this.assign(Number.parseFloat(`${currentValue}`) - value.asNumber());
   }
 
-  private evaluateMult(currentValue: string | number | undefined, value: string) {
-    this.assign(Number.parseFloat(`${currentValue}`) * Number.parseFloat(value));
+  private evaluateMult(currentValue: string | number | undefined, value: TSExpressionResult) {
+    this.assign(Number.parseFloat(`${currentValue}`) * value.asNumber());
   }
 
-  private evaluateDiv(currentValue: string | number | undefined, value: string) {
-    this.assign(Number.parseFloat(`${currentValue}`) / Number.parseFloat(value));
+  private evaluateDiv(currentValue: string | number | undefined, value: TSExpressionResult) {
+    this.assign(Number.parseFloat(`${currentValue}`) / value.asNumber());
   }
 
-  private evaluateDivRound(currentValue: string | number | undefined, value: string) {
-    this.assign(Math.round(Number.parseFloat(`${currentValue}`) / Number.parseFloat(value)));
+  private evaluateDivRound(currentValue: string | number | undefined, value: TSExpressionResult) {
+    this.assign(Math.round(Number.parseFloat(`${currentValue}`) / value.asNumber()));
   }
 
-  private evaluateMinimumBoundary(currentValue: string | number | undefined, value: string) {
+  private evaluateMinimumBoundary(currentValue: string | number | undefined, value: TSExpressionResult) {
     const currentInt = Number.parseFloat(`${currentValue}`);
-    const newInt = Number.parseFloat(value);
+    const newInt = Number.parseFloat(value.asString());
     if (Number.isNaN(currentInt) || currentInt < newInt) this.assign(newInt);
   }
 
-  private evaluateMaximumBoundary(currentValue: string | number | undefined, value: string) {
+  private evaluateMaximumBoundary(currentValue: string | number | undefined, value: TSExpressionResult) {
     const currentInt = Number.parseFloat(`${currentValue}`);
-    const newInt = Number.parseFloat(value);
+    const newInt = value.asNumber();
     if (Number.isNaN(currentInt) || currentInt > newInt) this.assign(newInt);
   }
 
-  private evaluateAppendText(currentValue: string | number | undefined, value: string) {
-    const result = currentValue ? `${currentValue}${value}` : `${value}`;
+  private evaluateAppendText(currentValue: string | number | undefined, value: TSExpressionResult) {
+    const valueString = value.asString();
+    const result = currentValue ? `${currentValue}${valueString}` : `${valueString}`;
     this.assign(result);
   }
 

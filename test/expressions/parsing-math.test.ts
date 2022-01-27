@@ -100,7 +100,7 @@ describe('Parsing nested Math in Dice~ or Calc~', () => {
     const term = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
     expect(term).toBe('{Dice~{Dice~3d1}d{Dice~1d1}}');
     const total = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.evaluate();
-    expect(total).toBe('3');
+    expect(total?.asString()).toBe('3');
   });
 
   it('with whitespaces and linebreaks', () => {
@@ -109,7 +109,7 @@ describe('Parsing nested Math in Dice~ or Calc~', () => {
     const term = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
     expect(term).toBe('{Dice~{Dice~3d1}d{Dice~1d1}}');
     const total = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.evaluate();
-    expect(total).toBe('3');
+    expect(total?.asString()).toBe('3');
   });
 });
 

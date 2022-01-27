@@ -1,45 +1,43 @@
 import MinusTerm from './minusterm';
 import PlusTerm from './plusterm';
-import Evalcontext from '../evaluationcontext';
-import Term from './term';
-import TermResult from './termresult';
 import { MODIFIERS } from '../../../foundry/tablecallvalues';
 import TSExpression from '../tsexpression';
 import TSTextExpression from '../tstextexpression';
-import TSExpressionWrapperTerm from './tsexpressionwrapperterm';
+import TSExpressionResult from '../tsexpressionresult';
+import TSGroup from '../../tsgroup';
 
 /**
  * A modifier for a table group call, consists of the operation "+", "-" or "="(fixed) modifier and the term
  * that represents the modifier.
  */
-class GroupCallModifierTerm implements Term {
+class GroupCallModifierTerm implements TSExpression {
   modifierType: MODIFIERS;
-  modifierTerm: TSExpressionWrapperTerm;
+  modifierTerm: TSExpression;
   private constructor(modifierType: MODIFIERS, modifierExpression: TSExpression) {
     this.modifierType = modifierType;
-    this.modifierTerm = new TSExpressionWrapperTerm(modifierExpression);
+    this.modifierTerm = modifierExpression;
   }
 
   /**
    * Returns the Expression that represents this Modifier.
    * @returns The expression this Group call modifier translates to.
    */
-  getTerm(): string {
+  getExpression(): string {
     if (this.modifierType == MODIFIERS.none) return '';
-    return `${this.modifierType}${this.modifierTerm.getTerm()}`;
+    return `${this.modifierType}${this.modifierTerm.getExpression()}`;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  roll(evalcontext: Evalcontext): TermResult {
+  evaluate(): TSExpressionResult {
     throw 'Cannot roll this term Group Calls need runtime information about rolled upon Group to get maxValue for range';
   }
 
   /**
-   * Modifies a Term representing the Group call to apply correct modification.
+   * Modifies a TSExpression representing the Group call to apply correct modification.
    * @param rollTerm the roll to modify.
    * @returns Term that evaluates based on given rollTerm to correct result.
    */
-  modify(rollTerm: Term): Term {
+  modify(rollTerm: TSExpression): TSExpression {
     if (this.modifierType == MODIFIERS.none) {
       return rollTerm;
     } else if (this.modifierType == MODIFIERS.minus) {
@@ -78,6 +76,11 @@ class GroupCallModifierTerm implements Term {
         throw `Unknown modifier type '${modifierType}'`;
     }
     return result;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setGroup(group: TSGroup): void {
+    // empty nothing must be set for this expression
   }
 
   /**

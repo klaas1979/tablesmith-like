@@ -1,20 +1,23 @@
-import Evalcontext from '../evaluationcontext';
-import Term from './term';
-import TermResult from './termresult';
+import TSGroup from '../../tsgroup';
+import TSExpression from '../tsexpression';
+import TSExpressionResult from '../tsexpressionresult';
 
-class DiceCalcTerm implements Term {
+export default class DiceCalcTerm implements TSExpression {
   functionName: string;
-  innerTerm: Term;
-  constructor(functionName: string, innerDiceTerm: Term) {
+  innerTerm: TSExpression;
+  constructor(functionName: string, innerDiceTerm: TSExpression) {
     this.functionName = functionName;
     this.innerTerm = innerDiceTerm;
   }
-  getTerm(): string {
-    return `{${this.functionName}~${this.innerTerm.getTerm()}}`;
+  getExpression(): string {
+    return `{${this.functionName}~${this.innerTerm.getExpression()}}`;
   }
-  roll(evalcontext: Evalcontext): TermResult {
-    return this.innerTerm.roll(evalcontext);
+  evaluate(): TSExpressionResult {
+    return this.innerTerm.evaluate();
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setGroup(group: TSGroup): void {
+    // empty nothing must be set for this expression
   }
 }
-
-export default DiceCalcTerm;
