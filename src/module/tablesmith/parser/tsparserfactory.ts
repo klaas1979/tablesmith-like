@@ -178,6 +178,14 @@ class TSParserFactory {
     if (!this.groupBuilder) throw `Cannot stack string '${value}' without defined Group!`;
     this.groupBuilder.stackString(value);
   }
+
+  /**
+   * The current call and parse stack for easier error handling.
+   * @returns string a human readable stack representation.
+   */
+  getStackRepresentationForError(): string {
+    return JSON.stringify(this.groupBuilder?.stack, null, 1);
+  }
 }
 
 export default TSParserFactory;

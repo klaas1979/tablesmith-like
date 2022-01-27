@@ -24,14 +24,14 @@ function toInt(text) {
       actionCallback();
     } catch (actionError) {
       const loc = location();
-      const before = input.substring(Math.max(0, loc.start.offset - 15), loc.start.offset);
+      const before = input.substring(Math.max(0, loc.start.offset - 100), loc.start.offset);
       const start = loc.start.offset;
       let end = loc.end.offset;
+      let content = input.substring(start, end);
       if (end - start > 200) {
-        end = start + 200;
+        content = input.substring(start, start + 100) + '||<||stripped||>||' + input.substring(end - 100, end);
       }
-      const content = input.substring(start, end);
-      const after = input.substring(loc.end.offset, Math.max(input.length, loc.end.offset + 15));
+      const after = input.substring(loc.end.offset, Math.min(input.length, loc.end.offset + 100));
       const errorLocation = `Lines from ${loc.start.line} to ${loc.end.line}', columns from ${loc.start.column} to ${loc.end.column}, FileOffset from ${loc.start.offset} to ${loc.end.offset} \nText:>>>>\n${before}||>|${content}|<||${after}\n<<<<`;
       throw `Error '${actionError}' at location '${errorLocation}'`;
     }
@@ -127,12 +127,14 @@ StartGroupCall
             options?.pf.startGroupCall();
           }); }
 Modifier
-  = modType:ModifierType _ modifier:int { errorHandling(() => {
+  = modType:ModifierType _ Expression { errorHandling(() => {
             options?.pf.stackString(modType);
-            options?.pf.stackString(modifier);
           }); }
 ModifierType
-  = $[=+-]
+  = type:[=+-] { errorHandling(() => {
+            options?.pf.stackParameter();
+          });
+          return type; }
 CallParameters
   = StartCallParams _ ExpressionTextNoCommaNorCurlyBraces _ (ParamSeparatorComma _ ExpressionTextNoCommaNorCurlyBraces)* _ ')'
 StartCallParams
@@ -239,6 +241,11 @@ Expression
   / _ VariableSet Value? Expression*
   / _ Value Expression*
 
+MathFactorExpression
+  = _ GroupCall Value? MathFactorExpression*
+  / _ TsFunction Value? MathFactorExpression*
+  / _ VariableGet Value? MathFactorExpression*
+
 /* Expressions that are allowed in a set Variable expression. */
 VariableSetExpressions
   = GroupCall VariableSetExpressions*
@@ -259,6 +266,7 @@ IfExpressionPart
 GroupIdentifier
   = GroupCall GroupIdentifier*
   / TsFunction GroupIdentifier*
+  / VariableGet GroupIdentifier*
   / ValueGroupIdentifier GroupIdentifier*
 
   VariableIdentifier
@@ -420,6 +428,7 @@ MathFactor
   / OpenBracket _ MathExpression _ ')' { errorHandling(() => {
             options?.pf.mathBuilder.closeBracket();
           }); }
+//  / MathFactorExpression
   / number:int { errorHandling(() => {
             options?.pf.mathBuilder.addNumber(toInt(number));
           }); }
@@ -443,7 +452,7 @@ Value
           }); }
 /** Matches all text that is printed verbose, without special chars that are key chars for the DSL. */
 PlainText
- = text:(@[^{}[\]%|/\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ { return text.join(''); }
+ = text:([^{}[\]%|/\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ { return text.join(''); }
 
 ValueIfPart
   = text:PlainTextIfPart { errorHandling(() => {
@@ -451,7 +460,7 @@ ValueIfPart
           }); }
 
 PlainTextIfPart
- = text:(@[^!=<>,?/{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ { return text.join(''); }
+ = text:([^!=<>,?/{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ { return text.join(''); }
 
 ValueVariableIdentifier
   = text:PlainTextVariableExpression { errorHandling(() => {
@@ -469,14 +478,25 @@ PlainTextVariableExpression
 PlainTextGroupExpression
  = text:([^-+\\*&!=<>,?/(){}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']')+ { return text.join(''); }
 
+ValueMathFactorExpression
+  = text:PlainTextValueMathFactorExpression { errorHandling(() => {
+            options?.pf.createText(text);
+          }); }
+
+/** Text that is allowed within an If with slash "/", no escaped chars, because escape
+sign is the same as the separator for If {If~}. */
+PlainTextValueMathFactorExpression
+ = text:([^^+.*/{}[\]%|\n])+ { return text.join(''); }
+
 ValueIfSlash
   = text:PlainTextIfSlash { errorHandling(() => {
             options?.pf.createText(text);
           }); }
 
-/** Text that is allowed within an If with slash "/" {If~}. */
+/** Text that is allowed within an If with slash "/", no escaped chars, because escape
+sign is the same as the separator for If {If~}. */
 PlainTextIfSlash
- = text:([^/{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']')+ { return text.join(''); }
+ = text:([^/{}[\]%|\n])+ { return text.join(''); }
 
 ValueIfColon
   = text:PlainTextIfColon { errorHandling(() => {

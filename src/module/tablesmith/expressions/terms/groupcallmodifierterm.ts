@@ -1,10 +1,12 @@
-import IntTerm from './intterm';
 import MinusTerm from './minusterm';
 import PlusTerm from './plusterm';
 import Evalcontext from '../evaluationcontext';
 import Term from './term';
 import TermResult from './termresult';
 import { MODIFIERS } from '../../../foundry/tablecallvalues';
+import TSExpression from '../tsexpression';
+import TSTextExpression from '../tstextexpression';
+import TSExpressionWrapperTerm from './tsexpressionwrapperterm';
 
 /**
  * A modifier for a table group call, consists of the operation "+", "-" or "="(fixed) modifier and the term
@@ -12,10 +14,10 @@ import { MODIFIERS } from '../../../foundry/tablecallvalues';
  */
 class GroupCallModifierTerm implements Term {
   modifierType: MODIFIERS;
-  modifierTerm: Term;
-  private constructor(modifierType: MODIFIERS, modifierTerm: Term) {
+  modifierTerm: TSExpressionWrapperTerm;
+  private constructor(modifierType: MODIFIERS, modifierExpression: TSExpression) {
     this.modifierType = modifierType;
-    this.modifierTerm = modifierTerm;
+    this.modifierTerm = new TSExpressionWrapperTerm(modifierExpression);
   }
 
   /**
@@ -53,23 +55,24 @@ class GroupCallModifierTerm implements Term {
   /**
    * Creates a new modifier for given values.
    * @param modifierType to create for can be '=', '-' or '+' for changes or 'unmodified'.
-   * @param modifier the number to modify with.
+   * @param modifierExpression the number to modify with.
    * @returns GroupCallModifierTerm to modify rolls with.
    */
-  static create(modifierType: string, modifier: number): GroupCallModifierTerm {
+  static create(modifierType: string, modifierExpression: TSExpression | number): GroupCallModifierTerm {
+    if (typeof modifierExpression == 'number') modifierExpression = new TSTextExpression(`${modifierExpression}`);
     let result;
     switch (modifierType) {
       case MODIFIERS.none:
         result = GroupCallModifierTerm.createUnmodified();
         break;
       case MODIFIERS.equal:
-        result = GroupCallModifierTerm.createFixedValue(new IntTerm(modifier));
+        result = GroupCallModifierTerm.createFixedValue(modifierExpression);
         break;
       case MODIFIERS.plus:
-        result = GroupCallModifierTerm.createPlus(new IntTerm(modifier));
+        result = GroupCallModifierTerm.createPlus(modifierExpression);
         break;
       case MODIFIERS.minus:
-        result = GroupCallModifierTerm.createMinus(new IntTerm(modifier));
+        result = GroupCallModifierTerm.createMinus(modifierExpression);
         break;
       default:
         throw `Unknown modifier type '${modifierType}'`;
@@ -79,29 +82,29 @@ class GroupCallModifierTerm implements Term {
 
   /**
    * Creates a modifier for subtraction.
-   * @param modifierTerm to subtract from Roll.
+   * @param modifierExpression to subtract from Roll.
    * @returns Minus Groupcall modifier.
    */
-  static createMinus(modifierTerm: Term): GroupCallModifierTerm {
-    return new GroupCallModifierTerm(MODIFIERS.minus, modifierTerm);
+  static createMinus(modifierExpression: TSExpression): GroupCallModifierTerm {
+    return new GroupCallModifierTerm(MODIFIERS.minus, modifierExpression);
   }
 
   /**
    * Creates a modifier for addition.
-   * @param modifierTerm to add to Roll.
+   * @param modifierExpression to add to Roll.
    * @returns Plus Groupcall modifier.
    */
-  static createPlus(modifierTerm: Term): GroupCallModifierTerm {
-    return new GroupCallModifierTerm(MODIFIERS.plus, modifierTerm);
+  static createPlus(modifierExpression: TSExpression): GroupCallModifierTerm {
+    return new GroupCallModifierTerm(MODIFIERS.plus, modifierExpression);
   }
 
   /**
    * Creates a modifier for fixed values.
-   * @param fixedValueTerm to evaluate to get fixed value.
+   * @param modifierExpression to evaluate to get fixed value.
    * @returns Fixe Value Groupcall modifier.
    */
-  static createFixedValue(fixedValueTerm: Term): GroupCallModifierTerm {
-    return new GroupCallModifierTerm(MODIFIERS.equal, fixedValueTerm);
+  static createFixedValue(modifierExpression: TSExpression): GroupCallModifierTerm {
+    return new GroupCallModifierTerm(MODIFIERS.equal, modifierExpression);
   }
 
   /**
@@ -109,7 +112,7 @@ class GroupCallModifierTerm implements Term {
    * @returns Modifier to leave roll as is.
    */
   static createUnmodified(): GroupCallModifierTerm {
-    return new GroupCallModifierTerm(MODIFIERS.none, new IntTerm(0));
+    return new GroupCallModifierTerm(MODIFIERS.none, new TSTextExpression('0'));
   }
 }
 

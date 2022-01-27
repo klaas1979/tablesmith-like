@@ -116,12 +116,12 @@ class TSTableGroupBuilder {
     while (stacked.stackSize() > 1) params.push(stacked.popExpressions());
     const tableAndGroup = stacked.popExpressions();
     let modifierTerm = GroupCallModifierTerm.createUnmodified();
-    if (stacked.stringSize() == 2) {
-      const modifier = stacked.popString();
+    if (stacked.stringSize() == 1) {
       const operator = stacked.popString();
-      const num = Number.parseInt(modifier);
-      if (Number.isNaN(num)) throw `Could not create GroupCall modifier is not a number but '${modifier}'`;
-      modifierTerm = GroupCallModifierTerm.create(operator, num);
+      const modifierExpression = params.pop();
+      if (!modifierExpression)
+        throw `Cannot create group Call modifier for operator '${operator}', no Expression provided!`;
+      modifierTerm = GroupCallModifierTerm.create(operator, modifierExpression);
     }
     return new TSGroupCallExpression(tableAndGroup, modifierTerm, params.reverse());
   }

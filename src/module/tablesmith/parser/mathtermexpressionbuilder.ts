@@ -11,6 +11,7 @@ import TSExpression from '../expressions/tsexpression';
 import TSTermExpression from '../expressions/tstermexpression';
 import TSTextExpression from '../expressions/tstextexpression';
 import TSVariableGetExpression from '../expressions/tsvariablegetexpression';
+import Stack from './stack';
 
 type TermCreator = (a: Term, b: Term) => Term;
 
@@ -32,10 +33,28 @@ class MathTermContext {
 class MathTermExpressionBuilder {
   mathTermContexts: MathTermContext[];
   context: MathTermContext;
+  stack: Stack | undefined;
 
   constructor() {
     this.mathTermContexts = [];
     this.context = new MathTermContext();
+  }
+
+  /**
+   * Sets the stack to retrieve expressions from when Term Stack is exhausted.
+   * @param stack to get expressions from.
+   */
+  setStack(stack: Stack): void {
+    this.stack = stack;
+  }
+
+  /**
+   * Returns stack or throws if not defined.
+   * @param stack to get expressions from.
+   */
+  getStack(): Stack {
+    if (!this.stack) throw 'Stack is undefined, cannot return!';
+    return this.stack;
   }
 
   /**
@@ -65,7 +84,7 @@ class MathTermExpressionBuilder {
     while (termCreator) {
       const termB = this.context.terms.pop();
       const termA = this.context.terms.pop();
-      if (!termA || !termB) throw 'Cannot create TSExpression missing terms got a=${termA} b=${termB}';
+      if (!termA || !termB) throw `Cannot create Term missing terms got a=${termA} b=${termB}`;
       this.context.terms.push(termCreator(termA, termB));
       termCreator = this.context.termCreators.pop();
     }
