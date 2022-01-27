@@ -121,7 +121,7 @@ describe('Tablesmith#evaluate with count of execution', () => {
   });
 });
 
-describe('Tablesmith#evaluate Group calls', () => {
+describe('Tablesmith#evaluate GroupCalls', () => {
   beforeEach(() => {
     tablesmith.reset();
     filename = 'simpletable';
@@ -155,6 +155,13 @@ describe('Tablesmith#evaluate Group calls', () => {
     tablesmith.addTable('folder', filename, simpleTable);
     const result = tablesmith.evaluate(`[${filename}]`);
     expect(result).toBe('1-2');
+  });
+
+  it('call with parameter in modifier', () => {
+    simpleTable = `%var%,2\n:Start\n1,[other=%var%]\n:other\n1,one\n2,two`;
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = tablesmith.evaluate(`[${filename}]`);
+    expect(result).toBe('two');
   });
 });
 
