@@ -156,9 +156,9 @@ Variables are scoped to the context of the enclosing Table (not the group) so ea
 
 #### Using Variables
 
-Variables can be accessed by using the syntax `%variableName%`. The reference is replaced by the current value. References can be used in nearly any place, withing functions and Group calls.
+Variables can be accessed by using the syntax `%variableName%`. The reference is replaced by the current value. References can be used in nearly any place, within functions and Group calls.
 
-Variables in other tables can be referenced as well using the Syntax `%Tablename!Variablename%`, i.e. `%Char.name%` to reference the variable `name` in Table `Char`.
+Variables in other tables can be referenced as well using the Syntax `%Tablename!Variablename%`, i.e. `%Char!name%` to reference the variable `name` in Table `Char`.
 
 **Note:** As Tablesmith 5.2 provides no comphrehensive documentation where variables can be referenced this implementation may act differently.
 
@@ -176,7 +176,7 @@ Variables can be assigned in Group entries by using the syntax `|variableName?X|
 - **|A& III|** - Concatenates the text " III" to A's value (Ex: If "A" was "Smith", it is now "Smith III")
 - **|A=orc|** - Sets "A" equal to the word "orc"
 
-As with reference Variables in other tables may be assigned using the syntax  `|Tablename!Variablename?Value|`, i.e. `|Char.name=Brognar|` to assign the variable `name` the value `Brognar` in Table `Char`.
+As with reference Variables in other tables may be assigned using the syntax  `|Tablename!Variablename?Value|`, i.e. `|Char!name=Brognar|` to assign the variable `name` the value `Brognar` in Table `Char`.
 
 ## Parameters
 
