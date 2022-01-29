@@ -215,16 +215,6 @@ class StackItem {
   }
 
   /**
-   * Shifts first expressions in list, pops from bottom of stack and returns it, throws if stack is empty.
-   * @returns TSExpressions on bottom of stack.
-   */
-  shiftExpressions(): TSExpressions {
-    const result = this.expressionsStack.shift();
-    if (result == undefined) throw 'Could not pop expressions, stack is empty!';
-    return result;
-  }
-
-  /**
    * Adds given expression to top of stack.
    * @param expression to add to Expressions on top of stack.
    */
