@@ -6,7 +6,7 @@ import TermCalc from './termcalc';
 /**
  * Basic class for all Math Terms not directly instantiated but extended.
  */
-class BaseMathTerm implements TSExpression {
+export class BaseMathTerm implements TSExpression {
   termA: TSExpression;
   termB: TSExpression;
   termCalc: TermCalc | undefined;
@@ -41,5 +41,3 @@ class BaseMathTerm implements TSExpression {
     // empty nothing must be set for this expression
   }
 }
-
-export default BaseMathTerm;

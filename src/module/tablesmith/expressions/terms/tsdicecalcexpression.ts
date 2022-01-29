@@ -2,7 +2,7 @@ import TSGroup from '../../tsgroup';
 import TSExpression from '../tsexpression';
 import TSExpressionResult from '../tsexpressionresult';
 
-export default class DiceCalcTerm implements TSExpression {
+export default class TSDiceCalcExpression implements TSExpression {
   functionName: string;
   innerTerm: TSExpression;
   constructor(functionName: string, innerDiceTerm: TSExpression) {

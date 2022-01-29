@@ -37,6 +37,13 @@ import TSNewlineExpression from '../expressions/tsnewlineexpression';
 import TSGroupCallExpression from '../expressions/tsgroupcallexpression';
 import GroupCallModifierTerm from '../expressions/terms/groupcallmodifierterm';
 import TSParamExpression from '../expressions/tsparamexpression';
+import TSDiceCalcExpression from '../expressions/terms/tsdicecalcexpression';
+import PlusTerm from '../expressions/terms/plusterm';
+import MinusTerm from '../expressions/terms/minusterm';
+import MultTerm from '../expressions/terms/multterm';
+import DivTerm from '../expressions/terms/divterm';
+import InnerDiceTerm from '../expressions/terms/innerdiceterm';
+import BracketTerm from '../expressions/terms/bracketterm';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -68,6 +75,91 @@ class TSTableGroupBuilder {
    */
   startGroupCall() {
     this.stack.startGroupCall();
+  }
+
+  /**
+   * Adds a MathTerm like +, -, *, /.
+   * @param operator of the math term.
+   */
+  addMathTerm(operator: string): void {
+    if (['+', '-'].includes(operator)) {
+      this.stack.stackMathSumOperator(operator);
+    } else if (['d', '*', '/'].includes(operator)) {
+      this.stack.stackMathMultOperator(operator);
+    }
+    this.stack.stackParameter();
+  }
+
+  /**
+   * Called by parser if opening bracket has been found in Math Terms.
+   */
+  openBracket(): void {
+    this.stack.startBracket();
+  }
+
+  /**
+   * Called by parser if closing bracket for math TSExpression has been found.
+   */
+  closeBracket() {
+    this.createMathMult();
+    this.createMathSum();
+    const stacked = this.stack.pop();
+    this.stack.pushExpressionToLast(new BracketTerm(stacked.popExpressions()));
+  }
+
+  /**
+   * Called by parser if closing bracket for math TSExpression has been found.
+   */
+  createMathMult(): void {
+    const stacked = this.stack.peek();
+    while (stacked.mathMultSize() > 0) {
+      const mathMultSize = stacked.mathMultSize();
+      const stackSize = stacked.stackSize();
+      const indexA = stackSize - (mathMultSize + 1);
+      const indexB = indexA + 1;
+      const operator = stacked.shiftMathMultOperator();
+      const b = stacked.pullExpressionsAt(indexB);
+      const a = stacked.pullExpressionsAt(indexA);
+      if (!a || !b) throw `Cannot create TSExpression missing terms got a=${a} b=${b}`;
+      stacked.stackAt(indexA);
+      stacked.pushExpressionTo(indexA, this.createTerm(operator, a, b));
+    }
+  }
+
+  /**
+   * Called by parser if closing bracket for math TSExpression has been found.
+   */
+  createMathSum(): void {
+    const stacked = this.stack.peek();
+    while (stacked.mathSumSize() > 0) {
+      const mathSumSize = stacked.mathSumSize();
+      const stackSize = stacked.stackSize();
+      const indexA = stackSize - (mathSumSize + 1);
+      const indexB = indexA + 1;
+      const operator = stacked.shiftMathSumOperator();
+      const b = stacked.pullExpressionsAt(indexB);
+      const a = stacked.pullExpressionsAt(indexA);
+      if (!a || !b) throw `Cannot create TSExpression missing terms got a=${a} b=${b}`;
+      stacked.stackAt(indexA);
+      stacked.pushExpressionTo(indexA, this.createTerm(operator, a, b));
+    }
+  }
+
+  private createTerm(operator: string, a: TSExpression, b: TSExpression): TSExpression {
+    switch (operator) {
+      case '+':
+        return new PlusTerm(a, b);
+      case '-':
+        return new MinusTerm(a, b);
+      case '*':
+        return new MultTerm(a, b);
+      case '/':
+        return new DivTerm(a, b);
+      case 'd':
+        return new InnerDiceTerm(a, b);
+      default:
+        throw `Cannot add math term, unknown operator '${operator}'!`;
+    }
   }
 
   /**
@@ -168,7 +260,8 @@ class TSTableGroupBuilder {
    * Creates function on top of stack and adds it to current expressions.
    */
   createFunction(): void {
-    this.addExpression(this.endFunction());
+    const tsfunction = this.endFunction();
+    this.addExpression(tsfunction);
   }
 
   /**
@@ -189,6 +282,9 @@ class TSTableGroupBuilder {
       case 'Bold':
         result = this.createBoldExpression(stacked);
         break;
+      case 'Calc':
+        result = new TSDiceCalcExpression(stacked.name, stacked.popExpressions());
+        break;
       case 'Count':
         result = this.createCountExpression(stacked);
         break;
@@ -198,6 +294,9 @@ class TSTableGroupBuilder {
       case 'CR':
         stacked.popExpressions();
         result = new TSNewlineExpression();
+        break;
+      case 'Dice':
+        result = new TSDiceCalcExpression(stacked.name, stacked.popExpressions());
         break;
       case 'Floor':
         result = new TSMathFloorExpression(stacked.popExpressions());
@@ -454,7 +553,7 @@ class TSTableGroupBuilder {
    */
   addExpression(expression: TSExpression): void {
     expression.setGroup(this.tsGroup);
-    this.stack.addExpression(expression);
+    this.stack.pushExpressionToLast(expression);
   }
 
   /**

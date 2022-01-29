@@ -7,6 +7,7 @@ describe('ToAD Villian Plan.tab', () => {
   let tablename: string;
   const filename = './test/tables/ToAD Villian Plan.tab';
   beforeAll(() => {
+    tablesmith.reset();
     tablename = path.basename(filename, '.tab');
     tablesmith.addTable('ToAD', tablename, fs.readFileSync(filename, { encoding: 'utf8', flag: 'r' }));
   });
@@ -30,6 +31,7 @@ describe('ToAD Dungeon.tab', () => {
   let tablename: string;
   const filename = './test/tables/ToAD Dungeon.tab';
   beforeAll(() => {
+    tablesmith.reset();
     tablename = path.basename(filename, '.tab');
     tablesmith.addTable('ToAD', tablename, fs.readFileSync(filename, { encoding: 'utf8', flag: 'r' }));
   });
@@ -37,13 +39,13 @@ describe('ToAD Dungeon.tab', () => {
   it('parsed complete', () => {
     expect(tstables.getTSTables().length).toBe(1);
     expect(tstables.getLastTSTable().getName()).toBe(tablename);
-    expect(tablesmith.tableForName(tablename)?.getGroups().length).toEqual(50);
-    const lastGroup = tstables.tableForName(tablename)?.getGroups()[50 - 1];
+    expect(tablesmith.tableForName(tablename)?.getGroups().length).toEqual(390);
+    const lastGroup = tstables.tableForName(tablename)?.getGroups()[390 - 1];
     expect(lastGroup?.getName()).toEqual('Decoration');
   });
 
-  it('[ToAD Villian Plan] generates a dungeon', () => {
-    const result = tablesmith.evaluate('[ToAD Villian Plan]');
+  it('[ToAD Dungeon] generates a dungeon', () => {
+    const result = tablesmith.evaluate('[ToAD Dungeon]');
     console.log(result);
     expect(result.length).toBeGreaterThan(40);
   });

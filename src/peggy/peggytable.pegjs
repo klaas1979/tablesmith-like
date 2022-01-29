@@ -241,11 +241,6 @@ Expression
   / _ VariableSet Value? Expression*
   / _ Value Expression*
 
-MathFactorExpression
-  = _ GroupCall Value? MathFactorExpression*
-  / _ TsFunction Value? MathFactorExpression*
-  / _ VariableGet Value? MathFactorExpression*
-
 /* Expressions that are allowed in a set Variable expression. */
 VariableSetExpressions
   = GroupCall VariableSetExpressions*
@@ -336,23 +331,16 @@ ParamSeparatorComma
           }); }
 
 TSMathFunction
-  = Dice _ MathExpression _ '}' { errorHandling(() => {
-            options?.pf.createDice();
-          }); }
-  / Calc _ MathExpression _ '}' { errorHandling(() => { 
-            options?.pf.createCalc();
+  = DiceOrCalc _ MathExpression _ '}' { errorHandling(() => {
+            options?.pf.createFunction();
           }); }
   / MathOneParamFunctions
   / MathTwoParamFunctions
   / MathManyParamFunctions
   / MathPowerFunction // has '^' as separator in TS definition
 
-Dice = '{' _ 'Dice~'  { errorHandling(() => {
-            options?.pf.mathBuilder.stackExpressionContext();
-          }); }
-
-Calc = '{' _ 'Calc~'  { errorHandling(() => {
-            options?.pf.mathBuilder.stackExpressionContext();
+DiceOrCalc = '{' _ name:(@'Dice' / @'Calc') '~'  { errorHandling(() => {
+            options?.pf.startFunction(name);
           }); }
 
 MathOneParamFunctions
@@ -399,46 +387,40 @@ MathPowerSeparator = [,^] { errorHandling(() => { // has only '^' in definition 
           }); }
 
 MathExpression
-  = MathTerm (_ MathSum _ MathTerm)*
+  = MathTerm (_ MathSum _ MathTerm)*  { errorHandling(() => { 
+            options?.pf.createMathSum();
+          }); }
 
 MathSum
-  = '+' { errorHandling(() => { 
-            options?.pf.mathBuilder.addAddition();
-          }); }
-  / '-' { errorHandling(() => { 
-            options?.pf.mathBuilder.addSubtraction();
+  = op:(@'+' / @'-') { errorHandling(() => { 
+            options?.pf.addMathTerm(op);
           }); }
 
 MathTerm
-  = MathFactor (_ MathMult _ MathFactor)* 
+  = MathFactor (_ MathMult _ MathFactor)* { errorHandling(() => { 
+            options?.pf.createMathMult();
+          }); }
   
 MathMult
-  = 'd'  { errorHandling(() => {
-            options?.pf.mathBuilder.addDice();
-          }); }
-  / '*' { errorHandling(() => { 
-            options?.pf.mathBuilder.addMultiplication();
-          }); }
-  / '/' { errorHandling(() => { 
-            options?.pf.mathBuilder.addDivision();
+  = op:(@'d' / @'*' / @'/') { errorHandling(() => { 
+            options?.pf.addMathTerm(op);
           }); }
 
 MathFactor
-  = TSMathFunction
-  / OpenBracket _ MathExpression _ ')' { errorHandling(() => {
-            options?.pf.mathBuilder.closeBracket();
+  = OpenBracket _ MathExpression _ ')' { errorHandling(() => {
+            options?.pf.closeBracket();
           }); }
-//  / MathFactorExpression
-  / number:int { errorHandling(() => {
-            options?.pf.mathBuilder.addNumber(toInt(number));
-          }); }
-  / !'/' '%' tablename:(@Name '.')? varname:Name '%'{ errorHandling(() => {
-            options?.pf.mathBuilder.addVariableGet(tablename, varname);
-          }); }
+  / MathFactorExpression
+
+MathFactorExpression
+  = _ GroupCall MathFactorExpression*
+  / _ TsFunction  MathFactorExpression*
+  / _ VariableGet MathFactorExpression*
+  / _ ValueMathFactorExpression MathFactorExpression*
 
 OpenBracket
   = '(' { errorHandling(() => {
-            options?.pf.mathBuilder.openBracket();
+            options?.pf.openBracket();
           }); }
 
  /** Text that is allowed within an selections where a comma ',' happens. */
@@ -486,7 +468,7 @@ ValueMathFactorExpression
 /** Text that is allowed within an If with slash "/", no escaped chars, because escape
 sign is the same as the separator for If {If~}. */
 PlainTextValueMathFactorExpression
- = text:([^^+.*/{}[\]%|\n])+ { return text.join(''); }
+ = text:[0-9]+ { return text.join(''); }
 
 ValueIfSlash
   = text:PlainTextIfSlash { errorHandling(() => {

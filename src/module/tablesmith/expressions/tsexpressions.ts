@@ -7,8 +7,9 @@ import TSExpressionResult from './tsexpressionresult';
  */
 class TSExpressions implements TSExpression {
   expressions: TSExpression[];
-  constructor() {
+  constructor(expression: TSExpression | undefined = undefined) {
     this.expressions = [];
+    if (expression) this.expressions.push(expression);
   }
 
   /**
@@ -46,8 +47,16 @@ class TSExpressions implements TSExpression {
    * Adds given expression to end of collection.
    * @param expression to add to end of list.
    */
-  add(expression: TSExpression) {
+  push(expression: TSExpression) {
     this.expressions.push(expression);
+  }
+
+  /**
+   * Unshifts given expression to beginning of collection.
+   * @param expression to add to begining of list.
+   */
+  unshift(expression: TSExpression) {
+    this.expressions.unshift(expression);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

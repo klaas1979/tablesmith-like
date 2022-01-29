@@ -2,7 +2,6 @@ import TSTextExpression from '../expressions/tstextexpression';
 import GroupCallModifierTerm from '../expressions/terms/groupcallmodifierterm';
 import { TableParameter, TSTable } from '../tstable';
 import TSTableGroupBuilder from './tstablegroupbuilder';
-import MathTermExpressionBuilder from './mathtermexpressionbuilder';
 
 /**
  * Factory used by the Peggy Parser to create the in memory representaion of a Tablesmith Table file.
@@ -10,12 +9,10 @@ import MathTermExpressionBuilder from './mathtermexpressionbuilder';
 class TSParserFactory {
   table: TSTable;
   groupBuilder: TSTableGroupBuilder | undefined;
-  mathBuilder: MathTermExpressionBuilder;
   groupCallModifier: GroupCallModifierTerm | undefined;
 
   constructor(table: TSTable) {
     this.table = table;
-    this.mathBuilder = new MathTermExpressionBuilder();
   }
 
   /**
@@ -120,10 +117,52 @@ class TSParserFactory {
   }
 
   /**
+   * Adds a MathTerm like +, -, *, /, ^.
+   * @param operator of the math term.
+   */
+  addMathTerm(operator: string): void {
+    if (!this.groupBuilder) throw `Cannot add math term for '${operator}', no Group set!`;
+    this.groupBuilder.addMathTerm(operator);
+  }
+
+  /**
+   * Creates math term for mult and div and dice 'd'.
+   */
+  createMathMult(): void {
+    if (!this.groupBuilder) throw `Cannot create math mult, no Group set!`;
+    this.groupBuilder.createMathMult();
+  }
+
+  /**
+   * Creates math term for plus and minus.
+   * @param operator of the math term.
+   */
+  createMathSum(): void {
+    if (!this.groupBuilder) throw `Cannot create math mult, no Group set!`;
+    this.groupBuilder.createMathSum();
+  }
+
+  /**
+   * Called by parser if opening bracket has been found in Math Terms.
+   */
+  openBracket(): void {
+    if (!this.groupBuilder) throw `Cannot open bracket function, no Group set!`;
+    this.groupBuilder.openBracket();
+  }
+
+  /**
+   * Called by parser if closing bracket for math TSExpression has been found.
+   */
+  closeBracket() {
+    if (!this.groupBuilder) throw `Cannot close bracket function, no Group set!`;
+    this.groupBuilder.closeBracket();
+  }
+
+  /**
    * Creates and adds TS Function Expression that is on top of stack.
    */
   createFunction() {
-    if (!this.groupBuilder) throw `Cannot create function , no Group set!`;
+    if (!this.groupBuilder) throw `Cannot create function, no Group set!`;
     this.groupBuilder.createFunction();
   }
 
@@ -134,24 +173,6 @@ class TSParserFactory {
   setBooleanComparisonOperator(operator: string): void {
     if (!this.groupBuilder) throw `Cannot add If Operator, no Group set!`;
     this.groupBuilder.setBooleanComparisonOperator(operator);
-  }
-
-  /**
-   * Creates result for math expressions when parser finds ending of a Dice function.
-   */
-  createDice(): void {
-    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
-    const dice = this.mathBuilder.create('Dice');
-    if (dice) this.groupBuilder.addExpression(dice);
-  }
-
-  /**
-   * Creates result for math expressions when parser finds ending of a Dice function.
-   */
-  createCalc(): void {
-    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
-    const calc = this.mathBuilder.create('Calc');
-    if (calc) this.groupBuilder.addExpression(calc);
   }
 
   /**

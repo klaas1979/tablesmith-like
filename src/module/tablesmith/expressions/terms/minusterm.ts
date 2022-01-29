@@ -1,5 +1,5 @@
 import TSExpression from '../tsexpression';
-import BaseMathTerm from './basemathterm';
+import { BaseMathTerm } from './basemathterm';
 import TermCalc from './termcalc';
 
 /**

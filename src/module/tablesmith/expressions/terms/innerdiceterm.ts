@@ -2,7 +2,6 @@ import TSGroup from '../../tsgroup';
 import { evalcontext } from '../evaluationcontextinstance';
 import TSExpression from '../tsexpression';
 import TSExpressionResult from '../tsexpressionresult';
-
 /**
  * Inner Term for a dice roll, containing one or many dice rolls with possible to be chained by math expressions,
  * i.e. 3d6+2d4. The inner dice while not add Function name to term, but only the bare dice term.

@@ -18,8 +18,8 @@ class Stack {
    * Adds the current expression to the current list of expressions.
    * @param expression to add.
    */
-  addExpression(expression: TSExpression) {
-    this.peek().addExpression(expression);
+  pushExpressionToLast(expression: TSExpression) {
+    this.peek().pushExpressionToLast(expression);
   }
 
   /**
@@ -43,6 +43,22 @@ class Stack {
   }
 
   /**
+   * Stacks low binding operator like +, -.
+   * @param operator to stack.
+   */
+  stackMathSumOperator(operator: string) {
+    this.peek().stackMathSumOperator(operator);
+  }
+
+  /**
+   * Stacks high binding operator like *, /
+   * @param operator to stack.
+   */
+  stackMathMultOperator(operator: string) {
+    this.peek().stackMathMultOperator(operator);
+  }
+
+  /**
    * Starts a new Variable get or set Expression.
    */
   startVariable(type: 'get' | 'set') {
@@ -57,8 +73,17 @@ class Stack {
    */
   startFunction(name: string) {
     if (this.stacked.length == 0) throw `Stack is empty, cannot start new function '${name}'!`;
-    const rangeStack = new StackItem(new TSExpressions(), STACK_TYPE.FUNCTION, name);
-    this.stacked.push(rangeStack);
+    const functionStack = new StackItem(new TSExpressions(), STACK_TYPE.FUNCTION, name);
+    this.stacked.push(functionStack);
+  }
+
+  /**
+   * Starts a new Math bracket.
+   */
+  startBracket() {
+    if (this.stacked.length == 0) throw `Stack is empty, cannot start bracket!`;
+    const bracketStack = new StackItem(new TSExpressions(), STACK_TYPE.MATH_BRACKET);
+    this.stacked.push(bracketStack);
   }
 
   /**
@@ -83,10 +108,11 @@ class Stack {
   }
 
   /**
-   * Peeks into Stack without removing item.
+   * Peeks into Stack without removing item, throws if stack is empty.
    * @returns Top item from stack.
    */
   peek(): StackItem {
+    if (this.stacked.length == 0) throw 'Cannot peek into stack, stack is empty!';
     return this.stacked[this.stacked.length - 1];
   }
 }

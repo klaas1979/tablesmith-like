@@ -4,87 +4,73 @@ import { tstables } from '../../src/module/tablesmith/tstables';
 let filename: string;
 let simpleTable: string;
 
-describe('Parsing {Dice~}', () => {
+describe('Parsing {Calc~} and {Dice~} allowed parts', () => {
   beforeEach(() => {
     tablesmith.reset();
     filename = 'simpletable';
   });
 
-  it('3d6+3 roll with modifier', () => {
-    simpleTable = ':Start\n1,{Dice~3d6+3}\n';
+  it('~[num]d[num] group call as Term', () => {
+    simpleTable = ':Start\n1,{Dice~[num]d[num]}\n';
     tablesmith.addTable('folder', filename, simpleTable);
     const result = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
-    expect(result).toBe('{Dice~3d6+3}');
-  });
-
-  it('1d4+3d6+4d8 chained rolls', () => {
-    simpleTable = ':Start\n1,{Dice~1d4+3d6+4d8}\n';
-    tablesmith.addTable('folder', filename, simpleTable);
-    const result = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
-    expect(result).toBe('{Dice~1d4+3d6+4d8}');
-  });
-
-  it('1+2 addition', () => {
-    simpleTable = ':Start\n1,{Dice~1+2}\n';
-    tablesmith.addTable('folder', filename, simpleTable);
-    const result = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
-    expect(result).toBe('{Dice~1+2}');
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('3');
-  });
-
-  it('2-1 subtraction', () => {
-    simpleTable = ':Start\n1,{Dice~2-1}\n';
-    tablesmith.addTable('folder', filename, simpleTable);
-    const result = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
-    expect(result).toBe('{Dice~2-1}');
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
-  });
-
-  it('3*6 multiplication', () => {
-    simpleTable = ':Start\n1,{Dice~3*6}\n';
-    tablesmith.addTable('folder', filename, simpleTable);
-    const result = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
-    expect(result).toBe('{Dice~3*6}');
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('18');
-  });
-
-  it('18/6 division', () => {
-    simpleTable = ':Start\n1,{Dice~18/6}\n';
-    tablesmith.addTable('folder', filename, simpleTable);
-    const result = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
-    expect(result).toBe('{Dice~18/6}');
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('3');
-  });
-
-  it('((5+5)/10)d(10-9) brackets', () => {
-    simpleTable = ':Start\n1,{Dice~((5+5)/10)d(10-9)}\n';
-    tablesmith.addTable('folder', filename, simpleTable);
-    const result = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
-    expect(result).toBe('{Dice~((5+5)/10)d(10-9)}');
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
+    expect(result).toBe('{Dice~[num]d[num]}');
   });
 });
 
-describe('Parsing {Calc~}', () => {
+describe('Parsing {Dice~} binding order', () => {
   beforeEach(() => {
     tablesmith.reset();
     filename = 'simpletable';
   });
 
-  it('((5+5)/10) brackets', () => {
-    simpleTable = ':Start\n1,{Calc~((5+5)/10)}\n';
-    tablesmith.addTable('folder', filename, simpleTable);
-    const result = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
-    expect(result).toBe('{Calc~((5+5)/10)}');
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
+  [
+    ['{Calc~1}', '1'],
+    ['{Calc~1+2}', '3'],
+    ['{Calc~2-1}', '1'],
+    ['{Calc~1+2-3}', '0'],
+    ['{Calc~2*3}', '6'],
+    ['{Calc~6/3}', '2'],
+    ['{Calc~9/3*2/6}', '1'],
+    ['{Calc~6d1}', '6'],
+    ['{Calc~2*3-4}', '2'],
+    ['{Calc~1+2*3-4}', '3'],
+    ['{Dice~1+4/2-3}', '0'],
+    ['{Dice~1+4d1-3}', '2'],
+    ['{Dice~10*10d1/10}', '10'],
+    ['{Dice~(10-9)*2}', '2'],
+    ['{Dice~(10-9)*(2+1)}', '3'],
+    ['{Dice~(10-9)d(3-2)}', '1'],
+  ].forEach((tuple) => {
+    it(`${tuple[0]} = ${tuple[1]}`, () => {
+      const term = tuple[0];
+      const result = tuple[1];
+      simpleTable = `:Start\n1,${term}\n`;
+      tablesmith.addTable('folder', filename, simpleTable);
+      const expression = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+      expect(expression).toBe(term);
+      expect(tablesmith.evaluate(`[${filename}]`)).toBe(result);
+    });
+  });
+});
+
+describe('Parsing {Dice~} and {Calc~}', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
   });
 
-  it('((5+5)/10)d(10-9) brackets', () => {
-    simpleTable = ':Start\n1,{Calc~((5+5)/10)d(10-9)}\n';
-    tablesmith.addTable('folder', filename, simpleTable);
-    const result = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
-    expect(result).toBe('{Calc~((5+5)/10)d(10-9)}');
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
+  ['3d6+3', '1d4+3d6+4d8', '((5+5)/10)d(10-9)'].forEach((term) => {
+    [`{Calc~${term}}`, `{Dice~${term}}`].forEach((tsCall) => {
+      // eslint-disable-next-line jest/valid-title
+      it(tsCall, () => {
+        simpleTable = `:Start\n1,${tsCall}\n`;
+        tablesmith.addTable('folder', filename, simpleTable);
+        const expression = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+        expect(expression).toBe(tsCall);
+        expect(tablesmith.evaluate(`[${filename}]`)).toBeTruthy();
+      });
+    });
   });
 });
 

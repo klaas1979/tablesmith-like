@@ -11,11 +11,15 @@ class StackItem {
   name: string;
   strings: string[];
   expressionsStack: TSExpressions[];
+  mathSumOperators: string[];
+  mathMultOperators: string[];
   constructor(expressions: TSExpressions, type: STACK_TYPE, name = '') {
     this.type = type;
     this.name = name;
     this.strings = [];
     this.expressionsStack = [];
+    this.mathSumOperators = [];
+    this.mathMultOperators = [];
     this.expressionsStack.push(expressions);
   }
 
@@ -27,11 +31,62 @@ class StackItem {
   }
 
   /**
+   * Stacks a new TSExpressions list to given index.
+   */
+  stackAt(index: number): void {
+    if (index > this.expressionsStack.length) throw `Cannot stackAt index '${index}' out of bounds!`;
+    this.expressionsStack.splice(index, 0, new TSExpressions());
+  }
+
+  /**
+   * Unshifts a new TSExpressions list at beginning
+   */
+  unshift(): void {
+    this.expressionsStack.unshift(new TSExpressions());
+  }
+
+  /**
    * Stacks a string value.
    * @param value to stack.
    */
   stackString(value: string): void {
     this.strings.push(value);
+  }
+
+  /**
+   * Stacks low binding operator like +, -.
+   * @param operator to stack.
+   */
+  stackMathSumOperator(operator: string): void {
+    this.mathSumOperators.push(operator);
+  }
+
+  /**
+   * Stacks high binding operator like *, /
+   * @param operator to stack.
+   */
+  stackMathMultOperator(operator: string): void {
+    this.mathMultOperators.push(operator);
+  }
+
+  /**
+   * Shifts a math sum operator from list, bottom of stack and returns it.
+   * @returns first operator in list.
+   */
+  shiftMathSumOperator(): string {
+    const result = this.mathSumOperators.shift();
+    if (result == undefined) throw 'Could not shift math sum operator, stack is empty!';
+    return result;
+  }
+
+  /**
+   * Shifts a math mult operator from list, bottom of stack and returns it.
+   * @returns first operator in list.
+   */
+  shiftMathMultOperator(): string {
+    const result = this.mathMultOperators.shift();
+    if (result == undefined) throw 'Could not shift math mult operator, stack is empty!';
+    return result;
   }
 
   /**
@@ -61,6 +116,21 @@ class StackItem {
   }
 
   /**
+   * Gives number of stacked Sum Operators.
+   * @returns number of stacked operators.
+   */
+  mathSumSize(): number {
+    return this.mathSumOperators.length;
+  }
+  /**
+   * Gives number of stacked Mult Operators.
+   * @returns number of stacked operators.
+   */
+  mathMultSize(): number {
+    return this.mathMultOperators.length;
+  }
+
+  /**
    * String summary of this stack item.
    * @returns Summary of this Stack Item.
    */
@@ -75,11 +145,42 @@ class StackItem {
   }
 
   /**
-   * Adds given expression to TSExpressions on top of stack.
+   * Pushs given expression to TSExpressions on top of stack.
    * @param expression to add.
    */
-  addExpression(expression: TSExpression) {
-    this.peekExpressions().add(expression);
+  pushExpressionToLast(expression: TSExpression) {
+    this.peekExpressions().push(expression);
+  }
+
+  /**
+   * Pushs given expression to TSExpressions at given index of stack.
+   * @param index of stack item to push Expression to.
+   * @param expression to add.
+   */
+  pushExpressionTo(index: number, expression: TSExpression) {
+    if (index > this.expressionsStack.length)
+      throw `Could not push to index '${index}', length '${this.expressionsStack.length}'`;
+    this.expressionsStack[index].push(expression);
+  }
+
+  /**
+   * Pushs all included expressions to this TSEspressions.
+   * @param expressions to pop and add to this stack.
+   */
+  pushExpressionsToLast(expressions: TSExpressions) {
+    let expression;
+    while ((expression = expressions.expressions.pop())) {
+      this.peekExpressions().push(expression);
+    }
+  }
+
+  /**
+   * Returns TSExpressions at start of list (at bottom of stack).
+   * @returns TSExpressions at start of list.
+   */
+  firstExpressions(): TSExpressions {
+    if (this.expressionsStack.length == 0) throw 'Cannot get firstExpressions stack is empty!';
+    return this.expressionsStack[0];
   }
 
   /**
@@ -87,6 +188,7 @@ class StackItem {
    * @returns TSExpressions on top of stack.
    */
   peekExpressions(): TSExpressions {
+    if (this.expressionsStack.length == 0) throw 'Cannot peekExpressions stack is empty!';
     return this.expressionsStack[this.expressionsStack.length - 1];
   }
 
@@ -96,6 +198,28 @@ class StackItem {
    */
   popExpressions(): TSExpressions {
     const result = this.expressionsStack.pop();
+    if (result == undefined) throw 'Could not pop expressions, stack is empty!';
+    return result;
+  }
+
+  /**
+   * Pops expressions at given index, throws if stack out of bounds.
+   * @param index to pull.
+   * @returns TSExpressions at index.
+   */
+  pullExpressionsAt(index: number): TSExpressions {
+    if (this.expressionsStack.length <= index)
+      throw `Could not pull at index '${index}', length '${this.expressionsStack.length}'`;
+    const result = this.expressionsStack.splice(index, 1);
+    return result[0];
+  }
+
+  /**
+   * Shifts first expressions in list, pops from bottom of stack and returns it, throws if stack is empty.
+   * @returns TSExpressions on bottom of stack.
+   */
+  shiftExpressions(): TSExpressions {
+    const result = this.expressionsStack.shift();
     if (result == undefined) throw 'Could not pop expressions, stack is empty!';
     return result;
   }

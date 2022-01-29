@@ -44,7 +44,11 @@ class TSRange {
    * @returns strnig representing the evaluated expressions for this range.
    */
   evaluate(): TSExpressionResult {
-    return this.expressions.evaluate();
+    try {
+      return this.expressions.evaluate();
+    } catch (error) {
+      throw `Error in Range '${this.upper}-${this.lower}'=>'${this.getExpression()}':\n${error}`;
+    }
   }
 
   /**
@@ -60,7 +64,7 @@ class TSRange {
    * @param expression to add to this range expressions end.
    */
   add(expression: TSExpression) {
-    this.expressions.add(expression);
+    this.expressions.push(expression);
   }
   /**
    * Returns the underlying TSExpressions colleciton.

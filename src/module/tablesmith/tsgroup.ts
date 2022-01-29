@@ -143,9 +143,13 @@ class TSGroup {
    * @returns evaluated expression for Range donating result.
    */
   result(total: number): string {
-    const result = this.rangeFor(total);
-    this.lastRollTotal = total;
-    return `${this.before.evaluate().asString()}${result.evaluate().asString()}${this.after.evaluate().asString()}`;
+    try {
+      const result = this.rangeFor(total);
+      this.lastRollTotal = total;
+      return `${this.before.evaluate().asString()}${result.evaluate().asString()}${this.after.evaluate().asString()}`;
+    } catch (error) {
+      throw `Error in Group '${this.name}'\n${error}`;
+    }
   }
 
   /**

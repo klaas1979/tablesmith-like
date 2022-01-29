@@ -33,20 +33,20 @@ describe('TSGroup (repeating)', () => {
   });
 
   it('#result with before add before prior to result', () => {
-    group.getBefore().add(new TSTextExpression('Before'));
+    group.getBefore().push(new TSTextExpression('Before'));
     const result = group.result(roll);
     expect(result).toBe('BeforeOne');
   });
 
   it('#result with after add after after result', () => {
-    group.getAfter().add(new TSTextExpression('After'));
+    group.getAfter().push(new TSTextExpression('After'));
     const result = group.result(roll);
     expect(result).toBe('OneAfter');
   });
 
   it('#result with before and after adds both around result', () => {
-    group.getBefore().add(new TSTextExpression('Before'));
-    group.getAfter().add(new TSTextExpression('After'));
+    group.getBefore().push(new TSTextExpression('Before'));
+    group.getAfter().push(new TSTextExpression('After'));
     const result = group.result(roll);
     expect(result).toBe('BeforeOneAfter');
   });
