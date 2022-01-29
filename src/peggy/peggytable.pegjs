@@ -123,7 +123,8 @@ GroupCall
             options?.pf.createGroupCall();
           }); }
 StartGroupCall
-  = !'/' '[' { errorHandling(() => {
+// ignore ~ reload toggle for the moment
+  = !'/' '[' '~'? { errorHandling(() => {
             options?.pf.startGroupCall();
           }); }
 Modifier

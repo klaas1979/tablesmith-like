@@ -22,7 +22,7 @@ class TSLineExpression implements TSExpression {
   private evaluateAlign(): string {
     const align = this.alignExpression.evaluate().trim();
     const allowed = ['left', 'center', 'right'];
-    if (!allowed.includes(align)) throw `Align was '${align}', allowed values '${allowed.join(',')}'`;
+    if (!allowed.includes(align.toLowerCase())) throw `Align was '${align}', allowed values '${allowed.join(',')}'`;
     return align;
   }
 

@@ -31,7 +31,7 @@ UnquotedAttributeValue = value:decimalDigit*
  
 TagName = chars:[a-zA-Z0-9]+ { return chars.join(''); }
 
-Text = chars:[^<>&''\n]+  { return chars.join(''); }
+Text = chars:[^<>&\n]+  { return chars.join(''); }
 
 EscapedChar
   = '\n'  { return ''; }
