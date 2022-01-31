@@ -56,5 +56,5 @@ jobs:
           username: ${{ secrets.FOUNDRY_ADMIN_USER }}
           password: ${{ secrets.FOUNDRY_ADMIN_PW }}
           module-id: 1874
-          manifest-url: https://github.com/klaas1979/tablesmith-like/releases/download/${{ steps.get-version.outputs.version }}/module.json
+          manifest-url: https://github.com/klaas1979/tablesmith-like/releases/download/v${{ steps.get-version.outputs.version }}/module.json
           manifest-file: src/module.json
