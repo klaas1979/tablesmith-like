@@ -12,6 +12,7 @@ Tablesmith table syntax allows it to create anything from simple tables and nest
   - [API](#api)
   - [Foundry Table integration](#foundry-table-integration)
   - [Tablesmith Form](#tablesmith-form)
+  - [Via Macro](#via-macro)
   - [Tablesmith Tables](#tablesmith-tables)
     - [Loaded tables](#loaded-tables)
     - [Tables in different Journals or Folders](#tables-in-different-journals-or-folders)
@@ -60,11 +61,29 @@ The main method to use in the API is `evaluateTable(expression: string)` where t
 
 ### Foundry Table integration
 
-TODO
+Any standard Table can call a Tablesmith table by using the Tablesmith Call syntax without any other text as *Result Details*, i.e. `[Simple(1,2)]:2` would call the table `Simple`, two times (`:2`), setting the first parameter to `1` and the second to `2`. The syntax is:
+
+```tab
+# Minimal call, defaults to Group 'Start'
+[Tablename]
+
+# Call other Group
+[Tablename.Groupname]
+
+# Call to table with params
+[Tablename(params)]
+
+# Full call with all options
+[Tablename.Groupname(params)]:times
+```
 
 ### Tablesmith Form
 
-Via Macro TODO
+One macro within the added compendium opens the Tablesmith Form, where all loaded tables can be called.
+
+### Via Macro
+
+The module adds a compendium with simple macros to demonstrate the usage of the API within a Macro.
 
 ### Tablesmith Tables
 
