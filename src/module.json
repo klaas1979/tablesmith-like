@@ -31,7 +31,7 @@
   ],
   "socket": false,
   "url": "https://github.com/klaas1979/tablesmith-like",
-  "manifest": "https://raw.githubusercontent.com/klaas1979/tablesmith-like/master/module.json",
+  "manifest": "https://github.com/klaas1979/tablesmith-like/blob/62c8068a27e01c3b528e682f177ccdb270a99002/src/module.json",
   "download": "https://github.com/klaas1979/tablesmith-like/releases/download/v1.0.0/module.zip",
   "license": "https://github.com/klaas1979/tablesmith-like/blob/main/LICENSE.txt",
   "readme": "https://github.com/klaas1979/tablesmith-like/blob/main/README.md",
