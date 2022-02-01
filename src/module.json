@@ -32,7 +32,7 @@
   "socket": false,
   "url": "https://github.com/klaas1979/tablesmith-like",
   "manifest": "https://raw.githubusercontent.com/klaas1979/tablesmith-like/master/module.json",
-  "download": "https://host/path/to/0.0.0.zip",
+  "download": "https://github.com/klaas1979/tablesmith-like/releases/download/v1.0.0/module.zip",
   "license": "https://github.com/klaas1979/tablesmith-like/blob/main/LICENSE.txt",
   "readme": "https://github.com/klaas1979/tablesmith-like/blob/main/README.md",
   "bugs": "https://github.com/klaas1979/tablesmith-like/issues",
