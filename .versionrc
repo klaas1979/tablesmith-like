@@ -6,7 +6,7 @@
     },
     {
       "filename": "src/module.json",
-      "type": "json"
+      "updater": "manifest-version-updater.js"
     }
   ]
 }
