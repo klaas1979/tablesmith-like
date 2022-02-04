@@ -69,7 +69,7 @@ class TSGroup {
    * @returns number that represents the LastRoll on this group.
    */
   getLastRoll(): number {
-    if (!this.lastRollTotal) throw `LastRoll not set for Group '${this.name}'`;
+    if (!this.lastRollTotal) throw Error(`LastRoll not set for Group '${this.name}'`);
     return this.lastRollTotal;
   }
 
@@ -100,18 +100,18 @@ class TSGroup {
    * Rolls on this group using the provided modifier and returns the result.
    * @param groupCallModifier to modify rolls with.
    */
-  roll(groupCallModifier: GroupCallModifierTerm): string {
+  async roll(groupCallModifier: GroupCallModifierTerm): Promise<string> {
     let result: string | undefined = undefined;
     const roller = groupCallModifier.modify(this.rollTerm());
     for (let i = 0; result === undefined && i < this.ranges.length * 10; i++) {
-      const roll = roller.evaluate();
+      const roll = await roller.evaluate();
       let range: TSRange | undefined = this.rangeFor(roll.asInt());
       if (this.isNonRepeating()) {
         if (!range.isTaken()) range.lockout();
         else range = undefined;
       }
       if (range) {
-        result = this.result(roll.asInt());
+        result = await this.result(roll.asInt());
       }
     }
     // check if group is really maxed out or the 10*ranges sets have not found a match
@@ -121,7 +121,7 @@ class TSGroup {
       });
       if (range) {
         range.lockout();
-        result = this.result(range.getLower());
+        result = await this.result(range.getLower());
       }
     }
     return result != undefined ? result : '<Non repeating Group maxed out!>';
@@ -142,13 +142,16 @@ class TSGroup {
    * @param rollResult The RollResult to lockup the groups text with.
    * @returns evaluated expression for Range donating result.
    */
-  result(total: number): string {
+  async result(total: number): Promise<string> {
     try {
       const result = this.rangeFor(total);
       this.lastRollTotal = total;
-      return `${this.before.evaluate().asString()}${result.evaluate().asString()}${this.after.evaluate().asString()}`;
+      const beforeValue = await this.before.evaluate();
+      const resultValue = await result.evaluate();
+      const afterValue = await this.after.evaluate();
+      return `${beforeValue.asString()}${resultValue.asString()}${afterValue.asString()}`;
     } catch (error) {
-      throw `Error in Group '${this.name}'\n${error}`;
+      throw Error(`Error in Group '${this.name}'\n${error}`);
     }
   }
 
@@ -197,7 +200,9 @@ class TSGroup {
     const lower = this.lastRange() ? this.lastRange().upper + 1 : 1;
     const upper = this.rangeAsProbabilty ? lower + value - 1 : value;
     if (upper < lower)
-      throw `Cannot add range to Group '${this.name}' value '${value}' results in range that is smaller than last range!`;
+      throw Error(
+        `Cannot add range to Group '${this.name}' value '${value}' results in range that is smaller than last range!`,
+      );
     const range = new TSRange(lower, upper);
     this.ranges.push(range);
     return range;
@@ -223,7 +228,7 @@ class TSGroup {
         }
       }
     }
-    if (!result) throw `Group='${this.name}' could not get TSRange for value=${total}`;
+    if (!result) throw Error(`Group='${this.name}' could not get TSRange for value=${total}`);
 
     return result;
   }

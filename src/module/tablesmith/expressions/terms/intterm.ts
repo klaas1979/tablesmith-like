@@ -1,24 +1,19 @@
-import TSGroup from '../../tsgroup';
-import TSExpression from '../tsexpression';
+import { BaseTSExpression } from '../tsexpression';
 import TSExpressionResult from '../tsexpressionresult';
 
 /**
  * Represents an Integer number as Term.
  */
-export default class IntTerm implements TSExpression {
+export default class IntTerm extends BaseTSExpression {
   int: number;
   constructor(int: number) {
+    super();
     this.int = int;
   }
   getExpression(): string {
     return `${this.int}`;
   }
-  evaluate(): TSExpressionResult {
+  async evaluate(): Promise<TSExpressionResult> {
     return new TSExpressionResult(this.int);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setGroup(group: TSGroup): void {
-    // empty nothing must be set for this expression
   }
 }

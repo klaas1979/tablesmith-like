@@ -1,17 +1,17 @@
-import TSGroup from '../tsgroup';
-import TSExpression from './tsexpression';
+import TSExpression, { BaseTSExpression } from './tsexpression';
 import TSExpressionResult from './tsexpressionresult';
 
 /**
  * Math min function to get smaller of the two values.
  */
-class TSMathMinExpression implements TSExpression {
+export default class TSMathMinExpression extends BaseTSExpression {
   values: TSExpression[];
   constructor(values: TSExpression[]) {
+    super();
     this.values = values;
   }
-  evaluate(): TSExpressionResult {
-    const nums = this.values.map((value) => value.evaluate().asNumber());
+  async evaluate(): Promise<TSExpressionResult> {
+    const nums = await Promise.all(this.values.map(async (value) => (await value.evaluate()).asNumber()));
     return new TSExpressionResult(Math.min(...nums));
   }
   getExpression(): string {
@@ -21,10 +21,4 @@ class TSMathMinExpression implements TSExpression {
     );
     return `{Min~${expressions}}`;
   }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setGroup(group: TSGroup): void {
-    // empty
-  }
 }
-
-export default TSMathMinExpression;

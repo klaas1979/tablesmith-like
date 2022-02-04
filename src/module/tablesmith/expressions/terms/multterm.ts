@@ -5,7 +5,7 @@ import TermCalc from './termcalc';
 /**
  * MultTerm is used for "*" calculations.
  */
-class MultTerm extends BaseMathTerm implements TermCalc {
+export default class MultTerm extends BaseMathTerm implements TermCalc {
   constructor(termA: TSExpression, termB: TSExpression) {
     super(termA, termB);
     super.termCalc = this;
@@ -18,5 +18,3 @@ class MultTerm extends BaseMathTerm implements TermCalc {
     return '*';
   }
 }
-
-export default MultTerm;

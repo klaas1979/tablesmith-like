@@ -27,10 +27,11 @@
 // Import TypeScript modules
 import { registerSettings } from './foundry/settings';
 import { preloadTemplates } from './foundry/preloadTemplates';
-import { getTablesmithApi, setTablesmithApi, TABLESMITH_ID } from './foundry/helper';
+import { setTablesmithApi, TABLESMITH_ID } from './foundry/helper';
 import { Logger, DevModeApi, LOG_LEVEL } from './foundry/logger';
 import TablesmithApi from './foundry/tablesmithapi';
-import { libWrapper } from './foundry/shims/libwrappershim';
+import { wrapRollTable } from './rolltable-wrapper';
+import { tablesmith } from './tablesmith/tablesmithinstance';
 
 // Initialize module
 Hooks.once('init', async () => {
@@ -59,23 +60,21 @@ Hooks.once('setup', async () => {
 Hooks.once('ready', async () => {
   // Do anything once the module is ready
   setTablesmithApi(new TablesmithApi());
-  libWrapper.register(TABLESMITH_ID, 'TableResult.prototype.getChatText', tableResultChatTextWrapper, 'WRAPPER');
+  tablesmith.registerInputTextCallback(promptForInputText);
+  wrapRollTable();
 });
 
-function tableResultChatTextWrapper(this: TableResult, wrapped: () => string): string {
-  const originalResult = wrapped();
-  let replacedResult = originalResult;
-  const tableCallValues = getTablesmithApi().parseEvaluateCall(originalResult);
-  if (tableCallValues) {
-    const result = getTablesmithApi().evaluateTable(tableCallValues);
-    if (typeof result == 'string') {
-      replacedResult = result;
-    } else {
-      replacedResult = result.join('br />');
-    }
-    Logger.debug(false, 'Original and replaced result', originalResult, replacedResult);
-  }
-  return replacedResult;
+async function promptForInputText(prompt: string, defaultValue: string): Promise<string> {
+  let entered = await Dialog.prompt({
+    content: `<div class="form-group"><label for="input">${prompt}</label><input id="input" name="input" type="text" value="${defaultValue}"><div/>`,
+    // When closed it will give us the number
+    callback: (html) => html.find('input').val(),
+  });
+  if (entered === undefined) entered = defaultValue;
+  else if (typeof entered === 'number') entered = `${entered}`;
+  else if (typeof entered === 'string') entered = entered;
+  else entered = entered.join(',');
+  return entered;
 }
 
 // Add any additional hooks if necessary

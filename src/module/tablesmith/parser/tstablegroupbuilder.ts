@@ -44,6 +44,7 @@ import MultTerm from '../expressions/terms/multterm';
 import DivTerm from '../expressions/terms/divterm';
 import InnerDiceTerm from '../expressions/terms/innerdiceterm';
 import BracketTerm from '../expressions/terms/bracketterm';
+import TSInputTextExpression from '../expressions/tsinputtextexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -120,7 +121,7 @@ class TSTableGroupBuilder {
       const operator = stacked.shiftMathMultOperator();
       const b = stacked.pullExpressionsAt(indexB);
       const a = stacked.pullExpressionsAt(indexA);
-      if (!a || !b) throw `Cannot create TSExpression missing terms got a=${a} b=${b}`;
+      if (!a || !b) throw Error(`Cannot create TSExpression missing terms got a=${a} b=${b}`);
       stacked.stackAt(indexA);
       stacked.pushExpressionTo(indexA, this.createTerm(operator, a, b));
     }
@@ -139,7 +140,7 @@ class TSTableGroupBuilder {
       const operator = stacked.shiftMathSumOperator();
       const b = stacked.pullExpressionsAt(indexB);
       const a = stacked.pullExpressionsAt(indexA);
-      if (!a || !b) throw `Cannot create TSExpression missing terms got a=${a} b=${b}`;
+      if (!a || !b) throw Error(`Cannot create TSExpression missing terms got a=${a} b=${b}`);
       stacked.stackAt(indexA);
       stacked.pushExpressionTo(indexA, this.createTerm(operator, a, b));
     }
@@ -158,7 +159,7 @@ class TSTableGroupBuilder {
       case 'd':
         return new InnerDiceTerm(a, b);
       default:
-        throw `Cannot add math term, unknown operator '${operator}'!`;
+        throw Error(`Cannot add math term, unknown operator '${operator}'!`);
     }
   }
 
@@ -203,7 +204,8 @@ class TSTableGroupBuilder {
 
   private endGroupCall(): TSExpression {
     const stacked = this.stack.pop();
-    if (stacked.type != STACK_TYPE.GROUP_CALL) throw `Cannot create group Call type on stack is '${stacked.type}'`;
+    if (stacked.type != STACK_TYPE.GROUP_CALL)
+      throw Error(`Cannot create group Call type on stack is '${stacked.type}'`);
     const params = [];
     while (stacked.stackSize() > 1) params.push(stacked.popExpressions());
     const tableAndGroup = stacked.popExpressions();
@@ -212,7 +214,7 @@ class TSTableGroupBuilder {
       const operator = stacked.popString();
       const modifierExpression = params.pop();
       if (!modifierExpression)
-        throw `Cannot create group Call modifier for operator '${operator}', no Expression provided!`;
+        throw Error(`Cannot create group Call modifier for operator '${operator}', no Expression provided!`);
       modifierTerm = GroupCallModifierTerm.create(operator, modifierExpression);
     }
     return new TSGroupCallExpression(tableAndGroup, modifierTerm, params.reverse());
@@ -236,7 +238,7 @@ class TSTableGroupBuilder {
         result = this.createVariableSet(stacked);
         break;
       default:
-        throw `Stacked item is not a Variable Expression but '${stacked.type}'`;
+        throw Error(`Stacked item is not a Variable Expression but '${stacked.type}'`);
     }
     return result;
   }
@@ -270,7 +272,7 @@ class TSTableGroupBuilder {
    */
   private endFunction(): TSExpression {
     const stacked = this.stack.pop();
-    if (stacked.type != STACK_TYPE.FUNCTION) throw `Stacked item is not a function but '${stacked.type}'`;
+    if (stacked.type != STACK_TYPE.FUNCTION) throw Error(`Stacked item is not a function but '${stacked.type}'`);
     let result;
     switch (stacked.name) {
       case 'Abs':
@@ -300,6 +302,9 @@ class TSTableGroupBuilder {
         break;
       case 'Floor':
         result = new TSMathFloorExpression(stacked.popExpressions());
+        break;
+      case 'InputText':
+        result = this.createInputTextExpression(stacked);
         break;
       case 'IsNumber':
         result = this.createIsNumberExpression(stacked);
@@ -371,7 +376,7 @@ class TSTableGroupBuilder {
         result = this.createLogicalExpression(stacked);
         break;
       default:
-        throw `Expression Factory for function '${stacked.name}' not defined!`;
+        throw Error(`Expression Factory for function '${stacked.name}' not defined!`);
     }
     this.checkEmpty(stacked);
     return result;
@@ -395,6 +400,12 @@ class TSTableGroupBuilder {
     const operator = data.popString();
     const booleanComparision = new BooleanComparison(ifExpression1, operator, ifExpression2);
     return new TSIfExpression(data.name, booleanComparision, trueVal, falseVal);
+  }
+
+  private createInputTextExpression(data: StackItem): TSInputTextExpression {
+    const prompt = data.popExpressions();
+    const defaultValue = data.popExpressions();
+    return new TSInputTextExpression(defaultValue, prompt);
   }
 
   private createIsNumberExpression(data: StackItem): TSIsNumberExpression {
@@ -434,7 +445,7 @@ class TSTableGroupBuilder {
 
   private createGroupLockExpression(data: StackItem): TSGroupLockExpression {
     const parameters = [];
-    if (data.stackSize() < 2) throw 'Cannot create Lockout missing parameters!';
+    if (data.stackSize() < 2) throw Error('Cannot create Lockout missing parameters!');
     while (data.stackSize() > 1) {
       const param = data.popExpressions();
       parameters.push(param);
@@ -465,7 +476,7 @@ class TSTableGroupBuilder {
         result = new TSMathMaxExpression(values);
         break;
       default:
-        throw `Cannot create math Min or Max unknown function name '${data.name}'`;
+        throw Error(`Cannot create math Min or Max unknown function name '${data.name}'`);
     }
     return result;
   }
@@ -536,7 +547,7 @@ class TSTableGroupBuilder {
    * @param expressions to check to contain any data.
    */
   private checkExpressionsNotEmpty(expressions: TSExpressions) {
-    if (expressions.size() == 0) throw `Expressions empty, but should not!`;
+    if (expressions.size() == 0) throw Error(`Expressions empty, but should not!`);
   }
 
   /**
@@ -544,7 +555,8 @@ class TSTableGroupBuilder {
    * @param data to check that it is empty meaning that no unused data was parsed.
    */
   private checkEmpty(data: StackItem) {
-    if (!data.isEmpty()) throw `Expression data for ${data.name} retrieved, still data left: '${data.summary()}'`;
+    if (!data.isEmpty())
+      throw Error(`Expression data for ${data.name} retrieved, still data left: '${data.summary()}'`);
   }
 
   /**

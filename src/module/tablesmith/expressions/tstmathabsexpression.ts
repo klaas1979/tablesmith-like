@@ -1,26 +1,20 @@
-import TSGroup from '../tsgroup';
-import TSExpression from './tsexpression';
+import TSExpression, { BaseTSExpression } from './tsexpression';
 import TSExpressionResult from './tsexpressionresult';
 
 /**
  * Math Abs function on contaned expression.
  */
-class TSMathAbsExpression implements TSExpression {
+export default class TSMathAbsExpression extends BaseTSExpression {
   param: TSExpression;
   constructor(param: TSExpression) {
+    super();
     this.param = param;
   }
-  evaluate(): TSExpressionResult {
-    const value = this.param.evaluate().asNumber();
+  async evaluate(): Promise<TSExpressionResult> {
+    const value = (await this.param.evaluate()).asNumber();
     return new TSExpressionResult(Math.abs(value));
   }
   getExpression(): string {
     return `{Abs~${this.param.getExpression()}}`;
   }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setGroup(group: TSGroup): void {
-    // empty
-  }
 }
-
-export default TSMathAbsExpression;

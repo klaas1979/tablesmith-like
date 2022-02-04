@@ -1,21 +1,21 @@
-import TSGroup from '../tsgroup';
 import { evalcontext } from './evaluationcontextinstance';
 import GroupCallSplitter from './callsplitter';
-import TSExpression from './tsexpression';
+import TSExpression, { BaseTSExpression } from './tsexpression';
 import TSExpressionResult from './tsexpressionresult';
 
 /**
  * Class representing variable Get returning the value of the variable from table.
  * The variable can be referenced via ([tablename].)?[varname].
  */
-class TSVariableGetExpression implements TSExpression {
+export default class TSVariableGetExpression extends BaseTSExpression {
   tableGroupExpression: TSExpression;
   constructor(tableGroupExpression: TSExpression) {
+    super();
     this.tableGroupExpression = tableGroupExpression;
   }
 
-  evaluate(): TSExpressionResult {
-    const evaluated = this.tableGroupExpression.evaluate();
+  async evaluate(): Promise<TSExpressionResult> {
+    const evaluated = await this.tableGroupExpression.evaluate();
     const splitted = GroupCallSplitter.forVariable().split(evaluated.asString());
     return new TSExpressionResult(`${evalcontext.getVar(splitted.tablename, splitted.variablename)}`);
   }
@@ -23,11 +23,4 @@ class TSVariableGetExpression implements TSExpression {
   getExpression(): string {
     return `%${this.tableGroupExpression.getExpression()}%`;
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setGroup(group: TSGroup): void {
-    // empty
-  }
 }
-
-export default TSVariableGetExpression;

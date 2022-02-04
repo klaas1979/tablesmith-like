@@ -48,11 +48,11 @@ export default class TablesmithApi {
    * TableCallValues object.
    * @param chatResults defaults to true, boolean value if results should be added to chat.
    */
-  evaluateTable(call: TableCallValues | string, chatResults = true): string | string[] {
+  async evaluateTable(call: TableCallValues | string, chatResults = true): Promise<string | string[]> {
     let result: string | string[] = '';
     const callValues = this.parseEvaluateCall(call);
     if (callValues) {
-      result = tablesmith.evaluate(call);
+      result = await tablesmith.evaluate(call);
       Logger.debug(false, 'Result for', callValues, result);
       if (chatResults) {
         new ChatResults().chatResults(callValues, result);

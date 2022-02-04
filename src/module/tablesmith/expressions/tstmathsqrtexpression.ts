@@ -1,26 +1,20 @@
-import TSGroup from '../tsgroup';
-import TSExpression from './tsexpression';
+import TSExpression, { BaseTSExpression } from './tsexpression';
 import TSExpressionResult from './tsexpressionresult';
 
 /**
  * Math Sqrt on given value.
  */
-class TSMathSqrtExpression implements TSExpression {
+export default class TSMathSqrtExpression extends BaseTSExpression {
   param: TSExpression;
   constructor(param: TSExpression) {
+    super();
     this.param = param;
   }
-  evaluate(): TSExpressionResult {
-    const value = this.param.evaluate();
+  async evaluate(): Promise<TSExpressionResult> {
+    const value = await this.param.evaluate();
     return new TSExpressionResult(Math.sqrt(value.asNumber()));
   }
   getExpression(): string {
     return `{Sqrt~${this.param.getExpression()}}`;
   }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setGroup(group: TSGroup): void {
-    // empty
-  }
 }
-
-export default TSMathSqrtExpression;

@@ -5,11 +5,11 @@ import TSExpressionResult from './tsexpressionresult';
  * Tablesmith expressions make up the values of a Range. If a Range is rolled the TSExpression
  * is evaluated to create the result.
  */
-interface TSExpression {
+export default interface TSExpression {
   /**
    * Returns the result for this expression.
    */
-  evaluate(): TSExpressionResult;
+  evaluate(): Promise<TSExpressionResult>;
 
   /**
    * Returns the definition of the expression without evaluating it's result.
@@ -23,4 +23,18 @@ interface TSExpression {
   setGroup(group: TSGroup): void;
 }
 
-export default TSExpression;
+/**
+ * Base implementation with default method implementations.
+ */
+export class BaseTSExpression implements TSExpression {
+  async evaluate(): Promise<TSExpressionResult> {
+    throw Error('Method not implemented.');
+  }
+  getExpression(): string {
+    throw Error('Method not implemented.');
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setGroup(group: TSGroup): void {
+    // empty
+  }
+}

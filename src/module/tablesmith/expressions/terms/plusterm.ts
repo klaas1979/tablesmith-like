@@ -1,4 +1,3 @@
-import TSGroup from '../../tsgroup';
 import TSExpression from '../tsexpression';
 import { BaseMathTerm } from './basemathterm';
 import TermCalc from './termcalc';
@@ -17,10 +16,5 @@ export default class PlusTerm extends BaseMathTerm implements TermCalc {
   }
   operator(): string {
     return '+';
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setGroup(group: TSGroup): void {
-    // empty nothing must be set for this expression
   }
 }

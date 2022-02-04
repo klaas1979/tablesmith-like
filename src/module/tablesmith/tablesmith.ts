@@ -29,25 +29,32 @@ class Tablesmith {
    * form is [Table.Group] or [Group] with potential added modifier in the form "=int", "+int" or "-int".
    * @returns result from Table as text.
    */
-  evaluate(
+  async evaluate(
     call: TableCallValues | string,
     parameters: { name: string; value: string | undefined }[] = [],
-  ): string | string[] {
-    const tableCallValues = this.parseEvaluateCall(call);
-    if (!tableCallValues.group)
-      throw `TSTable for name='${tableCallValues.tablename}' does not contain Group='${tableCallValues.groupname}'! call was '${call}'`;
-    const modifier = GroupCallModifierTerm.create(tableCallValues.modifier, tableCallValues.modifierValue);
-    const result = [];
-    for (let count = 0; count < tableCallValues.rollCount; count++) {
-      this.resetEvaluationContext();
-      evalcontext.pushCurrentCallTablename(tableCallValues.tablename);
-      if (tableCallValues.parameters)
-        tableCallValues.table?.setParametersForEvaluationByIndex(tableCallValues.parameters);
-      tableCallValues.table?.setParametersForEvaluationByName(parameters);
-      result.push(tableCallValues.group.roll(modifier));
-      evalcontext.popCurrentCallTablename();
+  ): Promise<string | string[]> {
+    try {
+      const tableCallValues = this.parseEvaluateCall(call);
+      if (!tableCallValues.group)
+        throw Error(
+          `TSTable for name='${tableCallValues.tablename}' does not contain Group='${tableCallValues.groupname}'! call was '${call}'`,
+        );
+      const modifier = GroupCallModifierTerm.create(tableCallValues.modifier, tableCallValues.modifierValue);
+      const result = [];
+      for (let count = 0; count < tableCallValues.rollCount; count++) {
+        this.resetEvaluationContext();
+        evalcontext.pushCurrentCallTablename(tableCallValues.tablename);
+        if (tableCallValues.parameters)
+          tableCallValues.table?.setParametersForEvaluationByIndex(tableCallValues.parameters);
+        tableCallValues.table?.setParametersForEvaluationByName(parameters);
+        result.push(await tableCallValues.group.roll(modifier));
+        evalcontext.popCurrentCallTablename();
+      }
+      return result.length == 1 ? result[0] : result;
+    } catch (error) {
+      const e = error as Error;
+      return `Error: ${e.message}`;
     }
-    return result.length == 1 ? result[0] : result;
   }
 
   /**
@@ -59,7 +66,7 @@ class Tablesmith {
     const tableCallValues = this._createCallValues(call);
     tableCallValues.table = this.tableForName(tableCallValues.tablename);
     if (!tableCallValues.table)
-      throw `TSTable for name='${tableCallValues.tablename}' not defined! Expression was '${call}'`;
+      throw Error(`TSTable for name='${tableCallValues.tablename}' not defined! Expression was '${call}'`);
     tableCallValues.group = tableCallValues.table.groupForName(tableCallValues.groupname);
     return tableCallValues;
   }
@@ -80,6 +87,7 @@ class Tablesmith {
   resetEvaluationContext() {
     tstables.resetEvaluationContext();
   }
+
   /**
    * Parses table and stores it with given filename as Tablename.
    * @param foldername name of folder table is contained in.
@@ -115,6 +123,14 @@ class Tablesmith {
    */
   tableForName(name: string): TSTable | undefined {
     return tstables.tableForName(name);
+  }
+
+  /**
+   * Registers the async callback function for InputText.
+   * @param callback to register as external input function, if a TS InputList is encountered.
+   */
+  registerInputTextCallback(callback: (prompt: string, defaultValue: string) => Promise<string>): void {
+    evalcontext.registerInputTextCallback(callback);
   }
 }
 

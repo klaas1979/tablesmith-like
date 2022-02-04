@@ -1,19 +1,19 @@
 import MinusTerm from './minusterm';
 import PlusTerm from './plusterm';
 import { MODIFIERS } from '../../../foundry/tablecallvalues';
-import TSExpression from '../tsexpression';
+import TSExpression, { BaseTSExpression } from '../tsexpression';
 import TSTextExpression from '../tstextexpression';
 import TSExpressionResult from '../tsexpressionresult';
-import TSGroup from '../../tsgroup';
 
 /**
  * A modifier for a table group call, consists of the operation "+", "-" or "="(fixed) modifier and the term
  * that represents the modifier.
  */
-class GroupCallModifierTerm implements TSExpression {
+export default class GroupCallModifierTerm extends BaseTSExpression {
   modifierType: MODIFIERS;
   modifierTerm: TSExpression;
   private constructor(modifierType: MODIFIERS, modifierExpression: TSExpression) {
+    super();
     this.modifierType = modifierType;
     this.modifierTerm = modifierExpression;
   }
@@ -28,8 +28,10 @@ class GroupCallModifierTerm implements TSExpression {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  evaluate(): TSExpressionResult {
-    throw 'Cannot roll this term Group Calls need runtime information about rolled upon Group to get maxValue for range';
+  async evaluate(): Promise<TSExpressionResult> {
+    throw Error(
+      'Cannot roll this term Group Calls need runtime information about rolled upon Group to get maxValue for range',
+    );
   }
 
   /**
@@ -47,7 +49,7 @@ class GroupCallModifierTerm implements TSExpression {
     } else if (this.modifierType == MODIFIERS.equal) {
       return this.modifierTerm;
     }
-    throw `Modfier Type '${this.modifierType}' unknown cannot create Term!`;
+    throw Error(`Modfier Type '${this.modifierType}' unknown cannot create Term!`);
   }
 
   /**
@@ -73,14 +75,9 @@ class GroupCallModifierTerm implements TSExpression {
         result = GroupCallModifierTerm.createMinus(modifierExpression);
         break;
       default:
-        throw `Unknown modifier type '${modifierType}'`;
+        throw Error(`Unknown modifier type '${modifierType}'`);
     }
     return result;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setGroup(group: TSGroup): void {
-    // empty nothing must be set for this expression
   }
 
   /**
@@ -118,5 +115,3 @@ class GroupCallModifierTerm implements TSExpression {
     return new GroupCallModifierTerm(MODIFIERS.none, new TSTextExpression('0'));
   }
 }
-
-export default GroupCallModifierTerm;

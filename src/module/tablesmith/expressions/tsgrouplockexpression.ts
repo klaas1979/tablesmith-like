@@ -1,39 +1,44 @@
 import { tstables } from '../tstables';
 import TSGroup from '../tsgroup';
-import TSExpression from './tsexpression';
+import TSExpression, { BaseTSExpression } from './tsexpression';
 import TSExpressionResult from './tsexpressionresult';
 
 /**
  * Simple Text Expression as value of a Range in a Group or part of the value, i.e. prefix or suffix to a TermExpression.
  */
-class TSGroupLockExpression implements TSExpression {
+export default class TSGroupLockExpression extends BaseTSExpression {
   functionname: string;
   tablename: string;
   groupExpression: TSExpression;
   parameters: TSExpression[];
   constructor(functionname: string, tablename: string, groupExpression: TSExpression, parameters: TSExpression[]) {
+    super();
     this.functionname = functionname;
     this.tablename = tablename;
     this.groupExpression = groupExpression;
     this.parameters = parameters;
   }
-  evaluate(): TSExpressionResult {
+  async evaluate(): Promise<TSExpressionResult> {
     const table = tstables.tableForName(this.tablename);
-    const groupname = this.groupExpression.evaluate().trim();
+    const groupname = (await this.groupExpression.evaluate()).trim();
     const group = table?.groupForName(groupname);
-    if (!group) throw `Cannot ${this.functionname} group '${groupname}' in table '${this.tablename}', not defined!`;
+    if (!group)
+      throw Error(`Cannot ${this.functionname} group '${groupname}' in table '${this.tablename}', not defined!`);
     let params = '';
-    this.parameters.forEach((param) => {
+    for (const param of this.parameters) {
       if (params.length > 0) params += ',';
-      params += param.evaluate().asString();
-    });
-    params.split(',').forEach((range) => {
+      const paramValue = await param.evaluate();
+      params += paramValue.asString();
+    }
+    for (const range of params.split(',')) {
       const splitted = range.trim().split('-');
       if (splitted.length > 1) {
         let start = Number.parseInt(splitted[0]);
         const end = Number.parseInt(splitted[1]);
         if (Number.isNaN(start) || Number.isNaN(end))
-          throw `Cannot ${this.functionname} for group '${groupname}' range is no number '${range}', not defined!`;
+          throw Error(
+            `Cannot ${this.functionname} for group '${groupname}' range is no number '${range}', not defined!`,
+          );
         while (start <= end) {
           this.changeLockState(group, start);
           start += 1;
@@ -41,7 +46,7 @@ class TSGroupLockExpression implements TSExpression {
       } else {
         this.changeLockState(group, splitted[0]);
       }
-    });
+    }
     return new TSExpressionResult('');
   }
 
@@ -55,23 +60,17 @@ class TSGroupLockExpression implements TSExpression {
         group.lockout(index);
         break;
       default:
-        throw `Cannot Change lock state for functionname '${this.functionname}'`;
+        throw Error(`Cannot Change lock state for functionname '${this.functionname}'`);
     }
   }
 
   getExpression(): string {
     const gne = this.groupExpression.getExpression();
     let parameters = '';
-    this.parameters.forEach((param) => {
-      parameters += `,${param.evaluate().asString()}`;
-    });
+    for (const param of this.parameters) {
+      const paramValue = param.getExpression();
+      parameters += `,${paramValue}`;
+    }
     return `{${this.functionname}~${gne}${parameters}}`;
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setGroup(group: TSGroup): void {
-    // empty
-  }
 }
-
-export default TSGroupLockExpression;

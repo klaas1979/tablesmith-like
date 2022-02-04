@@ -16,34 +16,34 @@ describe('Parsing {And~', () => {
     expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{And~1=1,2=2}');
   });
 
-  it('sub expression error => -1', () => {
+  it('sub expression error => -1', async () => {
     simpleTable = ':Start\n1,{And~[missingGroup]=1,2=2}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('-1');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('-1');
   });
 
-  it('true, true => 1', () => {
+  it('true, true => 1', async () => {
     simpleTable = ':Start\n1,{And~1=1,2=2}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('1');
   });
 
-  it('true, false => 0', () => {
+  it('true, false => 0', async () => {
     simpleTable = ':Start\n1,{And~1=1,2=3}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('0');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('0');
   });
 
-  it('false, true => 0', () => {
+  it('false, true => 0', async () => {
     simpleTable = ':Start\n1,{And~1=2,2=2}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('0');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('0');
   });
 
-  it('false, false => 0', () => {
+  it('false, false => 0', async () => {
     simpleTable = ':Start\n1,{And~1=2,2=3}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('0');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('0');
   });
 });
 
@@ -59,34 +59,34 @@ describe('Parsing {Or~', () => {
     expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Or~1=1,2=2}');
   });
 
-  it('sub expression error => -1', () => {
+  it('sub expression error => -1', async () => {
     simpleTable = ':Start\n1,{Or~[missingGroup]=1,2=2}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('-1');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('-1');
   });
 
-  it('true, true => 1', () => {
+  it('true, true => 1', async () => {
     simpleTable = ':Start\n1,{Or~1=1,2=2}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('1');
   });
 
-  it('true, false => 1', () => {
+  it('true, false => 1', async () => {
     simpleTable = ':Start\n1,{Or~1=1,2=3}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('1');
   });
 
-  it('false, true => 1', () => {
+  it('false, true => 1', async () => {
     simpleTable = ':Start\n1,{Or~1=2,2=2}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('1');
   });
 
-  it('false, false => 0', () => {
+  it('false, false => 0', async () => {
     simpleTable = ':Start\n1,{Or~1=2,2=3}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('0');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('0');
   });
 });
 
@@ -102,46 +102,46 @@ describe('Parsing {Xor~', () => {
     expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Xor~1=1,2=2}');
   });
 
-  it('sub expression error => -1', () => {
+  it('sub expression error => -1', async () => {
     simpleTable = ':Start\n1,{Xor~[missingGroup]=1,2=2}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('-1');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('-1');
   });
 
-  it('true, true => 1', () => {
+  it('true, true => 1', async () => {
     simpleTable = ':Start\n1,{Xor~1=1,2=2}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('0');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('0');
   });
 
-  it('true, false => 1', () => {
+  it('true, false => 1', async () => {
     simpleTable = ':Start\n1,{Xor~1=1,2=3}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('1');
   });
 
-  it('false, true => 1', () => {
+  it('false, true => 1', async () => {
     simpleTable = ':Start\n1,{Xor~1=2,2=2}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('1');
   });
 
-  it('false, false => 0', () => {
+  it('false, false => 0', async () => {
     simpleTable = ':Start\n1,{Xor~1=2,2=3}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('0');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('0');
   });
 
-  it('can have 2+ arguments all true => 0', () => {
+  it('can have 2+ arguments all true => 0', async () => {
     simpleTable = ':Start\n1,{Xor~1=1,2=2,3=3,4=4}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('0');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('0');
   });
 
-  it('can have 2+ arguments single true => 1', () => {
+  it('can have 2+ arguments single true => 1', async () => {
     simpleTable = ':Start\n1,{Xor~1=1,2=3,3=4,4=5}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('1');
   });
 });
 
@@ -151,56 +151,56 @@ describe('{Or~/And~/Xor~ comparison operator test', () => {
     filename = 'simpletable';
   });
 
-  it('1<2', () => {
+  it('1<2', async () => {
     simpleTable = ':Start\n1,{Or~1<2,1=2}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('1');
   });
 
-  it('1<1', () => {
+  it('1<1', async () => {
     simpleTable = ':Start\n1,{Or~1<1,1=2}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('0');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('0');
   });
-  it('1>1', () => {
+  it('1>1', async () => {
     simpleTable = ':Start\n1,{Or~1>1,1=2}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('0');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('0');
   });
 
-  it('2>1', () => {
+  it('2>1', async () => {
     simpleTable = ':Start\n1,{Or~2>1,1=2}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('1');
   });
-  it('1>=2', () => {
+  it('1>=2', async () => {
     simpleTable = ':Start\n1,{Or~1>=2,1=2}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('0');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('0');
   });
 
-  it('1>=1', () => {
+  it('1>=1', async () => {
     simpleTable = ':Start\n1,{Or~1>=1,1=2}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('1');
   });
 
-  it('2<=1', () => {
+  it('2<=1', async () => {
     simpleTable = ':Start\n1,{Or~2<=1,1=2}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('0');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('0');
   });
 
-  it('1<=1', () => {
+  it('1<=1', async () => {
     simpleTable = ':Start\n1,{Or~1<=1,1=2}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('1');
   });
 
-  it('can have 2+ arguments', () => {
+  it('can have 2+ arguments', async () => {
     simpleTable = ':Start\n1,{Or~1<2,1=2,1<2,1=2,1<2,1=2}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('1');
   });
 });
 
@@ -216,27 +216,27 @@ describe('Parsing {IsNumber~', () => {
     expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{IsNumber~20}');
   });
 
-  it('integer => 1', () => {
+  it('integer => 1', async () => {
     simpleTable = ':Start\n1,{IsNumber~20}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('1');
   });
 
-  it('float => 1', () => {
+  it('float => 1', async () => {
     simpleTable = ':Start\n1,{IsNumber~20.212}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('1');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('1');
   });
 
-  it('text => 0', () => {
+  it('text => 0', async () => {
     simpleTable = ':Start\n1,{IsNumber~nonumber}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('0');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('0');
   });
 
-  it('can have 2+ arguments', () => {
+  it('can have 2+ arguments', async () => {
     simpleTable = ':Start\n1,{And~1<2,1=2,1<2,1=2,1<2,1=2}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('0');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('0');
   });
 });

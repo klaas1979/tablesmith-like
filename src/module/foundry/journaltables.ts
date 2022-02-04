@@ -55,7 +55,7 @@ class JournalTables {
    * @param journalName of Jounal entry to check if it is a Tablesmith entry.
    */
   static tableBasename(journalName: string | null): string {
-    if (journalName == null) throw 'Could not get entry basename for missing journal bame!';
+    if (journalName == null) throw Error('Could not get entry basename for missing journal bame!');
     return journalName.trim().replace(`.${tablesmithExtension}`, '');
   }
 }

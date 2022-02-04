@@ -1,3 +1,4 @@
+/* eslint-disable jest/expect-expect */
 import { tablesmith } from '../../src/module/tablesmith/tablesmithinstance';
 import { tstables } from '../../src/module/tablesmith/tstables';
 
@@ -17,11 +18,10 @@ describe('Parsing {LastRoll~', () => {
     expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{LastRoll~}');
   });
 
-  it('returns roll result for the group it is called from', () => {
+  it('returns roll result for the group it is called from', async () => {
     simpleTable = ':Start\n1,One{LastRoll~}[Other=2]\n:Other\n1,notused\n2,Two{LastRoll~}';
     tablesmith.addTable('folder', filename, simpleTable);
-    const result = tablesmith.evaluate(`[${filename}]`);
-    expect(result).toBe('One1Two2');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('One1Two2');
   });
 });
 
@@ -37,18 +37,16 @@ describe('Parsing {MinVal~', () => {
     expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{MinVal~Start,1}');
   });
 
-  it('min value from first range', () => {
+  it('min value from first range', async () => {
     simpleTable = ':Start\n1-49,{MinVal~Start,1}\n50-100,{MinVal~Start,1}';
     tablesmith.addTable('folder', filename, simpleTable);
-    const result = tablesmith.evaluate(`[${filename}]`);
-    expect(result).toBe('1');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('1');
   });
 
-  it('min value from second range', () => {
+  it('min value from second range', async () => {
     simpleTable = ':Start\n1-49,{MinVal~Start,2}\n50-100,{MinVal~Start,2}';
     tablesmith.addTable('folder', filename, simpleTable);
-    const result = tablesmith.evaluate(`[${filename}]`);
-    expect(result).toBe('50');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('50');
   });
 });
 describe('Parsing {MaxVal~', () => {
@@ -61,17 +59,15 @@ describe('Parsing {MaxVal~', () => {
     tablesmith.addTable('folder', filename, simpleTable);
     expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{MaxVal~Start,1}');
   });
-  it('max value from first range', () => {
+  it('max value from first range', async () => {
     simpleTable = ':Start\n1-49,{MaxVal~Start,1}\n50-100,{MaxVal~Start,1}';
     tablesmith.addTable('folder', filename, simpleTable);
-    const result = tablesmith.evaluate(`[${filename}]`);
-    expect(result).toBe('49');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('49');
   });
-  it('max value from second range', () => {
+  it('max value from second range', async () => {
     simpleTable = ':Start\n1-49,{MaxVal~Start,2}\n50-100,{MaxVal~Start,2}';
     tablesmith.addTable('folder', filename, simpleTable);
-    const result = tablesmith.evaluate(`[${filename}]`);
-    expect(result).toBe('100');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('100');
   });
 });
 
@@ -92,9 +88,10 @@ describe('Parsing {Reset~', () => {
     const group = tstables.getLastTSTable().groupForName('other');
     const firstRange = group?.firstRange();
     const lastRange = group?.lastRange();
-    tablesmith.evaluate(`[${filename}]`);
-    expect(firstRange?.isTaken()).toBeFalsy();
-    expect(lastRange?.isTaken()).toBeFalsy();
+    return tablesmith.evaluate(`[${filename}]`).then(() => {
+      expect(firstRange?.isTaken()).toBeFalsy();
+      expect(lastRange?.isTaken()).toBeFalsy();
+    });
   });
 });
 
@@ -114,9 +111,10 @@ describe('Parsing {Lockout~', () => {
     const group = tstables.getLastTSTable().groupForName('other');
     const firstRange = group?.firstRange();
     const lastRange = group?.lastRange();
-    tablesmith.evaluate(`[${filename}]`);
-    expect(firstRange?.isTaken()).toBeTruthy();
-    expect(lastRange?.isTaken()).toBeFalsy();
+    return tablesmith.evaluate(`[${filename}]`).then(() => {
+      expect(firstRange?.isTaken()).toBeTruthy();
+      expect(lastRange?.isTaken()).toBeFalsy();
+    });
   });
   it('{Lockout~other,1-5} simple range', () => {
     simpleTable = ':Start\n1,{Lockout~other,1-5}\n:!other\n1-5,One\n6-10,One\n';
@@ -124,9 +122,10 @@ describe('Parsing {Lockout~', () => {
     const group = tstables.getLastTSTable().groupForName('other');
     const firstRange = group?.firstRange();
     const lastRange = group?.lastRange();
-    tablesmith.evaluate(`[${filename}]`);
-    expect(firstRange?.isTaken()).toBeTruthy();
-    expect(lastRange?.isTaken()).toBeFalsy();
+    return tablesmith.evaluate(`[${filename}]`).then(() => {
+      expect(firstRange?.isTaken()).toBeTruthy();
+      expect(lastRange?.isTaken()).toBeFalsy();
+    });
   });
   it('{Lockout~other,1,2,3,4,5} list of values', () => {
     simpleTable = ':Start\n1,{Lockout~other,1,2,3,4,5}\n:!other\n1-5,One\n6-10,One\n';
@@ -134,9 +133,10 @@ describe('Parsing {Lockout~', () => {
     const group = tstables.getLastTSTable().groupForName('other');
     const firstRange = group?.firstRange();
     const lastRange = group?.lastRange();
-    tablesmith.evaluate(`[${filename}]`);
-    expect(firstRange?.isTaken()).toBeTruthy();
-    expect(lastRange?.isTaken()).toBeFalsy();
+    return tablesmith.evaluate(`[${filename}]`).then(() => {
+      expect(firstRange?.isTaken()).toBeTruthy();
+      expect(lastRange?.isTaken()).toBeFalsy();
+    });
   });
   it('{Lockout~other,1,2-4,5} list of values and ranges', () => {
     simpleTable = ':Start\n1,{Lockout~other,1,2-4,5}\n:!other\n1-5,One\n6-10,One\n';
@@ -145,8 +145,10 @@ describe('Parsing {Lockout~', () => {
     const firstRange = group?.firstRange();
     const lastRange = group?.lastRange();
     tablesmith.evaluate(`[${filename}]`);
-    expect(firstRange?.isTaken()).toBeTruthy();
-    expect(lastRange?.isTaken()).toBeFalsy();
+    return tablesmith.evaluate(`[${filename}]`).then(() => {
+      expect(firstRange?.isTaken()).toBeTruthy();
+      expect(lastRange?.isTaken()).toBeFalsy();
+    });
   });
   it('{Lockout~other,5-6} range hits more than one Group.range', () => {
     simpleTable = ':Start\n1,{Lockout~other,5-6}\n:!other\n1-5,One\n6-10,One\n';
@@ -154,9 +156,10 @@ describe('Parsing {Lockout~', () => {
     const group = tstables.getLastTSTable().groupForName('other');
     const firstRange = group?.firstRange();
     const lastRange = group?.lastRange();
-    tablesmith.evaluate(`[${filename}]`);
-    expect(firstRange?.isTaken()).toBeTruthy();
-    expect(lastRange?.isTaken()).toBeTruthy();
+    return tablesmith.evaluate(`[${filename}]`).then(() => {
+      expect(firstRange?.isTaken()).toBeTruthy();
+      expect(lastRange?.isTaken()).toBeTruthy();
+    });
   });
   it('{Lockout~other,5-12} no error for out of bounds', () => {
     simpleTable = ':Start\n1,{Lockout~other,5-6}\n:!other\n1-5,One\n6-10,One\n';
@@ -164,9 +167,10 @@ describe('Parsing {Lockout~', () => {
     const group = tstables.getLastTSTable().groupForName('other');
     const firstRange = group?.firstRange();
     const lastRange = group?.lastRange();
-    tablesmith.evaluate(`[${filename}]`);
-    expect(firstRange?.isTaken()).toBeTruthy();
-    expect(lastRange?.isTaken()).toBeTruthy();
+    return tablesmith.evaluate(`[${filename}]`).then(() => {
+      expect(firstRange?.isTaken()).toBeTruthy();
+      expect(lastRange?.isTaken()).toBeTruthy();
+    });
   });
 });
 
@@ -186,9 +190,10 @@ describe('Parsing {Unlock~', () => {
     const group = tstables.getLastTSTable().groupForName('other');
     const firstRange = group?.firstRange();
     const lastRange = group?.lastRange();
-    tablesmith.evaluate(`[${filename}]`);
-    expect(firstRange?.isTaken()).toBeFalsy();
-    expect(lastRange?.isTaken()).toBeTruthy();
+    return tablesmith.evaluate(`[${filename}]`).then(() => {
+      expect(firstRange?.isTaken()).toBeFalsy();
+      expect(lastRange?.isTaken()).toBeTruthy();
+    });
   });
   it('{Unlock~other,1-5} simple range', () => {
     simpleTable = ':Start\n1,{Lockout~other,1,6}{Unlock~other,1-5}\n:!other\n1-5,One\n6-10,One\n';
@@ -196,9 +201,10 @@ describe('Parsing {Unlock~', () => {
     const group = tstables.getLastTSTable().groupForName('other');
     const firstRange = group?.firstRange();
     const lastRange = group?.lastRange();
-    tablesmith.evaluate(`[${filename}]`);
-    expect(firstRange?.isTaken()).toBeFalsy();
-    expect(lastRange?.isTaken()).toBeTruthy();
+    return tablesmith.evaluate(`[${filename}]`).then(() => {
+      expect(firstRange?.isTaken()).toBeFalsy();
+      expect(lastRange?.isTaken()).toBeTruthy();
+    });
   });
   it('{Unlock~other,1,2,3,4,5} list of values', () => {
     simpleTable = ':Start\n1,{Lockout~other,1,6}{Unlock~other,1,2,3,4,5}\n:!other\n1-5,One\n6-10,One\n';
@@ -206,9 +212,10 @@ describe('Parsing {Unlock~', () => {
     const group = tstables.getLastTSTable().groupForName('other');
     const firstRange = group?.firstRange();
     const lastRange = group?.lastRange();
-    tablesmith.evaluate(`[${filename}]`);
-    expect(firstRange?.isTaken()).toBeFalsy();
-    expect(lastRange?.isTaken()).toBeTruthy();
+    return tablesmith.evaluate(`[${filename}]`).then(() => {
+      expect(firstRange?.isTaken()).toBeFalsy();
+      expect(lastRange?.isTaken()).toBeTruthy();
+    });
   });
   it('{Unlock~other,1,2-4,5} list of values and ranges', () => {
     simpleTable = ':Start\n1,{Lockout~other,1,6}{Unlock~other,1,2-4,5}\n:!other\n1-5,One\n6-10,One\n';
@@ -216,9 +223,10 @@ describe('Parsing {Unlock~', () => {
     const group = tstables.getLastTSTable().groupForName('other');
     const firstRange = group?.firstRange();
     const lastRange = group?.lastRange();
-    tablesmith.evaluate(`[${filename}]`);
-    expect(firstRange?.isTaken()).toBeFalsy();
-    expect(lastRange?.isTaken()).toBeTruthy();
+    return tablesmith.evaluate(`[${filename}]`).then(() => {
+      expect(firstRange?.isTaken()).toBeFalsy();
+      expect(lastRange?.isTaken()).toBeTruthy();
+    });
   });
   it('{Unlock~other,5-6} range hits more than one Group.range', () => {
     simpleTable = ':Start\n1,{Lockout~other,1,6}{Unlock~other,5-6}\n:!other\n1-5,One\n6-10,One\n';
@@ -226,9 +234,10 @@ describe('Parsing {Unlock~', () => {
     const group = tstables.getLastTSTable().groupForName('other');
     const firstRange = group?.firstRange();
     const lastRange = group?.lastRange();
-    tablesmith.evaluate(`[${filename}]`);
-    expect(firstRange?.isTaken()).toBeFalsy();
-    expect(lastRange?.isTaken()).toBeFalsy();
+    return tablesmith.evaluate(`[${filename}]`).then(() => {
+      expect(firstRange?.isTaken()).toBeFalsy();
+      expect(lastRange?.isTaken()).toBeFalsy();
+    });
   });
   it('{Unlock~other,5-12} no error for out of bounds', () => {
     simpleTable = ':Start\n1,{Lockout~other,1,6}{Unlock~other,5-6}\n:!other\n1-5,One\n6-10,One\n';
@@ -236,8 +245,9 @@ describe('Parsing {Unlock~', () => {
     const group = tstables.getLastTSTable().groupForName('other');
     const firstRange = group?.firstRange();
     const lastRange = group?.lastRange();
-    tablesmith.evaluate(`[${filename}]`);
-    expect(firstRange?.isTaken()).toBeFalsy();
-    expect(lastRange?.isTaken()).toBeFalsy();
+    return tablesmith.evaluate(`[${filename}]`).then(() => {
+      expect(firstRange?.isTaken()).toBeFalsy();
+      expect(lastRange?.isTaken()).toBeFalsy();
+    });
   });
 });

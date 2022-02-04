@@ -1,13 +1,13 @@
-import TSGroup from '../tsgroup';
-import TSExpression from './tsexpression';
+import TSExpression, { BaseTSExpression } from './tsexpression';
 import TSExpressionResult from './tsexpressionresult';
 
 /**
  * Collection of expressions that make up the result of a TSRange or the Before and After parts within a Group.
  */
-class TSExpressions implements TSExpression {
+export default class TSExpressions extends BaseTSExpression {
   expressions: TSExpression[];
   constructor(expression: TSExpression | undefined = undefined) {
+    super();
     this.expressions = [];
     if (expression) this.expressions.push(expression);
   }
@@ -16,11 +16,12 @@ class TSExpressions implements TSExpression {
    * Gets text result for this expressions.
    * @returns string resulting text, for evaluating all expressions contained.
    */
-  evaluate(): TSExpressionResult {
+  async evaluate(): Promise<TSExpressionResult> {
     let result = '';
-    this.expressions.forEach((expression) => {
-      result += expression.evaluate().asString();
-    });
+    for (const expression of this.expressions) {
+      const subResult = await expression.evaluate();
+      result += subResult.asString();
+    }
     return new TSExpressionResult(result);
   }
 
@@ -30,9 +31,9 @@ class TSExpressions implements TSExpression {
    */
   getExpression(): string {
     let result = '';
-    this.expressions.forEach((expression) => {
+    for (const expression of this.expressions) {
       result += expression.getExpression();
-    });
+    }
     return result;
   }
   /**
@@ -58,11 +59,4 @@ class TSExpressions implements TSExpression {
   unshift(expression: TSExpression) {
     this.expressions.unshift(expression);
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setGroup(group: TSGroup): void {
-    // empty
-  }
 }
-
-export default TSExpressions;

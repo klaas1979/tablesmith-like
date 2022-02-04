@@ -51,7 +51,7 @@ class TSParserFactory {
    * @param upper the number donating the new ranges max value.
    */
   addRange(upper: number): void {
-    if (!this.groupBuilder) throw `Cannot add Range without prior defined Group!`;
+    if (!this.groupBuilder) throw Error(`Cannot add Range without prior defined Group!`);
     this.groupBuilder.addRange(upper);
   }
 
@@ -59,7 +59,7 @@ class TSParserFactory {
    * Setup builder to add before expressions to the current group.
    */
   addBefore(): void {
-    if (!this.groupBuilder) throw `Cannot add Before Expressions without prior defined Group!`;
+    if (!this.groupBuilder) throw Error(`Cannot add Before Expressions without prior defined Group!`);
     this.groupBuilder.addBefore();
   }
 
@@ -67,7 +67,7 @@ class TSParserFactory {
    * Setup builder to add after expressions to the current group.
    */
   addAfter(): void {
-    if (!this.groupBuilder) throw `Cannot add Before Expressions without prior defined Group!`;
+    if (!this.groupBuilder) throw Error(`Cannot add Before Expressions without prior defined Group!`);
     this.groupBuilder.addAfter();
   }
 
@@ -77,7 +77,7 @@ class TSParserFactory {
    * @param group to call.
    */
   startGroupCall(): void {
-    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
+    if (!this.groupBuilder) throw Error(`Cannot create Expression without defined Group!`);
     this.groupBuilder.startGroupCall();
   }
 
@@ -87,7 +87,7 @@ class TSParserFactory {
    * @param group to call.
    */
   createGroupCall(): void {
-    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
+    if (!this.groupBuilder) throw Error(`Cannot create Expression without defined Group!`);
     this.groupBuilder.createGroupCall();
   }
 
@@ -95,7 +95,7 @@ class TSParserFactory {
    * Starts a variable Assignment.
    */
   startVariable(type: 'get' | 'set') {
-    if (!this.groupBuilder) throw `Cannot start variable without defined Group!`;
+    if (!this.groupBuilder) throw Error(`Cannot start variable without defined Group!`);
     this.groupBuilder.startVariable(type);
   }
 
@@ -103,7 +103,7 @@ class TSParserFactory {
    * Creates a variable Assignment.
    */
   createVariable() {
-    if (!this.groupBuilder) throw `Cannot create variable without defined Group!`;
+    if (!this.groupBuilder) throw Error(`Cannot create variable without defined Group!`);
     this.groupBuilder.createVariable();
   }
 
@@ -112,7 +112,7 @@ class TSParserFactory {
    * @param name of function to start.
    */
   startFunction(name: string) {
-    if (!this.groupBuilder) throw `Cannot start function '${name}' expression, no Group set!`;
+    if (!this.groupBuilder) throw Error(`Cannot start function '${name}' expression, no Group set!`);
     this.groupBuilder.startFunction(name);
   }
 
@@ -121,7 +121,7 @@ class TSParserFactory {
    * @param operator of the math term.
    */
   addMathTerm(operator: string): void {
-    if (!this.groupBuilder) throw `Cannot add math term for '${operator}', no Group set!`;
+    if (!this.groupBuilder) throw Error(`Cannot add math term for '${operator}', no Group set!`);
     this.groupBuilder.addMathTerm(operator);
   }
 
@@ -129,7 +129,7 @@ class TSParserFactory {
    * Creates math term for mult and div and dice 'd'.
    */
   createMathMult(): void {
-    if (!this.groupBuilder) throw `Cannot create math mult, no Group set!`;
+    if (!this.groupBuilder) throw Error(`Cannot create math mult, no Group set!`);
     this.groupBuilder.createMathMult();
   }
 
@@ -138,7 +138,7 @@ class TSParserFactory {
    * @param operator of the math term.
    */
   createMathSum(): void {
-    if (!this.groupBuilder) throw `Cannot create math mult, no Group set!`;
+    if (!this.groupBuilder) throw Error(`Cannot create math sum, no Group set!`);
     this.groupBuilder.createMathSum();
   }
 
@@ -146,7 +146,7 @@ class TSParserFactory {
    * Called by parser if opening bracket has been found in Math Terms.
    */
   openBracket(): void {
-    if (!this.groupBuilder) throw `Cannot open bracket function, no Group set!`;
+    if (!this.groupBuilder) throw Error(`Cannot open bracket function, no Group set!`);
     this.groupBuilder.openBracket();
   }
 
@@ -154,7 +154,7 @@ class TSParserFactory {
    * Called by parser if closing bracket for math TSExpression has been found.
    */
   closeBracket() {
-    if (!this.groupBuilder) throw `Cannot close bracket function, no Group set!`;
+    if (!this.groupBuilder) throw Error(`Cannot close bracket function, no Group set!`);
     this.groupBuilder.closeBracket();
   }
 
@@ -162,7 +162,7 @@ class TSParserFactory {
    * Creates and adds TS Function Expression that is on top of stack.
    */
   createFunction() {
-    if (!this.groupBuilder) throw `Cannot create function, no Group set!`;
+    if (!this.groupBuilder) throw Error(`Cannot create function, no Group set!`);
     this.groupBuilder.createFunction();
   }
 
@@ -171,7 +171,7 @@ class TSParserFactory {
    * @param operator to set for boolean expression.
    */
   setBooleanComparisonOperator(operator: string): void {
-    if (!this.groupBuilder) throw `Cannot add If Operator, no Group set!`;
+    if (!this.groupBuilder) throw Error(`Cannot add If Operator, no Group set!`);
     this.groupBuilder.setBooleanComparisonOperator(operator);
   }
 
@@ -180,7 +180,7 @@ class TSParserFactory {
    * @param text to create simple TSExpression for.
    */
   createText(text: string): void {
-    if (!this.groupBuilder) throw `Cannot create Expression without defined Group!`;
+    if (!this.groupBuilder) throw Error(`Cannot create Expression without defined Group!`);
     this.groupBuilder.addExpression(new TSTextExpression(text));
   }
 
@@ -188,7 +188,7 @@ class TSParserFactory {
    * Stacks next Parameter for Group Lock expression.
    */
   stackParameter(): void {
-    if (!this.groupBuilder) throw `Cannot stack parameter without defined Group!`;
+    if (!this.groupBuilder) throw Error(`Cannot stack parameter without defined Group!`);
     this.groupBuilder.stackParameter();
   }
 
@@ -196,7 +196,7 @@ class TSParserFactory {
    * Stacks given string in current context.
    */
   stackString(value: string): void {
-    if (!this.groupBuilder) throw `Cannot stack string '${value}' without defined Group!`;
+    if (!this.groupBuilder) throw Error(`Cannot stack string '${value}' without defined Group!`);
     this.groupBuilder.stackString(value);
   }
 

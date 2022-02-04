@@ -1,28 +1,21 @@
-import TSGroup from '../tsgroup';
-import TSExpression from './tsexpression';
+import { BaseTSExpression } from './tsexpression';
 import TSExpressionResult from './tsexpressionresult';
 
 /**
  * Simple Text Expression as value of a Range in a Group or part of the value, i.e. prefix or suffix to a TermExpression.
  */
-class TSTextExpression implements TSExpression {
+export default class TSTextExpression extends BaseTSExpression {
   text: string;
   constructor(text: string) {
+    super();
     this.text = text;
   }
 
-  evaluate(): TSExpressionResult {
+  async evaluate(): Promise<TSExpressionResult> {
     return new TSExpressionResult(this.text);
   }
 
   getExpression(): string {
     return this.text.replace('%', '/%').replace('[', '/[').replace(']', '/]');
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setGroup(group: TSGroup): void {
-    // empty
-  }
 }
-
-export default TSTextExpression;

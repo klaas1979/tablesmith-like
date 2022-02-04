@@ -7,6 +7,7 @@ import twist from './mersennetwister';
 class EvaluationContext {
   variables: Map<string, Map<string, undefined | string | number>>;
   callTables: string[];
+  inputTextCallback: ((prompt: string, defaultValue: string) => Promise<string>) | undefined;
   constructor() {
     this.variables = new Map();
     this.callTables = [];
@@ -22,7 +23,7 @@ class EvaluationContext {
     const lookupTablename = !tablename ? this.getCurrentCallTablename() : tablename;
     const table = this.variables.get(lookupTablename);
     if (!table || !table?.has(variablename))
-      throw `Variable '${variablename}' not defined for Table '${lookupTablename}'`;
+      throw Error(`Variable '${variablename}' not defined for Table '${lookupTablename}'`);
     return table.get(variablename);
   }
 
@@ -73,6 +74,25 @@ class EvaluationContext {
   roll(sides: number): number {
     const random = twist.random();
     return Math.ceil(random * sides);
+  }
+
+  /**
+   * Calls the InputText callback and returns its result.
+   * @param prompt to show as question when asking for input text.
+   * @param defaultValue for text.
+   * @returns The result for the prompt.
+   */
+  async promptForInputText(prompt: string, defaultValue: string): Promise<string> {
+    if (!this.inputTextCallback) throw Error('No InputText Callback is set, cannot prompt for text!');
+    return this.inputTextCallback(prompt, defaultValue);
+  }
+
+  /**
+   * Registers the async callback function for InputText.
+   * @param callback to register as external input function, if a TS InputList is encountered.
+   */
+  registerInputTextCallback(callback: (prompt: string, defaultValue: string) => Promise<string>): void {
+    this.inputTextCallback = callback;
   }
 }
 

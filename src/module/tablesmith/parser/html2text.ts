@@ -19,7 +19,7 @@ class Html2Text {
         }
         const after = call.substring(loc.end.offset, Math.min(call.length, loc.end.offset + 100));
         const errorLocation = `Lines from ${loc.start.line} to ${loc.end.line}', columns from ${loc.start.column} to ${loc.end.column}, FileOffset from ${loc.start.offset} to ${loc.end.offset} \nText:>>>>\n${before}||>|${content}|<||${after}\n<<<<`;
-        throw `Error '${se}' at location '${errorLocation}'`;
+        throw Error(`Error '${se}' at location '${errorLocation}'`);
       }
       throw error;
     }

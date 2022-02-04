@@ -1,25 +1,25 @@
 import BooleanComparison from './booleancomparison';
-import TSExpression from './tsexpression';
-import TSGroup from '../tsgroup';
+import { BaseTSExpression } from './tsexpression';
 import TSExpressionResult from './tsexpressionresult';
 
 /**
  * TS Function for chaining boolean expressions "And" or "Or".
  */
-class TSLogicalExpression implements TSExpression {
+export default class TSLogicalExpression extends BaseTSExpression {
   functionName: string;
   comparisons: BooleanComparison[];
   constructor(functionName: string, comparisons: BooleanComparison[]) {
+    super();
     this.functionName = functionName;
     this.comparisons = comparisons;
   }
 
-  evaluate(): TSExpressionResult {
+  async evaluate(): Promise<TSExpressionResult> {
     let result = '-1';
     const results: string[] = [];
-    this.comparisons.forEach((comparison) => {
-      results.push(comparison.evaluate().trim());
-    });
+    for (const comparison of this.comparisons) {
+      results.push((await comparison.evaluate()).trim());
+    }
     if (results.includes('-1')) {
       result = '-1';
     } else if (this.functionName == 'Or') {
@@ -40,11 +40,4 @@ class TSLogicalExpression implements TSExpression {
     );
     return `{${this.functionName}~${expressions}}`;
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setGroup(group: TSGroup): void {
-    // empty
-  }
 }
-
-export default TSLogicalExpression;

@@ -30,7 +30,7 @@ export default class TSExpressionResult {
    */
   asNumber(): number {
     const num = Number.parseFloat(this.result);
-    if (Number.isNaN(num)) throw `Could not parse number as float '${this.result}'!`;
+    if (Number.isNaN(num)) throw Error(`Could not parse number as float '${this.result}'!`);
     return num;
   }
 
@@ -40,7 +40,7 @@ export default class TSExpressionResult {
    */
   asInt(): number {
     const num = Number.parseInt(this.result);
-    if (Number.isNaN(num)) throw `Could not parse number as int '${this.result}'!`;
+    if (Number.isNaN(num)) throw Error(`Could not parse number as int '${this.result}'!`);
     return num;
   }
 }

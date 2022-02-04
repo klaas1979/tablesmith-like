@@ -109,7 +109,7 @@ describe('Parsing MultiList', () => {
     }).toThrowError();
   });
 
-  it('default not three digit but not 0s and 1s', () => {
+  it('default not three digit but not 0s and 1s', async () => {
     simpleTable = '%varname%,\n@*varname,002,Prompt,1,2,3\n:Start\n1,%varname%\n';
     expect(() => {
       tablesmith.addTable('folder', filename, simpleTable);
@@ -123,35 +123,28 @@ describe('Parsing {Param~', () => {
     filename = 'simpletable';
   });
 
-  it('existing values', () => {
+  it('existing values', async () => {
     simpleTable =
       '%var%,\n@var,1,Prompt,O1,O2,O3,O4\n:Start\n1,{Param~var,1},{Param~var,2},{Param~var,3},{Param~var,4}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    const result = tablesmith.evaluate(`[${filename}]`);
-    expect(result).toBe('O1,O2,O3,O4');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('O1,O2,O3,O4');
   });
 
-  it('non existing param throws', () => {
+  it('non existing param throws', async () => {
     simpleTable = '%var%,\n@var,1,Prompt,O1,O2,O3,O4\n:Start\n1,{Param~nonExisting,1}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(() => {
-      tablesmith.evaluate(`[${filename}]`);
-    }).toThrow();
+    expect(await tablesmith.evaluate(`[${filename}]`)).toContain('Error in Group');
   });
 
-  it('index = 0 throws, must be 1 or greater', () => {
+  it('index = 0 throws, must be 1 or greater', async () => {
     simpleTable = '%var%,\n@var,1,Prompt,O1,O2,O3,O4\n:Start\n1,{Param~var,0}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(() => {
-      tablesmith.evaluate(`[${filename}]`);
-    }).toThrow();
+    expect(await tablesmith.evaluate(`[${filename}]`)).toContain('Error in Group');
   });
 
-  it('index = 5 throws max is 4', () => {
+  it('index = 5 throws max is 4', async () => {
     simpleTable = '%var%,\n@var,1,Prompt,O1,O2,O3,O4\n:Start\n1,{Param~var,5}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(() => {
-      tablesmith.evaluate(`[${filename}]`);
-    }).toThrow();
+    expect(await tablesmith.evaluate(`[${filename}]`)).toContain('Error in Group');
   });
 });

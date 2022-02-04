@@ -33,7 +33,7 @@ function toInt(text) {
       }
       const after = input.substring(loc.end.offset, Math.min(input.length, loc.end.offset + 100));
       const errorLocation = `Lines from ${loc.start.line} to ${loc.end.line}', columns from ${loc.start.column} to ${loc.end.column}, FileOffset from ${loc.start.offset} to ${loc.end.offset} \nText:>>>>\n${before}||>|${content}|<||${after}\n<<<<`;
-      throw `Error '${actionError}' at location '${errorLocation}'`;
+      throw Error(`Error '${actionError}' at location '${errorLocation}'`);
     }
   }
 }
@@ -314,7 +314,7 @@ FunctionsOneParam
           }); }
 
 FunctionsTwoParams
-  = '{' _ name:(@'Line' / @'Param') '~' { errorHandling(() => {
+  = '{' _ name:(@'Line' / @'Param' / @'InputText') '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 

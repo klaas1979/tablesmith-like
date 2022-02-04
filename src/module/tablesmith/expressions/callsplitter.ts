@@ -30,7 +30,7 @@ export default class CallSplitter {
         result.variablename = tableGroup[1];
         break;
       default:
-        throw `Could not get variable expression did not result in ([tablename].)?[varname] but '${input}'`;
+        throw Error(`Could not get variable expression did not result in ([tablename].)?[varname] but '${input}'`);
     }
     return result;
   }

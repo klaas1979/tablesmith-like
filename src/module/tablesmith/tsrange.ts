@@ -43,11 +43,11 @@ class TSRange {
    * Text result for this range.
    * @returns strnig representing the evaluated expressions for this range.
    */
-  evaluate(): TSExpressionResult {
+  async evaluate(): Promise<TSExpressionResult> {
     try {
-      return this.expressions.evaluate();
+      return await this.expressions.evaluate();
     } catch (error) {
-      throw `Error in Range '${this.upper}-${this.lower}'=>'${this.getExpression()}':\n${error}`;
+      throw Error(`Error in Range '${this.upper}-${this.lower}'=>'${this.getExpression()}':\n${error}`);
     }
   }
 

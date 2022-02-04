@@ -27,7 +27,8 @@ class Stack {
    * @param expressions to use as start for new ranges expression stack.
    */
   startGroupLine(expressions: TSExpressions) {
-    if (this.stacked.length > 0 && this.peek().stackSize() > 1) throw 'Stack is not empty, cannot start a new Range!';
+    if (this.stacked.length > 0 && this.peek().stackSize() > 1)
+      throw Error('Stack is not empty, cannot start a new Range!');
     this.stacked.pop(); // remove last range, if exists
     const rangeStack = new StackItem(expressions, STACK_TYPE.RANGE);
     this.stacked.push(rangeStack);
@@ -37,7 +38,7 @@ class Stack {
    * Starts a new Group Call Expression.
    */
   startGroupCall() {
-    if (this.stacked.length == 0) throw `Stack is empty, cannot start new Group Call!`;
+    if (this.stacked.length == 0) throw Error(`Stack is empty, cannot start new Group Call!`);
     const rangeStack = new StackItem(new TSExpressions(), STACK_TYPE.GROUP_CALL);
     this.stacked.push(rangeStack);
   }
@@ -62,7 +63,7 @@ class Stack {
    * Starts a new Variable get or set Expression.
    */
   startVariable(type: 'get' | 'set') {
-    if (this.stacked.length == 0) throw `Stack is empty, cannot start new variable assignment!`;
+    if (this.stacked.length == 0) throw Error(`Stack is empty, cannot start new variable assignment!`);
     const stackType = type == 'set' ? STACK_TYPE.VARIABLE_SET : STACK_TYPE.VARIABLE_GET;
     const rangeStack = new StackItem(new TSExpressions(), stackType);
     this.stacked.push(rangeStack);
@@ -72,7 +73,7 @@ class Stack {
    * Starts a new Function Expression.
    */
   startFunction(name: string) {
-    if (this.stacked.length == 0) throw `Stack is empty, cannot start new function '${name}'!`;
+    if (this.stacked.length == 0) throw Error(`Stack is empty, cannot start new function '${name}'!`);
     const functionStack = new StackItem(new TSExpressions(), STACK_TYPE.FUNCTION, name);
     this.stacked.push(functionStack);
   }
@@ -81,7 +82,7 @@ class Stack {
    * Starts a new Math bracket.
    */
   startBracket() {
-    if (this.stacked.length == 0) throw `Stack is empty, cannot start bracket!`;
+    if (this.stacked.length == 0) throw Error(`Stack is empty, cannot start bracket!`);
     const bracketStack = new StackItem(new TSExpressions(), STACK_TYPE.MATH_BRACKET);
     this.stacked.push(bracketStack);
   }
@@ -103,7 +104,7 @@ class Stack {
 
   pop(): StackItem {
     const result = this.stacked.pop();
-    if (!result) throw 'Could not pop from stack, nothing stacked!';
+    if (!result) throw Error('Could not pop from stack, nothing stacked!');
     return result;
   }
 
@@ -112,7 +113,7 @@ class Stack {
    * @returns Top item from stack.
    */
   peek(): StackItem {
-    if (this.stacked.length == 0) throw 'Cannot peek into stack, stack is empty!';
+    if (this.stacked.length == 0) throw Error('Cannot peek into stack, stack is empty!');
     return this.stacked[this.stacked.length - 1];
   }
 }

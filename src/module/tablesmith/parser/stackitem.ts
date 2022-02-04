@@ -34,7 +34,7 @@ class StackItem {
    * Stacks a new TSExpressions list to given index.
    */
   stackAt(index: number): void {
-    if (index > this.expressionsStack.length) throw `Cannot stackAt index '${index}' out of bounds!`;
+    if (index > this.expressionsStack.length) throw Error(`Cannot stackAt index '${index}' out of bounds!`);
     this.expressionsStack.splice(index, 0, new TSExpressions());
   }
 
@@ -75,7 +75,7 @@ class StackItem {
    */
   shiftMathSumOperator(): string {
     const result = this.mathSumOperators.shift();
-    if (result == undefined) throw 'Could not shift math sum operator, stack is empty!';
+    if (result == undefined) throw Error('Could not shift math sum operator, stack is empty!');
     return result;
   }
 
@@ -85,7 +85,7 @@ class StackItem {
    */
   shiftMathMultOperator(): string {
     const result = this.mathMultOperators.shift();
-    if (result == undefined) throw 'Could not shift math mult operator, stack is empty!';
+    if (result == undefined) throw Error('Could not shift math mult operator, stack is empty!');
     return result;
   }
 
@@ -159,7 +159,7 @@ class StackItem {
    */
   pushExpressionTo(index: number, expression: TSExpression) {
     if (index > this.expressionsStack.length)
-      throw `Could not push to index '${index}', length '${this.expressionsStack.length}'`;
+      throw Error(`Could not push to index '${index}', length '${this.expressionsStack.length}'`);
     this.expressionsStack[index].push(expression);
   }
 
@@ -179,7 +179,7 @@ class StackItem {
    * @returns TSExpressions at start of list.
    */
   firstExpressions(): TSExpressions {
-    if (this.expressionsStack.length == 0) throw 'Cannot get firstExpressions stack is empty!';
+    if (this.expressionsStack.length == 0) throw Error('Cannot get firstExpressions stack is empty!');
     return this.expressionsStack[0];
   }
 
@@ -188,7 +188,7 @@ class StackItem {
    * @returns TSExpressions on top of stack.
    */
   peekExpressions(): TSExpressions {
-    if (this.expressionsStack.length == 0) throw 'Cannot peekExpressions stack is empty!';
+    if (this.expressionsStack.length == 0) throw Error('Cannot peekExpressions stack is empty!');
     return this.expressionsStack[this.expressionsStack.length - 1];
   }
 
@@ -198,7 +198,7 @@ class StackItem {
    */
   popExpressions(): TSExpressions {
     const result = this.expressionsStack.pop();
-    if (result == undefined) throw 'Could not pop expressions, stack is empty!';
+    if (result == undefined) throw Error('Could not pop expressions, stack is empty!');
     return result;
   }
 
@@ -209,7 +209,7 @@ class StackItem {
    */
   pullExpressionsAt(index: number): TSExpressions {
     if (this.expressionsStack.length <= index)
-      throw `Could not pull at index '${index}', length '${this.expressionsStack.length}'`;
+      throw Error(`Could not pull at index '${index}', length '${this.expressionsStack.length}'`);
     const result = this.expressionsStack.splice(index, 1);
     return result[0];
   }
@@ -236,7 +236,7 @@ class StackItem {
    */
   popString(): string {
     const result = this.strings.pop();
-    if (result == undefined) throw 'Could not pop string, stack is empty!';
+    if (result == undefined) throw Error('Could not pop string, stack is empty!');
     return result;
   }
 }

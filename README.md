@@ -79,6 +79,8 @@ Any standard Table can call a Tablesmith table by using the Tablesmith Call synt
 [Tablename.Groupname(params)]:times
 ```
 
+Only the chat message is altered and the call value is replaced with a rolled Tablesmith result. The `RollTable.draw` return value is left as is and contains the original data.
+
 ### Tablesmith Form
 
 One macro within the added compendium opens the Tablesmith Form, where all loaded tables can be called.

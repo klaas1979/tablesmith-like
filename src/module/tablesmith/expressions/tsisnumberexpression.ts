@@ -1,18 +1,17 @@
-import TSExpression from './tsexpression';
-import TSGroup from '../tsgroup';
+import TSExpression, { BaseTSExpression } from './tsexpression';
 import TSExpressionResult from './tsexpressionresult';
 
 /**
  * TS Function for IsNumber check.
  */
-class TSIsNumberExpression implements TSExpression {
+export default class TSIsNumberExpression extends BaseTSExpression {
   expression: TSExpression;
   constructor(expression: TSExpression) {
+    super();
     this.expression = expression;
   }
-
-  evaluate(): TSExpressionResult {
-    const value = this.expression.evaluate().asString();
+  async evaluate(): Promise<TSExpressionResult> {
+    const value = (await this.expression.evaluate()).asString();
     const result = !Number.isNaN(Number.parseFloat(value)) || !Number.isNaN(Number.parseInt(value)) ? '1' : '0';
     return new TSExpressionResult(result);
   }
@@ -20,11 +19,4 @@ class TSIsNumberExpression implements TSExpression {
   getExpression(): string {
     return `{IsNumber~${this.expression.getExpression()}}`;
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setGroup(group: TSGroup): void {
-    // empty
-  }
 }
-
-export default TSIsNumberExpression;

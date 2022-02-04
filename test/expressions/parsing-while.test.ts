@@ -25,21 +25,21 @@ describe('Parsing {While~', () => {
     );
   });
 
-  it('while with BooleanComparision', () => {
+  it('while with BooleanComparision', async () => {
     simpleTable = '%var%,0\n:Start\n1,{While~%var%<5,|var+1|x}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('xxxxx');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('xxxxx');
   });
 
-  it('while with %variable%', () => {
+  it('while with %variable%', async () => {
     simpleTable = '%var%,1\n:Start\n1,{While~%var%,|var=0|body}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('body');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('body');
   });
 
-  it('nesting whiles', () => {
+  it('nesting whiles', async () => {
     simpleTable = '%var%,2,%var2%,0\n:Start\n1,{While~%var%,{While~%var2%<3,|var2+1|.}|var-1||var2=0|x}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('...x...x');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('...x...x');
   });
 });

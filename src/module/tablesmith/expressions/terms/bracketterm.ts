@@ -1,14 +1,14 @@
-import TSGroup from '../../tsgroup';
-import TSExpression from '../tsexpression';
+import TSExpression, { BaseTSExpression } from '../tsexpression';
 import TSExpressionResult from '../tsexpressionresult';
 
 /**
  * A mathematical Bracket to order the evaluation of mathematical expressions.
  * All operations within the bracket are added to a single term.
  */
-export default class BracketTerm implements TSExpression {
+export default class BracketTerm extends BaseTSExpression {
   term: TSExpression;
   constructor(term: TSExpression) {
+    super();
     this.term = term;
   }
 
@@ -16,12 +16,7 @@ export default class BracketTerm implements TSExpression {
     return `(${this.term.getExpression()})`;
   }
 
-  evaluate(): TSExpressionResult {
+  async evaluate(): Promise<TSExpressionResult> {
     return this.term.evaluate();
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setGroup(group: TSGroup): void {
-    // empty nothing must be set for this expression
   }
 }

@@ -37,15 +37,21 @@ export class TableParameter {
   private validateListValue(): void {
     const defaultNumber = Number.parseInt(this.defaultValue);
     if (Number.isNaN(defaultNumber) || defaultNumber < 1 || defaultNumber > this.options.length)
-      throw `Default value '${this.defaultValue}' must be integer for list Parameter between 1 and ${this.options.length}`;
+      throw Error(
+        `Default value '${this.defaultValue}' must be integer for list Parameter between 1 and ${this.options.length}`,
+      );
   }
   private validateMultiListValue() {
     if (this.defaultValue.length != this.options.length)
-      throw `Default value '${this.defaultValue}' for multi-list Parameter must be binary of length '${this.options.length}'`;
+      throw Error(
+        `Default value '${this.defaultValue}' for multi-list Parameter must be binary of length '${this.options.length}'`,
+      );
     for (let i = 0; i < this.defaultValue.length; i++) {
       const num = Number.parseInt(this.defaultValue[i]);
       if (Number.isNaN(num) || num < 0 || num > 1)
-        throw `Default value '${this.defaultValue}' for multi-list Parameter must be binary of length '${this.options.length}'`;
+        throw Error(
+          `Default value '${this.defaultValue}' for multi-list Parameter must be binary of length '${this.options.length}'`,
+        );
     }
   }
 
@@ -56,16 +62,16 @@ export class TableParameter {
   setDefaultValue(value: string | string[]) {
     switch (this.type) {
       case TableParameterType.PROMPT:
-        if (typeof value != 'string') throw `Type must be string, not a '${typeof value}' cannot set value!`;
+        if (typeof value != 'string') throw Error(`Type must be string, not a '${typeof value}' cannot set value!`);
         this.defaultValue = value;
         break;
       case TableParameterType.LIST:
-        if (typeof value != 'string') throw `Type must be string, not a '${typeof value}' cannot set value!`;
+        if (typeof value != 'string') throw Error(`Type must be string, not a '${typeof value}' cannot set value!`);
         this.defaultValue = value;
         this.validateListValue();
         break;
       case TableParameterType.MULTI_LIST:
-        if (typeof value == 'string') throw `Type must be string[], not a '${typeof value}' cannot set value!`;
+        if (typeof value == 'string') throw Error(`Type must be string[], not a '${typeof value}' cannot set value!`);
         let result = '';
         for (let i = 0; i < this.options.length; i++) {
           const isSelected = value.find((selected) => {
@@ -78,7 +84,7 @@ export class TableParameter {
         this.validateMultiListValue();
         break;
       default:
-        throw `Setting value for Type '${this.type}' not implemented!`;
+        throw Error(`Setting value for Type '${this.type}' not implemented!`);
     }
   }
 
@@ -169,8 +175,9 @@ export class TSTable {
     const variable = this.variables.find((variable) => {
       return variable.name == parameter.variable;
     });
-    if (!variable) throw `Missing variable declaration '${parameter.variable}' for parameter '${parameter}!'`;
-    if (this.getParameter(parameter.variable)) throw `Parameter for variable '${parameter.variable}' already defined!`;
+    if (!variable) throw Error(`Missing variable declaration '${parameter.variable}' for parameter '${parameter}!'`);
+    if (this.getParameter(parameter.variable))
+      throw Error(`Parameter for variable '${parameter.variable}' already defined!`);
     this.parameters.push(parameter);
   }
 
@@ -198,9 +205,9 @@ export class TSTable {
    * @param params to set for evaluation.
    */
   setParametersForEvaluationByName(params: { name: string; value: string | undefined }[]): void {
-    params.forEach((param) => {
+    for (const param of params) {
       this.setVariableInEvalContext(param.name, param.value);
-    });
+    }
   }
 
   /**
@@ -210,14 +217,16 @@ export class TSTable {
   setParametersForEvaluationByIndex(params: string[]): void {
     if (params.length > 0) {
       if (this.parameters.length != params.length)
-        throw `Cannot set parameters by index, length do not match, needed=${this.parameters.length} got length=${
-          params.length
-        } values='${params.join(',')}'`;
+        throw Error(
+          `Cannot set parameters by index, length do not match, needed=${this.parameters.length} got length=${
+            params.length
+          } values='${params.join(',')}'`,
+        );
       const clone = [...params].reverse();
-      this.parameters.forEach((parameter) => {
+      for (const parameter of this.parameters) {
         const value = clone.pop();
         if (value) this.setVariableInEvalContext(parameter.variable, value);
-      });
+      }
     }
   }
 
@@ -248,7 +257,7 @@ export class TSTable {
    * @param nonRepeating should results on this group be only be drawn once, in multiply evaluatios.
    */
   addGroup(name: string, rangeAsProbabilty: boolean, nonRepeating: boolean): TSGroup {
-    if (this.groupForName(name)) throw `Group name already defined got '${name}'`;
+    if (this.groupForName(name)) throw Error(`Group name already defined got '${name}'`);
     const tsGroup = new TSGroup(name, rangeAsProbabilty, nonRepeating);
     this.groups.push(tsGroup);
     return tsGroup;

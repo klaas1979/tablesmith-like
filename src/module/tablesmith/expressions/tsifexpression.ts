@@ -1,13 +1,12 @@
-import TSGroup from '../tsgroup';
 import BooleanComparison from './booleancomparison';
-import TSExpression from './tsexpression';
+import { BaseTSExpression } from './tsexpression';
 import TSExpressionResult from './tsexpressionresult';
 import TSExpressions from './tsexpressions';
 
 /**
  * Ternary if expression for TS-Function IIf ":" or If "/".
  */
-class TSIfExpression implements TSExpression {
+export default class TSIfExpression extends BaseTSExpression {
   functionName: string;
   booleanComparision: BooleanComparison;
   trueVal: TSExpressions;
@@ -18,14 +17,15 @@ class TSIfExpression implements TSExpression {
     trueVal: TSExpressions,
     falseVal: TSExpressions,
   ) {
+    super();
     this.functionName = functionName;
     this.booleanComparision = booleanComparision;
     this.trueVal = trueVal;
     this.falseVal = falseVal;
   }
-  evaluate(): TSExpressionResult {
-    const boolResult = this.booleanComparision.evaluate().asString();
-    const result = boolResult == '1' ? this.trueVal.evaluate() : this.falseVal.evaluate();
+  async evaluate(): Promise<TSExpressionResult> {
+    const boolResult = (await this.booleanComparision.evaluate()).asString();
+    const result = await (boolResult == '1' ? this.trueVal.evaluate() : this.falseVal.evaluate());
     return new TSExpressionResult(result.asString());
   }
 
@@ -35,10 +35,6 @@ class TSIfExpression implements TSExpression {
       ef = this.falseVal.getExpression();
     return `{${this.functionName}~${be}?${et}${this.valueSeparator()}${ef}}`;
   }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setGroup(group: TSGroup): void {
-    // empty
-  }
 
   /**
    * Correct true false value separator for function name.
@@ -47,5 +43,3 @@ class TSIfExpression implements TSExpression {
     return this.functionName === 'If' ? '/' : ':';
   }
 }
-
-export default TSIfExpression;

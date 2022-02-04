@@ -178,11 +178,11 @@ export default class TableSelectionForm extends FormApplication<TableSelectionOp
     }
   }
 
-  _evaluateTable() {
+  async _evaluateTable() {
     Logger.debug(false, 'Evaluating table', this.data);
     if (this.data.callValues.table) {
       this.data.callValues.parameters = this._mapParameter();
-      const results = tablesmith.evaluate(this.data.callValues);
+      const results = await tablesmith.evaluate(this.data.callValues);
       this.data.results = typeof results == 'string' ? [results] : results;
       this.render();
       if (this.data.chatResults) {

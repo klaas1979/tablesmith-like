@@ -21,21 +21,21 @@ describe('Parsing {Loop~', () => {
     expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Loop~%var%,x}');
   });
 
-  it('with expression', () => {
+  it('with expression', async () => {
     simpleTable = '%var%,3\n:Start\n1,{Loop~{Calc~8-4},x}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('xxxx');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('xxxx');
   });
 
-  it('while with %variable%', () => {
+  it('while with %variable%', async () => {
     simpleTable = '%var%,3\n:Start\n1,{Loop~%var%,x}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('xxx');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('xxx');
   });
 
-  it('nesting loops', () => {
+  it('nesting loops', async () => {
     simpleTable = '%var%,3\n:Start\n1,{Loop~3,{Loop~3,.}x}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tablesmith.evaluate(`[${filename}]`)).toBe('...x...x...x');
+    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('...x...x...x');
   });
 });

@@ -1,26 +1,26 @@
-import TSGroup from '../tsgroup';
-import TSExpression from './tsexpression';
+import { BaseTSExpression } from './tsexpression';
 import TSExpressionResult from './tsexpressionresult';
 import TSExpressions from './tsexpressions';
 
 /**
  * A simple boolean comparison between to TSExpressions, based on TS comparision operators.
  */
-class BooleanComparison implements TSExpression {
+export default class BooleanComparison extends BaseTSExpression {
   ifExpression1: TSExpressions;
   operator: string;
   ifExpression2: TSExpressions;
   constructor(ifExpression1: TSExpressions, operator: string, ifExpression2: TSExpressions) {
+    super();
     this.ifExpression1 = ifExpression1;
     this.operator = operator;
     this.ifExpression2 = ifExpression2;
   }
 
-  evaluate(): TSExpressionResult {
+  async evaluate(): Promise<TSExpressionResult> {
     let boolResult;
     try {
-      const e1 = this.ifExpression1.evaluate().asString(),
-        e2 = this.ifExpression2.evaluate().asString();
+      const e1 = (await this.ifExpression1.evaluate()).asString(),
+        e2 = (await this.ifExpression2.evaluate()).asString();
       switch (this.operator) {
         case '=':
           boolResult = e1 == e2;
@@ -54,17 +54,10 @@ class BooleanComparison implements TSExpression {
       e2 = this.ifExpression2.getExpression();
     return `${e1}${this.operator}${e2}`;
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setGroup(group: TSGroup): void {
-    // empty
-  }
 }
 
 function int(val: string) {
   const int = Number.parseInt(val);
-  if (Number.isNaN(int)) throw `Could not convert '${val}' to integer for If comparison!`;
+  if (Number.isNaN(int)) throw Error(`Could not convert '${val}' to integer for If comparison!`);
   return int;
 }
-
-export default BooleanComparison;

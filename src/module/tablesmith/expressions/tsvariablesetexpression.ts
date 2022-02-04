@@ -1,28 +1,28 @@
-import TSGroup from '../tsgroup';
 import { evalcontext } from './evaluationcontextinstance';
 import CallSplitter from './callsplitter';
-import TSExpression from './tsexpression';
+import TSExpression, { BaseTSExpression } from './tsexpression';
 import TSExpressionResult from './tsexpressionresult';
 
 /**
  * Class representing a variable Set expression.
  */
-class TSVariableSetExpression implements TSExpression {
+export default class TSVariableSetExpression extends BaseTSExpression {
   varNameExpression: TSExpression;
   call: { tablename: string; variablename: string };
   type: string;
   valueExpression: TSExpression;
   constructor(varNameExpression: TSExpression, type: string, valueExpression: TSExpression) {
+    super();
     this.varNameExpression = varNameExpression;
     this.type = type;
     this.valueExpression = valueExpression;
     this.call = { tablename: '', variablename: '' };
   }
 
-  evaluate(): TSExpressionResult {
-    const evaluated = this.varNameExpression.evaluate();
+  async evaluate(): Promise<TSExpressionResult> {
+    const evaluated = await this.varNameExpression.evaluate();
     this.call = CallSplitter.forVariable().split(evaluated.asString());
-    const value = this.valueExpression.evaluate();
+    const value = await this.valueExpression.evaluate();
     const currentValue = evalcontext.getVar(this.call.tablename, this.call.variablename);
     switch (this.type) {
       case '=':
@@ -53,7 +53,7 @@ class TSVariableSetExpression implements TSExpression {
         this.evaluateMaximumBoundary(currentValue, value);
         break;
       default:
-        throw `Unknown Type '${this.type}' cannot set variable '${this.getExpression()}'`;
+        throw Error(`Unknown Type '${this.type}' cannot set variable '${this.getExpression()}'`);
     }
     return new TSExpressionResult('');
   }
@@ -108,11 +108,4 @@ class TSVariableSetExpression implements TSExpression {
   getExpression(): string {
     return `|${this.varNameExpression.getExpression()}${this.type}${this.valueExpression.getExpression()}|`;
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setGroup(group: TSGroup): void {
-    // empty
-  }
 }
-
-export default TSVariableSetExpression;

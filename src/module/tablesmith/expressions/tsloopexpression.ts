@@ -1,23 +1,23 @@
-import TSGroup from '../tsgroup';
-import TSExpression from './tsexpression';
+import TSExpression, { BaseTSExpression } from './tsexpression';
 import TSExpressionResult from './tsexpressionresult';
 import TSExpressions from './tsexpressions';
 
 /**
  * Loop expression for iterating given number of times over a block.
  */
-class TSLoopExpression implements TSExpression {
+export default class TSLoopExpression extends BaseTSExpression {
   counterExpression: TSExpression;
   block: TSExpressions;
   constructor(counterExpression: TSExpression, block: TSExpressions) {
+    super();
     this.counterExpression = counterExpression;
     this.block = block;
   }
-  evaluate(): TSExpressionResult {
+  async evaluate(): Promise<TSExpressionResult> {
     let result = '';
-    const maxValue = this.counterExpression.evaluate().asInt();
+    const maxValue = (await this.counterExpression.evaluate()).asInt();
     for (let i = 0; i < maxValue; i++) {
-      result += this.block.evaluate().asString();
+      result += (await this.block.evaluate()).asString();
     }
     return new TSExpressionResult(result);
   }
@@ -27,10 +27,4 @@ class TSLoopExpression implements TSExpression {
       block = this.block.getExpression();
     return `{Loop~${counter},${block}}`;
   }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setGroup(group: TSGroup): void {
-    // empty
-  }
 }
-
-export default TSLoopExpression;
