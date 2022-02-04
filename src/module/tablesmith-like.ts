@@ -32,6 +32,7 @@ import { Logger, DevModeApi, LOG_LEVEL } from './foundry/logger';
 import TablesmithApi from './foundry/tablesmithapi';
 import { wrapRollTable } from './rolltable-wrapper';
 import { tablesmith } from './tablesmith/tablesmithinstance';
+import { promptForInputText } from './foundry/inputtextprompt';
 
 // Initialize module
 Hooks.once('init', async () => {
@@ -63,19 +64,6 @@ Hooks.once('ready', async () => {
   tablesmith.registerInputTextCallback(promptForInputText);
   wrapRollTable();
 });
-
-async function promptForInputText(prompt: string, defaultValue: string): Promise<string> {
-  let entered = await Dialog.prompt({
-    content: `<div class="form-group"><label for="input">${prompt}</label><input id="input" name="input" type="text" value="${defaultValue}"><div/>`,
-    // When closed it will give us the number
-    callback: (html) => html.find('input').val(),
-  });
-  if (entered === undefined) entered = defaultValue;
-  else if (typeof entered === 'number') entered = `${entered}`;
-  else if (typeof entered === 'string') entered = entered;
-  else entered = entered.join(',');
-  return entered;
-}
 
 // Add any additional hooks if necessary
 Hooks.once('devModeReady', ({ registerPackageDebugFlag }: DevModeApi): void => {
