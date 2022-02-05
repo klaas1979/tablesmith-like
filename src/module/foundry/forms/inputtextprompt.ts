@@ -1,5 +1,5 @@
-import { getGame } from './helper';
-import { Logger } from './logger';
+import { getGame } from '../helper';
+import { Logger } from '../logger';
 
 /**
  * Dialog that prompts for user input.

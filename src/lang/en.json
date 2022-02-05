@@ -2,6 +2,7 @@
   "TABLESMITH": {
     "default-folder": "Default",
     "evaluation-form": "Tablesmith - Evaluation",
+    "parameter-input": "Tablesmith - Parameter input",
     "evaluate-table": "Evaluate",
     "input-text": "Text Input",
     "reload-tables": "Reload Tables",

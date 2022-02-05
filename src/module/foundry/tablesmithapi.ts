@@ -2,9 +2,9 @@ import JournalTables from './journaltables';
 import { tablesmith } from '../tablesmith/tablesmithinstance';
 import { Logger } from './logger';
 import { TableCallValues } from './tablecallvalues';
-import TableSelectionForm from './tableselectionform';
+import TableSelectionForm from './forms/tableselectionform';
 import ChatResults from './chatresults';
-import { displayTableParseErrors } from './displayparseerrors';
+import { displayTableParseErrors } from './forms/displayparseerrors';
 export default class TablesmithApi {
   constructor() {
     JournalTables.loadTablesFromJournal();

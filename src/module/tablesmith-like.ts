@@ -32,7 +32,7 @@ import { Logger, DevModeApi, LOG_LEVEL } from './foundry/logger';
 import TablesmithApi from './foundry/tablesmithapi';
 import { wrapRollTable } from './rolltable-wrapper';
 import { tablesmith } from './tablesmith/tablesmithinstance';
-import { promptForInputText } from './foundry/inputtextprompt';
+import { promptForInputText } from './foundry/forms/inputtextprompt';
 
 // Initialize module
 Hooks.once('init', async () => {

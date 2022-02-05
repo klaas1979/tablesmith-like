@@ -1,5 +1,5 @@
-import { getGame } from './helper';
-import JournalTables from './journaltables';
+import { getGame } from '../helper';
+import JournalTables from '../journaltables';
 
 /**
  * Dialog that displays all encountered parse errors.
