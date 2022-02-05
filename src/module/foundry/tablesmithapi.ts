@@ -4,16 +4,29 @@ import { Logger } from './logger';
 import { TableCallValues } from './tablecallvalues';
 import TableSelectionForm from './tableselectionform';
 import ChatResults from './chatresults';
+import { displayTableParseErrors } from './displayparseerrors';
 export default class TablesmithApi {
   constructor() {
     JournalTables.loadTablesFromJournal();
   }
 
   /**
-   * Reloads all tables and deletes table that has been removed.
+   * Reloads all tables and deletes table that has been removed, if errors are encountered and options
+   * set the Errors are displayed in a Dialog for inspection.
+   * @param options for reloading tables.
+   * @param options.showErrors boolean indicating of errors on reload should be displayed va dialog, defaults
+   * to true.
    */
-  reloadTables(): void {
-    JournalTables.reloadTablesFromJournal();
+  reloadTables(options: { showErrors: boolean } = { showErrors: true }): void {
+    const errors = JournalTables.reloadTablesFromJournal();
+    if (options.showErrors && errors.length > 0) this.displayTableParseErrors();
+  }
+
+  /**
+   * Shows a Dialog with all encountered Table parse errors.
+   */
+  displayTableParseErrors(): void {
+    displayTableParseErrors();
   }
 
   /**

@@ -2,6 +2,7 @@ import { tablesmith } from '../tablesmith/tablesmithinstance';
 import { TableParameter, TSTable } from '../tablesmith/tstable';
 import { tstables } from '../tablesmith/tstables';
 import ChatResults from './chatresults';
+import { displayTableParseErrors } from './displayparseerrors';
 import { getGame, TABLESMITH_ID } from './helper';
 import JournalTables from './journaltables';
 import { Logger } from './logger';
@@ -197,8 +198,9 @@ export default class TableSelectionForm extends FormApplication<TableSelectionOp
   }
 
   _reloadTables() {
-    JournalTables.reloadTablesFromJournal();
+    const errors = JournalTables.reloadTablesFromJournal();
     this.render();
-    ui.notifications?.info(getGame().i18n.localize('TABLESMITH.tables-reloaded'));
+    if (errors.length > 0) displayTableParseErrors();
+    else ui.notifications?.info(getGame().i18n.localize('TABLESMITH.tables-reloaded'));
   }
 }

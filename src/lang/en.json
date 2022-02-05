@@ -6,6 +6,8 @@
     "input-text": "Text Input",
     "reload-tables": "Reload Tables",
     "tables-reloaded": "Tables have been reloaded!",
+    "parse-errors": "Table parse errors",
+    "no-parse-errors": "No errors parsing tables!",
     "rollcount": "Number of rolls",
     "chatresults": "Add Results to Chat",
     "result": "Result",
