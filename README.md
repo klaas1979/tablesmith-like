@@ -104,7 +104,7 @@ Tables are created as Journal entries. Journal entries provide an easy way to ad
 
 ### Loaded tables
 
-All Journal entries where there name ends with `.tab` are loaded. The resulting name is omitting the extension, i.e. `Monsters.tab` results in the Table name `Monsters`, not that Tablenames are case insensitive so the table `simple`and `Simple` 
+All Journal entries where there name ends with `.tab` are loaded. The resulting name is omitting the extension, i.e. `Monsters.tab` results in the Table name `Monsters`, not that Tablenames are case insensitive so the table `simple`and `Simple` are the same and will overwrite each other.
 Each table is placed in a folder named after the folder they are contained in. If a table is in no folder it is placed in a `Default` folder.
 
 ### Tables in different Journals or Folders
