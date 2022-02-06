@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/klaas1979/tablesmith-like/compare/v1.0.0...v1.1.0) (2022-02-06)
+
+
+### Features
+
+* better InputText dialog on close default value is used. ([87fe76c](https://github.com/klaas1979/tablesmith-like/commit/87fe76c43233afdc80101a3017f2e079d3822a84))
+* InputText initial version with Prompt to gather User Input. ([83c6875](https://github.com/klaas1979/tablesmith-like/commit/83c6875b7a4b76e5e9e4baae49729f132fd12e5b))
+* Parameter Input for tables called from RollTable results is gathered via a Form. If all parametes have been provided, no Dialogform is displayed. ([3e16d9b](https://github.com/klaas1979/tablesmith-like/commit/3e16d9bf809c9f1d631cc97b711f0ae5b5414327))
+* Table parsing errors are stored and displayed on reload or via API ([f29c8bd](https://github.com/klaas1979/tablesmith-like/commit/f29c8bdab2e8a265710eee2faff6472ef364c73d))
+* Tablesmith Chat commands added '/ts' and '/tablesmith' ([562d4de](https://github.com/klaas1979/tablesmith-like/commit/562d4dec209a979a243a41b2c3f0a104c10f7b58))
+
+
+### Bug Fixes
+
+* Download links and module links broken ([#1](https://github.com/klaas1979/tablesmith-like/issues/1)) ([a2b6a35](https://github.com/klaas1979/tablesmith-like/commit/a2b6a3549a5f7f82e489f5f0e0e82693aa3605ca))
+* Results chats result with correctly created ID -> can be deleted etc. ([da8bf35](https://github.com/klaas1979/tablesmith-like/commit/da8bf35fbe9ac94803172e1c14d99b0638b44a78))
+
 ## 1.0.0 (2022-01-31)
 
 
