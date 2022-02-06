@@ -37,7 +37,9 @@ export class TableCallValues {
     let result = false;
     if (this.table) {
       const numParams = this.table.parameters.length;
-      result = (numParams > 0 && this.parameters == null) || numParams != this.parameters?.length;
+      if (numParams > 0) {
+        result = this.parameters == null || this.parameters?.length !== numParams;
+      }
     }
     Logger.debug(false, 'needsParameters', result);
     return result;
