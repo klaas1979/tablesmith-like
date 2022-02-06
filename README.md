@@ -316,11 +316,12 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 
 ### Interface
 
+- InputText (Input a value from the user, showing a prompt)
+
 **Not implemented:**
 
 - Generate (Generation link)
 - InputList (Input a list option from the user)
-- InputText (Input a value from the user)
 - Iteration (Get the current roll the table is on)
 - Msg (Message box)
 - Note (Notation)
