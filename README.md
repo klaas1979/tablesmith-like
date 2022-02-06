@@ -11,14 +11,16 @@ Tablesmith is useful for Character and NPC generation, Solo play, generating Enc
 ## Table of Contents <!-- omit in TOC -->
 
 - [Foundry integration](#foundry-integration)
-  - [API](#api)
+  - [Call Syntax](#call-syntax)
   - [Foundry Table integration](#foundry-table-integration)
   - [Tablesmith Form](#tablesmith-form)
-  - [Via Macro](#via-macro)
-  - [Tablesmith Tables](#tablesmith-tables)
-    - [Loaded tables](#loaded-tables)
-    - [Tables in different Journals or Folders](#tables-in-different-journals-or-folders)
-    - [Formatting Tips for Journal Tables](#formatting-tips-for-journal-tables)
+  - [Macro](#macro)
+  - [Chat Commands](#chat-commands)
+  - [API](#api)
+- [Tablesmith Tables](#tablesmith-tables)
+  - [Loaded tables](#loaded-tables)
+  - [Tables in different Journals or Folders](#tables-in-different-journals-or-folders)
+  - [Formatting Tips for Journal Tables](#formatting-tips-for-journal-tables)
 - [Implemented Tablesmith Features](#implemented-tablesmith-features)
   - [Groups](#groups)
     - [Splitting Group Entries / Ranges](#splitting-group-entries--ranges)
@@ -53,23 +55,20 @@ Tablesmith is useful for Character and NPC generation, Solo play, generating Enc
 
 Basically Tablesmith Tables can be used in the following ways:
 
-1. **API** that is exposed on the module.
-2. A **Group Call expression within a Table Result** of type text, that is dynamically evaluated.
-3. With the **Tablesmith form** to select Tables and roll on them.
+1. A **Group Call expression within a Table Result** of type text, that is dynamically evaluated.
+2. With the **Tablesmith form** to select Tables and roll on them.
+3. Using Chat commands `/ts` or `/tablesmith`.
+4. **API** that is exposed on the module.
 
-### API
+### Call Syntax
 
-The main method to use in the API is `evaluateTable(expression: string)` where the expression is a valid Table call, that may donate the Group to call, define Parameters and the roll count. I.e. `evaluateTable('[Char.name(1,name)]:5')`.
-
-### Foundry Table integration
-
-Any standard Table can call a Tablesmith table by using the Tablesmith Call syntax without any other text as *Result Details*, i.e. `[Simple(1,2)]:2` would call the table `Simple`, two times (`:2`), setting the first parameter to `1` and the second to `2`. The syntax is:
+For all calls the tablename is not case sensitive for convenience. The following is all equal to find a table: `Simple`, `simple`, `SIMPLE`, `sImPle`, and so on. The call `[Simple(1,2)]:2` draws from the table `Simple`, two times (`:2`), setting the first parameter to `1` and the second to `2`. The syntax is:
 
 ```tab
 # Minimal call, defaults to Group 'Start'
 [Tablename]
 
-# Call other Group
+# Call to other Group
 [Tablename.Groupname]
 
 # Call to table with params
@@ -79,30 +78,40 @@ Any standard Table can call a Tablesmith table by using the Tablesmith Call synt
 [Tablename.Groupname(params)]:times
 ```
 
-Only the chat message is altered and the call value is replaced with a rolled Tablesmith result. The `RollTable.draw` return value is left as is and contains the original data.
+### Foundry Table integration
+
+Any standard Table can call a Tablesmith table by using the Tablesmith Call syntax without any other text as *Result Details*. Only the chat message is altered and the call value is replaced with a rolled Tablesmith result. The `RollTable.draw` return value is left as is and contains the original data.
 
 ### Tablesmith Form
 
-One macro within the added compendium opens the Tablesmith Form, where all loaded tables can be called.
+One macro contained within the added compendium opens the Tablesmith Form, where all loaded tables can be called.
 
-### Via Macro
+### Macro
 
 The module adds a compendium with simple macros to demonstrate the usage of the API within a Macro.
 
-### Tablesmith Tables
+### Chat Commands
+
+The chat commands `ts` and `tablesmith` can be used to call a table directly by using the standard call syntax as parameter. The enclosing brackets `[]` can be ommitted for convenience.
+
+### API
+
+The main method to use in the API is `evaluateTable(expression: string)` where the expression is a valid Table call, that may donate the Group to call, define Parameters and the roll count. I.e. `evaluateTable('[Char.name(1,name)]:5')`.
+
+## Tablesmith Tables
 
 Tables are created as Journal entries. Journal entries provide an easy way to add and edit a long text document, as needed.
 
-#### Loaded tables
+### Loaded tables
 
-All Journal entries where there name ends with `.tab` are loaded. The resulting name is omitting the extension, i.e. `Monsters.tab` results in the Table name `Monsters`.
+All Journal entries where there name ends with `.tab` are loaded. The resulting name is omitting the extension, i.e. `Monsters.tab` results in the Table name `Monsters`, not that Tablenames are case insensitive so the table `simple`and `Simple` 
 Each table is placed in a folder named after the folder they are contained in. If a table is in no folder it is placed in a `Default` folder.
 
-#### Tables in different Journals or Folders
+### Tables in different Journals or Folders
 
 Note that the tablename must be unique over all folders and journals as of now.
 
-#### Formatting Tips for Journal Tables
+### Formatting Tips for Journal Tables
 
 For long tables it is recommended to use `SHIFT+Enter` instead of `Enter` to save some space. This is purely cosmetic, the parser has no problem with mixed newlines.
 

@@ -67,6 +67,7 @@ class Tablesmith {
     tableCallValues.table = this.tableForName(tableCallValues.tablename);
     if (!tableCallValues.table)
       throw Error(`TSTable for name='${tableCallValues.tablename}' not defined! Expression was '${call}'`);
+    tableCallValues.tablename = tableCallValues.table.name; // ensure correct case
     tableCallValues.group = tableCallValues.table.groupForName(tableCallValues.groupname);
     return tableCallValues;
   }

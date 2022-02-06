@@ -5,6 +5,7 @@ import { TableCallValues } from './tablecallvalues';
 import TableSelectionForm from './forms/tableselectionform';
 import ChatResults from './chatresults';
 import { displayTableParseErrors } from './forms/displayparseerrors';
+import ParamInputForm from './forms/paraminputform';
 export default class TablesmithApi {
   constructor() {
     JournalTables.loadTablesFromJournal();
@@ -59,18 +60,39 @@ export default class TablesmithApi {
    * Evaluates / rolls on given Tablesmith Table and posts result to chat.
    * @param call of table to evaluate, may be a call expression or a already parsed
    * TableCallValues object.
-   * @param chatResults defaults to true, boolean value if results should be added to chat.
+   * @param options Options object for evaluation.
+   * @param options.chatResults defaults to true, boolean value if results should be added to chat.
+   * @param options.lenient defaults to false, should the evaluation try to create a valid expression
+   * by fixing standard errors?.
    */
-  async evaluateTable(call: TableCallValues | string, chatResults = true): Promise<string | string[]> {
+  async evaluateTable(
+    call: TableCallValues | string,
+    options: { chatResults?: boolean; lenient?: boolean } = { chatResults: true, lenient: false },
+  ): Promise<string | string[]> {
+    if (options.lenient && typeof call === 'string') call = this.enhanceCall(call);
     let result: string | string[] = '';
     const callValues = this.parseEvaluateCall(call);
     if (callValues) {
-      result = await tablesmith.evaluate(call);
+      const submitted = await ParamInputForm.gather(callValues);
+      if (!submitted)
+        Logger.warn(false, 'Gathering Parameters Form for Table closed, using default parameters!', callValues);
+      result = await tablesmith.evaluate(callValues);
       Logger.debug(false, 'Result for', callValues, result);
-      if (chatResults) {
+      if (options.chatResults) {
         new ChatResults().chatResults(callValues, result);
       }
     }
     return result;
+  }
+
+  /**
+   * Fixes common call syntax errors to potentially fix an invalid call.
+   * @param call to enhance to valid syntax.
+   * @returns Enhanced call object.
+   */
+  private enhanceCall(call: string): string {
+    call = call.trim();
+    if (call[0] != '[') call = `[${call}]`; // wrap in Tablesmith call brackets if needed
+    return call;
   }
 }

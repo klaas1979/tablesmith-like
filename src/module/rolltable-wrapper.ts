@@ -1,4 +1,3 @@
-import ParamInputForm from './foundry/forms/paraminputform';
 import { getTablesmithApi, TABLESMITH_ID } from './foundry/helper';
 import { Logger } from './foundry/logger';
 import { libWrapper } from './foundry/shims/libwrappershim';
@@ -36,10 +35,8 @@ async function rollTableDrawWrapper(
       const tableCallValues = getTablesmithApi().parseEvaluateCall(text);
       if (tableCallValues) {
         Logger.debug(false, 'tableCallValues', tableCallValues);
-        const submitted = await ParamInputForm.gather(tableCallValues);
-        const tsResult = await getTablesmithApi().evaluateTable(tableCallValues);
+        const tsResult = await getTablesmithApi().evaluateTable(tableCallValues, { chatResults: false });
         storeResult(text, tsResult);
-        if (!submitted) Logger.warn(false, 'Parameter input aborted, default parameter used', tableCallValues);
       }
     }
     const rollMode = options.rollMode;

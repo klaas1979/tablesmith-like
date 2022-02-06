@@ -33,6 +33,7 @@ import TablesmithApi from './foundry/tablesmithapi';
 import { wrapRollTable } from './rolltable-wrapper';
 import { tablesmith } from './tablesmith/tablesmithinstance';
 import { promptForInputText } from './foundry/forms/inputtextprompt';
+import ChatCommands from './foundry/chatcommands';
 
 // Initialize module
 Hooks.once('init', async () => {
@@ -69,3 +70,6 @@ Hooks.once('ready', async () => {
 Hooks.once('devModeReady', ({ registerPackageDebugFlag }: DevModeApi): void => {
   registerPackageDebugFlag(TABLESMITH_ID, 'level', { default: LOG_LEVEL.INFO });
 });
+
+// Add the Chat commands for Tablesmith
+Hooks.on('chatMessage', ChatCommands.process);

@@ -18,12 +18,25 @@ class TSTables {
     this.tables = [];
   }
   /**
-   * Adds table to this collection.
+   * Adds table to this collection, removes existing instance for same name case insensitive.
+   * @param table to add.
    */
   addTable(table: TSTable): void {
+    this.deleteForName(table.name);
     this.tables.push(table);
     this.tables.sort((a, b) => a.name.localeCompare(b.name));
     this.addFolder(table.folder);
+  }
+
+  /**
+   * Deletes table for name ignoring case, if it exists.
+   * @param name of table to delete.
+   */
+  deleteForName(name: string): void {
+    const existingIndex = this.tables.findIndex((table) => {
+      table.name.toLowerCase() === name.toLowerCase();
+    });
+    if (existingIndex >= 0) this.tables.splice(existingIndex, 1);
   }
 
   /**
@@ -38,12 +51,13 @@ class TSTables {
   }
 
   /**
-   * Searches table with given name and returns it.
-   * @param name of table to retrieve.
+   * Searches table with given name and returns it, ignoring case.
+   * @param name of table to retrieve, ignoring case.
    * @returns Table for name or undefined if no table was found.
    */
   tableForName(name: string): TSTable | undefined {
-    return this.tables.find((current) => current.getName() === name);
+    name = name.toLowerCase();
+    return this.tables.find((current) => current.getName().toLowerCase() === name);
   }
 
   /**
