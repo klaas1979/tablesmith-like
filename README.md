@@ -271,7 +271,7 @@ No pre generation directives are implemented.
 
 ## Tablesmith functions
 
-The list below is grouped in line with the Tablesmith documentation and shows all implemented or not yet implemented functions that can be used. For a more in depth documentation see the Tablesmith documentation linked on the Tablesmith Homepage.
+The list below is grouped in line with the Tablesmith documentation and shows all implemented or not yet implemented functions that can be used. For a more in depth documentation see the Tablesmith documentation linked on the Tablesmith Homepage. All additional documentation about Tablesmith functions is derived or copied based on the [Tablesmith Documention by Bruce Gulke](http://www.mythosa.net/p/tablesmith.html). See the [downloadable documentation](https://www.dropbox.com/s/q9j207pszvm9fqu/TSHelp.html?dl=0).
 
 ### Conditional
 
@@ -411,5 +411,7 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 ## Licensing
 
 [![License](https://img.shields.io/badge/License-MIT-blue)](https://github.com/klaas1979/tablesmith-like/blob/main/LICENSE.txt)
+
+The **documentation** contains parts that are **not** licensed under MIT. These parts are copied and adapted from the [documentation of Bruce Gulke](http://www.mythosa.net/p/tablesmith.html) who gave the right to include the documentation within this project, granting no other rights as long as he and his work is referenced.
 
 This work is licensed under Foundry Virtual Tabletop [EULA - Limited License Agreement for module development](https://foundryvtt.com/article/license/).
