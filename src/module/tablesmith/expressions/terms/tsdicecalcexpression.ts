@@ -1,5 +1,6 @@
+import EvaluationContext from '../evaluationcontext';
 import TSExpression, { BaseTSExpression } from '../tsexpression';
-import { TSExpressionResult, SingleTSExpressionResult } from '../tsexpressionresult';
+import { TSExpressionResult } from '../tsexpressionresult';
 
 export default class TSDiceCalcExpression extends BaseTSExpression {
   functionName: string;
@@ -12,7 +13,7 @@ export default class TSDiceCalcExpression extends BaseTSExpression {
   getExpression(): string {
     return `{${this.functionName}~${this.innerTerm.getExpression()}}`;
   }
-  async evaluate(): Promise<TSExpressionResult> {
-    return this.innerTerm.evaluate();
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
+    return this.innerTerm.evaluate(evalcontext);
   }
 }

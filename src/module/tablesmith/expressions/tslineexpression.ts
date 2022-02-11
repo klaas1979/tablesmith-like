@@ -1,3 +1,4 @@
+import EvaluationContext from './evaluationcontext';
 import TSExpression, { BaseTSExpression } from './tsexpression';
 import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
@@ -13,22 +14,22 @@ export default class TSLineExpression extends BaseTSExpression {
     this.alignExpression = alignExpression;
     this.widthExpression = widthExpression;
   }
-  async evaluate(): Promise<TSExpressionResult> {
-    this.evaluateAlign();
-    this.evaluateWidth();
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
+    this.evaluateAlign(evalcontext);
+    this.evaluateWidth(evalcontext);
     return new SingleTSExpressionResult(`<br/>`);
   }
 
-  private async evaluateAlign(): Promise<string> {
-    const align = (await this.alignExpression.evaluate()).trim();
+  private async evaluateAlign(evalcontext: EvaluationContext): Promise<string> {
+    const align = (await this.alignExpression.evaluate(evalcontext)).trim();
     const allowed = ['left', 'center', 'right'];
     if (!allowed.includes(align.toLowerCase()))
       throw Error(`Align was '${align}', allowed values '${allowed.join(',')}'`);
     return align;
   }
 
-  private async evaluateWidth() {
-    return (await this.widthExpression.evaluate()).asInt();
+  private async evaluateWidth(evalcontext: EvaluationContext) {
+    return (await this.widthExpression.evaluate(evalcontext)).asInt();
   }
 
   getExpression(): string {

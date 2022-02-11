@@ -1,3 +1,4 @@
+import EvaluationContext from '../evaluationcontext';
 import TSExpression, { BaseTSExpression } from '../tsexpression';
 import { TSExpressionResult, SingleTSExpressionResult } from '../tsexpressionresult';
 import TermCalc from './termcalc';
@@ -29,11 +30,11 @@ export class BaseMathTerm extends BaseTSExpression {
    * @param evalcontext Roll support class to get random results.
    * @returns TermResult with math value and representation of calculation.
    */
-  async evaluate(): Promise<TSExpressionResult> {
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
     {
       if (!this.termCalc) throw Error('TermCalc not defined, cannot roll for result!');
-      const aResult = await this.termA.evaluate(),
-        bResult = await this.termB.evaluate();
+      const aResult = await this.termA.evaluate(evalcontext),
+        bResult = await this.termB.evaluate(evalcontext);
       return new SingleTSExpressionResult(this.termCalc.calc(aResult.asNumber(), bResult.asNumber()));
     }
   }

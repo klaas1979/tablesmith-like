@@ -1,3 +1,4 @@
+import EvaluationContext from './evaluationcontext';
 import { BaseTSExpression } from './tsexpression';
 import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 import TSExpressions from './tsexpressions';
@@ -11,8 +12,8 @@ export default class TSBoldExpression extends BaseTSExpression {
     super();
     this.expressions = expressions;
   }
-  async evaluate(): Promise<TSExpressionResult> {
-    const result = await this.expressions.evaluate();
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
+    const result = await this.expressions.evaluate(evalcontext);
     return new SingleTSExpressionResult(`<b>${result.asString()}</b>`);
   }
   getExpression(): string {

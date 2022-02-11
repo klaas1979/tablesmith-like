@@ -1,4 +1,4 @@
-import { evalcontext } from './expressions/evaluationcontextinstance';
+import EvaluationContext from './expressions/evaluationcontext';
 import TSGroup from './tsgroup';
 
 export const enum TableParameterType {
@@ -202,19 +202,24 @@ export class TSTable {
 
   /**
    * Sets parameters to given values for evaluation.
+   * @param context the EvaluationContext to set parameters to.
    * @param params to set for evaluation.
    */
-  setParametersForEvaluationByName(params: { name: string; value: string | undefined }[]): void {
+  setParametersForEvaluationByName(
+    context: EvaluationContext,
+    params: { name: string; value: string | undefined }[],
+  ): void {
     for (const param of params) {
-      this.setVariableInEvalContext(param.name, param.value);
+      context.assignVar(this.name, param.name, param.value);
     }
   }
 
   /**
    * Sets parameters to given values for evaluation by index.
+   * @param context the EvaluationContext to set parameters to.
    * @param params to set for evaluation.
    */
-  setParametersForEvaluationByIndex(params: string[]): void {
+  setParametersForEvaluationByIndex(context: EvaluationContext, params: string[]): void {
     if (params.length > 0) {
       if (this.parameters.length != params.length)
         throw Error(
@@ -225,7 +230,7 @@ export class TSTable {
       const clone = [...params].reverse();
       for (const parameter of this.parameters) {
         const value = clone.pop();
-        if (value) this.setVariableInEvalContext(parameter.variable, value);
+        if (value) context.assignVar(this.name, parameter.variable, value);
       }
     }
   }
@@ -237,16 +242,6 @@ export class TSTable {
    */
   declareVariable(variablename: string, value: string | undefined) {
     this.variables.push({ name: variablename, value: value });
-    this.setVariableInEvalContext(variablename, value);
-  }
-
-  /**
-   * Sets variable in Evalcontext to given value.
-   * @param variablename to set for this table.
-   * @param value to set to variable.
-   */
-  private setVariableInEvalContext(variablename: string, value: string | undefined) {
-    evalcontext.assignVar(this.name, variablename, value);
   }
 
   /**
@@ -266,9 +261,9 @@ export class TSTable {
   /**
    * Resets the evaluationcontext to be ready for a new evaluation of this table.
    */
-  resetEvaluationContext(): void {
+  prepareEvaluationContext(context: EvaluationContext): void {
     this.variables.forEach((tuple) => {
-      this.setVariableInEvalContext(tuple.name, tuple.value);
+      context.assignVar(this.name, tuple.name, tuple.value);
     });
 
     this.groups.forEach((group) => {

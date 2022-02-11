@@ -1,4 +1,5 @@
 import { tstables } from '../tstables';
+import EvaluationContext from './evaluationcontext';
 import TSExpression, { BaseTSExpression } from './tsexpression';
 import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
@@ -13,8 +14,8 @@ export default class TSGroupResetExpression extends BaseTSExpression {
     this.tablename = tablename;
     this.groupExpression = groupExpression;
   }
-  async evaluate(): Promise<TSExpressionResult> {
-    const groupname = (await this.groupExpression.evaluate()).trim();
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
+    const groupname = (await this.groupExpression.evaluate(evalcontext)).trim();
     const group = tstables.tableForName(this.tablename)?.groupForName(groupname);
     if (!group) throw Error(`Cannot reset group '${groupname}' in table '${this.tablename}', not defined!`);
     group.reset();

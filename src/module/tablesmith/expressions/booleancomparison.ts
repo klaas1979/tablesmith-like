@@ -1,3 +1,4 @@
+import EvaluationContext from './evaluationcontext';
 import { BaseTSExpression } from './tsexpression';
 import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 import TSExpressions from './tsexpressions';
@@ -16,11 +17,11 @@ export default class BooleanComparison extends BaseTSExpression {
     this.ifExpression2 = ifExpression2;
   }
 
-  async evaluate(): Promise<TSExpressionResult> {
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
     let boolResult;
     try {
-      const e1 = (await this.ifExpression1.evaluate()).asString(),
-        e2 = (await this.ifExpression2.evaluate()).asString();
+      const e1 = (await this.ifExpression1.evaluate(evalcontext)).asString(),
+        e2 = (await this.ifExpression2.evaluate(evalcontext)).asString();
       switch (this.operator) {
         case '=':
           boolResult = e1 == e2;

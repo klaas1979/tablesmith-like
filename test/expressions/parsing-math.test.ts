@@ -1,13 +1,16 @@
+import EvaluationContext from '../../src/module/tablesmith/expressions/evaluationcontext';
 import { tablesmith } from '../../src/module/tablesmith/tablesmithinstance';
 import { tstables } from '../../src/module/tablesmith/tstables';
 
 let filename: string;
 let simpleTable: string;
+let evalcontext: EvaluationContext;
 
 describe('Parsing {Calc~} and {Dice~} allowed parts', () => {
   beforeEach(() => {
     tablesmith.reset();
     filename = 'simpletable';
+    evalcontext = new EvaluationContext();
   });
 
   it('~[num]d[num] group call as Term', () => {
@@ -85,7 +88,7 @@ describe('Parsing nested Math in Dice~ or Calc~', () => {
     tablesmith.addTable('folder', filename, simpleTable);
     const term = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
     expect(term).toBe('{Dice~{Dice~3d1}d{Dice~1d1}}');
-    const total = await tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.evaluate();
+    const total = await tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.evaluate(evalcontext);
     expect(total?.asString()).toBe('3');
   });
 
@@ -94,7 +97,7 @@ describe('Parsing nested Math in Dice~ or Calc~', () => {
     tablesmith.addTable('folder', filename, simpleTable);
     const term = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
     expect(term).toBe('{Dice~{Dice~3d1}d{Dice~1d1}}');
-    const total = await tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.evaluate();
+    const total = await tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.evaluate(evalcontext);
     expect(total?.asString()).toBe('3');
   });
 });

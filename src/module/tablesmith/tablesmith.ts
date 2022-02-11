@@ -1,6 +1,5 @@
 import { TSTable } from './tstable';
 import TSParserFactory from './parser/tsparserfactory';
-import { evalcontext } from './expressions/evaluationcontextinstance';
 import GroupCallModifierTerm from './expressions/terms/groupcallmodifierterm';
 import { tstables } from './tstables';
 import { tableparser } from './parser/tableparser';
@@ -8,6 +7,9 @@ import { callparser } from './parser/callparser';
 import { html2text } from './parser/html2text';
 import { TableCallValues } from '../foundry/tablecallvalues';
 import CallResult from './callresult';
+import EvaluationContext from './expressions/evaluationcontext';
+
+type InputListCallback = (prompt: string, defaultValue: string) => Promise<string>;
 
 /**
  * The Tablesmith class to setup the Tablesmith environment, contains all parsed tables and provides needed functionality
@@ -15,6 +17,7 @@ import CallResult from './callresult';
  */
 class Tablesmith {
   evaluateTable: TSTable | undefined;
+  inputTextCallback: InputListCallback | undefined;
 
   /**
    * Resets to instance without parsed tables, normally only needed for testing purpose.
@@ -43,13 +46,12 @@ class Tablesmith {
       const modifier = GroupCallModifierTerm.create(tableCallValues.modifier, tableCallValues.modifierValue);
       const result = new CallResult(tableCallValues);
       for (let count = 0; count < tableCallValues.rollCount; count++) {
-        this.resetEvaluationContext();
+        const evalcontext = this.createEvaluationContext();
         evalcontext.pushCurrentCallTablename(tableCallValues.tablename);
         if (tableCallValues.parameters)
-          tableCallValues.table?.setParametersForEvaluationByIndex(tableCallValues.parameters);
-        tableCallValues.table?.setParametersForEvaluationByName(parameters);
-        result.push(await tableCallValues.group.roll(modifier));
-        evalcontext.popCurrentCallTablename();
+          tableCallValues.table?.setParametersForEvaluationByIndex(evalcontext, tableCallValues.parameters);
+        tableCallValues.table?.setParametersForEvaluationByName(evalcontext, parameters);
+        result.push(evalcontext, await tableCallValues.group.roll(evalcontext, modifier));
       }
       return result;
     } catch (error) {
@@ -86,10 +88,14 @@ class Tablesmith {
   }
 
   /**
-   * Resets the EvaluationContext for all tables.
+   * Creates a new EvaluationContext for all tables.
+   * @returns EvaluationContext prepared context.
    */
-  resetEvaluationContext() {
-    tstables.resetEvaluationContext();
+  createEvaluationContext(): EvaluationContext {
+    const context = new EvaluationContext();
+    tstables.prepareEvaluationContext(context);
+    if (this.inputTextCallback) context.registerInputTextCallback(this.inputTextCallback);
+    return context;
   }
 
   /**
@@ -133,8 +139,8 @@ class Tablesmith {
    * Registers the async callback function for InputText.
    * @param callback to register as external input function, if a TS InputList is encountered.
    */
-  registerInputTextCallback(callback: (prompt: string, defaultValue: string) => Promise<string>): void {
-    evalcontext.registerInputTextCallback(callback);
+  registerInputTextCallback(callback: InputListCallback): void {
+    this.inputTextCallback = callback;
   }
 }
 

@@ -1,3 +1,4 @@
+import EvaluationContext from './evaluationcontext';
 import TSExpression, { BaseTSExpression } from './tsexpression';
 import { TSExpressionResult, TSExpressionResultCollection } from './tsexpressionresult';
 
@@ -14,12 +15,13 @@ export default class TSExpressions extends BaseTSExpression {
 
   /**
    * Gets text result for this expressions.
+   * @param evalcontext the EvaluationContext to use.
    * @returns string resulting text, for evaluating all expressions contained.
    */
-  async evaluate(): Promise<TSExpressionResult> {
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
     const resultCollection = new TSExpressionResultCollection();
     for (const expression of this.expressions) {
-      const subResult = await expression.evaluate();
+      const subResult = await expression.evaluate(evalcontext);
       resultCollection.addResult(subResult);
     }
     return resultCollection.condense();

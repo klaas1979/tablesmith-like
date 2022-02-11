@@ -1,3 +1,4 @@
+import EvaluationContext from './evaluationcontext';
 import TSExpression, { BaseTSExpression } from './tsexpression';
 import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
@@ -10,8 +11,8 @@ export default class TSMathTruncExpression extends BaseTSExpression {
     super();
     this.param = param;
   }
-  async evaluate(): Promise<TSExpressionResult> {
-    const valueString = (await this.param.evaluate()).asString();
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
+    const valueString = (await this.param.evaluate(evalcontext)).asString();
     const value = Number.parseInt(valueString);
     if (Number.isNaN(value)) throw Error(`Could not get Trunc for non number value '${valueString}'!`);
     return new SingleTSExpressionResult(value);

@@ -1,4 +1,5 @@
 import { tstables } from '../tstables';
+import EvaluationContext from './evaluationcontext';
 import TSExpression, { BaseTSExpression } from './tsexpression';
 import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
@@ -17,11 +18,11 @@ export default class TSGroupRangeValueExpression extends BaseTSExpression {
     this.groupExpression = groupExpression;
     this.rangeExpression = rangeExpression;
   }
-  async evaluate(): Promise<TSExpressionResult> {
-    const groupname = (await this.groupExpression.evaluate()).trim();
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
+    const groupname = (await this.groupExpression.evaluate(evalcontext)).trim();
     const group = tstables.tableForName(this.tablename)?.groupForName(groupname);
     if (!group) throw Error(`Cannot Count group '${groupname}' in table '${groupname}', not defined!`);
-    const rangeIndex = (await this.rangeExpression.evaluate()).asInt();
+    const rangeIndex = (await this.rangeExpression.evaluate(evalcontext)).asInt();
     if (rangeIndex <= 0 || group.getRanges().length < rangeIndex)
       throw Error(`Index for '${this.functionname}' out of bounds='${rangeIndex}'`);
     let result;

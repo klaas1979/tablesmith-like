@@ -1,3 +1,4 @@
+import TSGroup from '../tsgroup';
 import twist from './mersennetwister';
 
 /**
@@ -7,10 +8,32 @@ import twist from './mersennetwister';
 class EvaluationContext {
   variables: Map<string, Map<string, undefined | string | number>>;
   callTables: string[];
+  lastRolls: Map<TSGroup, number>;
   inputTextCallback: ((prompt: string, defaultValue: string) => Promise<string>) | undefined;
   constructor() {
     this.variables = new Map();
     this.callTables = [];
+    this.lastRolls = new Map();
+  }
+
+  /**
+   * Returns the last roll result.
+   * @param group to get last roll result for
+   * @returns number the last roll for given group.
+   */
+  getLastRoll(group: TSGroup): number {
+    const roll = this.lastRolls.get(group);
+    if (!roll) throw Error(`LastRoll for '${group.name}' not set!`);
+    return roll;
+  }
+
+  /**
+   * Returns the last roll result.
+   * @param group to get last roll result for
+   * @param roll number to set as last roll for given group.
+   */
+  setLastRoll(group: TSGroup, roll: number): void {
+    this.lastRolls.set(group, roll);
   }
 
   /**

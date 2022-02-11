@@ -1,4 +1,4 @@
-import { evalcontext } from './evaluationcontextinstance';
+import EvaluationContext from './evaluationcontext';
 import TSExpression, { BaseTSExpression } from './tsexpression';
 import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
@@ -15,9 +15,9 @@ export default class TSInputTextExpression extends BaseTSExpression {
     this.prompt = prompt;
   }
 
-  async evaluate(): Promise<TSExpressionResult> {
-    const prompt = (await this.prompt.evaluate()).asString().trim();
-    const value = (await this.defaultValue.evaluate()).asString().trim();
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
+    const prompt = (await this.prompt.evaluate(evalcontext)).asString().trim();
+    const value = (await this.defaultValue.evaluate(evalcontext)).asString().trim();
     const result = await evalcontext.promptForInputText(prompt, value);
     return new SingleTSExpressionResult(result);
   }

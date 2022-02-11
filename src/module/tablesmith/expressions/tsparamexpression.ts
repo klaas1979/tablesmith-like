@@ -1,4 +1,5 @@
 import { TableParameter } from '../tstable';
+import EvaluationContext from './evaluationcontext';
 import TSExpression, { BaseTSExpression } from './tsexpression';
 import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
@@ -17,9 +18,9 @@ export default class TSParamExpression extends BaseTSExpression {
     this.parameters = parameters;
   }
 
-  async evaluate(): Promise<TSExpressionResult> {
-    const variable = (await this.varExpression.evaluate()).asString().trim();
-    const index = await this.evaluateIndex();
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
+    const variable = (await this.varExpression.evaluate(evalcontext)).asString().trim();
+    const index = await this.evaluateIndex(evalcontext);
     const param = this.parameters.find((param) => {
       return param.variable == variable;
     });
@@ -31,8 +32,8 @@ export default class TSParamExpression extends BaseTSExpression {
     return new SingleTSExpressionResult(param.options[index - 1].value);
   }
 
-  private async evaluateIndex(): Promise<number> {
-    return (await this.indexExpression.evaluate()).asInt();
+  private async evaluateIndex(evalcontext: EvaluationContext): Promise<number> {
+    return (await this.indexExpression.evaluate(evalcontext)).asInt();
   }
 
   getExpression(): string {

@@ -1,3 +1,4 @@
+import EvaluationContext from './evaluationcontext';
 import TSExpression, { BaseTSExpression } from './tsexpression';
 import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
@@ -12,9 +13,9 @@ export default class TSMathModExpression extends BaseTSExpression {
     this.param1 = param1;
     this.param2 = param2;
   }
-  async evaluate(): Promise<TSExpressionResult> {
-    const value1 = (await this.param1.evaluate()).asNumber();
-    const value2 = (await this.param2.evaluate()).asNumber();
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
+    const value1 = (await this.param1.evaluate(evalcontext)).asNumber();
+    const value2 = (await this.param2.evaluate(evalcontext)).asNumber();
     return new SingleTSExpressionResult(value1 % value2);
   }
   getExpression(): string {

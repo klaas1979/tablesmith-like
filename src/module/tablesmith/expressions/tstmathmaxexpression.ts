@@ -1,3 +1,4 @@
+import EvaluationContext from './evaluationcontext';
 import TSExpression, { BaseTSExpression } from './tsexpression';
 import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
@@ -10,8 +11,8 @@ export default class TSMathMaxExpression extends BaseTSExpression {
     super();
     this.values = values;
   }
-  async evaluate(): Promise<TSExpressionResult> {
-    const nums = await Promise.all(this.values.map(async (value) => (await value.evaluate()).asNumber()));
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
+    const nums = await Promise.all(this.values.map(async (value) => (await value.evaluate(evalcontext)).asNumber()));
     return new SingleTSExpressionResult(Math.max(...nums));
   }
   getExpression(): string {

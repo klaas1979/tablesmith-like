@@ -1,3 +1,4 @@
+import EvaluationContext from './evaluationcontext';
 import TSExpression, { BaseTSExpression } from './tsexpression';
 import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
@@ -10,8 +11,8 @@ export default class TSMathSqrtExpression extends BaseTSExpression {
     super();
     this.param = param;
   }
-  async evaluate(): Promise<TSExpressionResult> {
-    const value = await this.param.evaluate();
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
+    const value = await this.param.evaluate(evalcontext);
     return new SingleTSExpressionResult(Math.sqrt(value.asNumber()));
   }
   getExpression(): string {

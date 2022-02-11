@@ -1,4 +1,5 @@
 import BooleanComparison from './booleancomparison';
+import EvaluationContext from './evaluationcontext';
 import { BaseTSExpression } from './tsexpression';
 import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 import TSExpressions from './tsexpressions';
@@ -23,9 +24,9 @@ export default class TSIfExpression extends BaseTSExpression {
     this.trueVal = trueVal;
     this.falseVal = falseVal;
   }
-  async evaluate(): Promise<TSExpressionResult> {
-    const boolResult = (await this.booleanComparision.evaluate()).asString();
-    const result = await (boolResult == '1' ? this.trueVal.evaluate() : this.falseVal.evaluate());
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
+    const boolResult = (await this.booleanComparision.evaluate(evalcontext)).asString();
+    const result = await (boolResult == '1' ? this.trueVal.evaluate(evalcontext) : this.falseVal.evaluate(evalcontext));
     return new SingleTSExpressionResult(result.asString());
   }
 

@@ -1,3 +1,4 @@
+import EvaluationContext from './evaluationcontext';
 import TSExpression, { BaseTSExpression } from './tsexpression';
 import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 import TSExpressions from './tsexpressions';
@@ -13,11 +14,11 @@ export default class TSLoopExpression extends BaseTSExpression {
     this.counterExpression = counterExpression;
     this.block = block;
   }
-  async evaluate(): Promise<TSExpressionResult> {
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
     let result = '';
-    const maxValue = (await this.counterExpression.evaluate()).asInt();
+    const maxValue = (await this.counterExpression.evaluate(evalcontext)).asInt();
     for (let i = 0; i < maxValue; i++) {
-      result += (await this.block.evaluate()).asString();
+      result += (await this.block.evaluate(evalcontext)).asString();
     }
     return new SingleTSExpressionResult(result);
   }

@@ -1,5 +1,5 @@
-import { evalcontext } from './evaluationcontextinstance';
 import GroupCallSplitter from './callsplitter';
+import EvaluationContext from './evaluationcontext';
 import TSExpression, { BaseTSExpression } from './tsexpression';
 import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
@@ -14,9 +14,9 @@ export default class TSVariableGetExpression extends BaseTSExpression {
     this.tableGroupExpression = tableGroupExpression;
   }
 
-  async evaluate(): Promise<TSExpressionResult> {
-    const evaluated = await this.tableGroupExpression.evaluate();
-    const splitted = GroupCallSplitter.forVariable().split(evaluated.asString());
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
+    const evaluated = await this.tableGroupExpression.evaluate(evalcontext);
+    const splitted = GroupCallSplitter.forVariable().split(evalcontext, evaluated.asString());
     return new SingleTSExpressionResult(`${evalcontext.getVar(splitted.tablename, splitted.variablename)}`);
   }
 

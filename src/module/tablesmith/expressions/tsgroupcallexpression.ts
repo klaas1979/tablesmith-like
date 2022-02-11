@@ -1,5 +1,4 @@
 import { tstables } from '../tstables';
-import { evalcontext } from './evaluationcontextinstance';
 import CallSplitter from './callsplitter';
 import GroupCallModifierTerm from './terms/groupcallmodifierterm';
 import InnerDiceTerm from './terms/innerdiceterm';
@@ -7,6 +6,7 @@ import IntTerm from './terms/intterm';
 import TSExpression, { BaseTSExpression } from './tsexpression';
 import TSExpressions from './tsexpressions';
 import { TSExpressionResult, RerollableTSExpressionResult } from './tsexpressionresult';
+import EvaluationContext from './evaluationcontext';
 
 /**
  * Expression to evaluate / roll on a tables group. If modifier is "=" set fixed result to true and add
@@ -30,29 +30,29 @@ export default class TSGroupCallExpression extends BaseTSExpression {
     this.groupCallModifier = groupCallModifier ? groupCallModifier : GroupCallModifierTerm.createUnmodified();
     this.params = params;
   }
-  async evaluate(): Promise<TSExpressionResult> {
-    const tableAndGroup = await this.tableAndGroupExpression.evaluate();
-    const splitted = CallSplitter.forGroup().split(tableAndGroup.asString());
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
+    const tableAndGroup = await this.tableAndGroupExpression.evaluate(evalcontext);
+    const splitted = CallSplitter.forGroup().split(evalcontext, tableAndGroup.asString());
     const tsTable = tstables.tableForName(splitted.tablename);
     if (!tsTable) throw Error(`Table '${splitted.tablename}' is not defined cannot evaluate!`);
     const tsGroup = tsTable.groupForName(splitted.variablename);
     if (!tsGroup) throw Error(`Group '${splitted.variablename}' is not defined cannot evaluate!`);
     const maxValue = tsGroup.getMaxValue();
     const innerDiceTerm = new InnerDiceTerm(new IntTerm(1), new IntTerm(maxValue));
-    const termResult = await this.groupCallModifier.modify(innerDiceTerm).evaluate();
+    const termResult = await this.groupCallModifier.modify(innerDiceTerm).evaluate(evalcontext);
 
     let evaledParams: string[] = [];
     if (this.params && this.params.length > 0)
       evaledParams = await Promise.all(
         this.params.map(async (p) => {
-          return (await p.evaluate()).asString();
+          return (await p.evaluate(evalcontext)).asString();
         }),
       );
     evalcontext.pushCurrentCallTablename(tsTable.name);
-    tsTable.setParametersForEvaluationByIndex(evaledParams);
-    const result = await tsGroup.result(termResult.asNumber());
+    tsTable.setParametersForEvaluationByIndex(evalcontext, evaledParams);
+    const result = await tsGroup.result(evalcontext, termResult.asNumber());
     evalcontext.popCurrentCallTablename();
-    return new RerollableTSExpressionResult(result, this.rerollable ? this : undefined);
+    return new RerollableTSExpressionResult(evalcontext, result, this.rerollable ? this : undefined);
   }
 
   getExpression(): string {

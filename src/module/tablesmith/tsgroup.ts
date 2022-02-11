@@ -1,3 +1,4 @@
+import EvaluationContext from './expressions/evaluationcontext';
 import GroupCallModifierTerm from './expressions/terms/groupcallmodifierterm';
 import InnerDiceTerm from './expressions/terms/innerdiceterm';
 import IntTerm from './expressions/terms/intterm';
@@ -27,7 +28,6 @@ class TSGroup {
   ranges: TSRange[];
   before: TSExpressions;
   after: TSExpressions;
-  lastRollTotal: number | undefined;
   constructor(name: string, rangeAsProbability: boolean, nonRepeating: boolean) {
     this.name = name;
     this.rangeAsProbabilty = rangeAsProbability;
@@ -73,9 +73,8 @@ class TSGroup {
    * Returns the last roll made on this group, or throws if not rolled and called.
    * @returns number that represents the LastRoll on this group.
    */
-  getLastRoll(): number {
-    if (!this.lastRollTotal) throw Error(`LastRoll not set for Group '${this.name}'`);
-    return this.lastRollTotal;
+  getLastRoll(evalcontext: EvaluationContext): number {
+    return evalcontext.getLastRoll(this);
   }
 
   /**
@@ -103,20 +102,21 @@ class TSGroup {
 
   /**
    * Rolls on this group using the provided modifier and returns the result.
+   * @param evalcontext EvaluationContext to use.
    * @param groupCallModifier to modify rolls with.
    */
-  async roll(groupCallModifier: GroupCallModifierTerm): Promise<TSExpressionResult> {
+  async roll(evalcontext: EvaluationContext, groupCallModifier: GroupCallModifierTerm): Promise<TSExpressionResult> {
     let result: TSExpressionResult | undefined = undefined;
     const roller = groupCallModifier.modify(this.rollTerm());
     for (let i = 0; result === undefined && i < this.ranges.length * 10; i++) {
-      const roll = await roller.evaluate();
+      const roll = await roller.evaluate(evalcontext);
       let range: TSRange | undefined = this.rangeFor(roll.asInt());
       if (this.isNonRepeating()) {
         if (!range.isTaken()) range.lockout();
         else range = undefined;
       }
       if (range) {
-        result = await this.result(roll.asInt());
+        result = await this.result(evalcontext, roll.asInt());
       }
     }
     // check if group is really maxed out or the 10*ranges sets have not found a match
@@ -126,7 +126,7 @@ class TSGroup {
       });
       if (range) {
         range.lockout();
-        result = await this.result(range.getLower());
+        result = await this.result(evalcontext, range.getLower());
       }
     }
     return result != undefined ? result : new SingleTSExpressionResult('<Non repeating Group maxed out!>');
@@ -144,16 +144,17 @@ class TSGroup {
    * Returns text result for given roll including any defined before are afters in the group.
    * If result is below min range value returns first range, if above max returns
    * last ranges text.
+   * @param evalcontext EvaluationContext to use.
    * @param rollResult The RollResult to lockup the groups text with.
    * @returns evaluated expression for Range donating result.
    */
-  async result(total: number): Promise<TSExpressionResult> {
+  async result(evalcontext: EvaluationContext, total: number): Promise<TSExpressionResult> {
     try {
       const result = this.rangeFor(total);
-      this.lastRollTotal = total;
-      const beforeValue = await this.before.evaluate();
-      const resultValue = await result.evaluate();
-      const afterValue = await this.after.evaluate();
+      evalcontext.setLastRoll(this, total);
+      const beforeValue = await this.before.evaluate(evalcontext);
+      const resultValue = await result.evaluate(evalcontext);
+      const afterValue = await this.after.evaluate(evalcontext);
       return TSExpressionResultCollection.create(beforeValue, resultValue, afterValue).condense();
     } catch (error) {
       throw Error(`Error in Group '${this.name}'\n${error}`);
@@ -164,6 +165,7 @@ class TSGroup {
    * Unlocks all locked ranges for a non repeating group, normally used to set up context for next evaluation.
    */
   reset(): void {
+    // TODO add lockout Ranges to EvaluationContext
     if (this.isNonRepeating()) {
       this.ranges.forEach((range) => {
         range.unlock();

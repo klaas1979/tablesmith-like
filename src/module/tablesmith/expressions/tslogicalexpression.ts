@@ -1,4 +1,5 @@
 import BooleanComparison from './booleancomparison';
+import EvaluationContext from './evaluationcontext';
 import { BaseTSExpression } from './tsexpression';
 import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
@@ -14,11 +15,12 @@ export default class TSLogicalExpression extends BaseTSExpression {
     this.comparisons = comparisons;
   }
 
-  async evaluate(): Promise<TSExpressionResult> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
     let result = '-1';
     const results: string[] = [];
     for (const comparison of this.comparisons) {
-      results.push((await comparison.evaluate()).trim());
+      results.push((await comparison.evaluate(evalcontext)).trim());
     }
     if (results.includes('-1')) {
       result = '-1';

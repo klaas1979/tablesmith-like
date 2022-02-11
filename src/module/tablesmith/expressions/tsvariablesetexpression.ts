@@ -1,7 +1,7 @@
-import { evalcontext } from './evaluationcontextinstance';
 import CallSplitter from './callsplitter';
 import TSExpression, { BaseTSExpression } from './tsexpression';
 import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
+import EvaluationContext from './evaluationcontext';
 
 /**
  * Class representing a variable Set expression.
@@ -19,38 +19,38 @@ export default class TSVariableSetExpression extends BaseTSExpression {
     this.call = { tablename: '', variablename: '' };
   }
 
-  async evaluate(): Promise<TSExpressionResult> {
-    const evaluated = await this.varNameExpression.evaluate();
-    this.call = CallSplitter.forVariable().split(evaluated.asString());
-    const value = await this.valueExpression.evaluate();
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
+    const evaluated = await this.varNameExpression.evaluate(evalcontext);
+    this.call = CallSplitter.forVariable().split(evalcontext, evaluated.asString());
+    const value = await this.valueExpression.evaluate(evalcontext);
     const currentValue = evalcontext.getVar(this.call.tablename, this.call.variablename);
     switch (this.type) {
       case '=':
-        this.evaluateSet(currentValue, value);
+        this.evaluateSet(evalcontext, currentValue, value);
         break;
       case '+':
-        this.evaluatePlus(currentValue, value);
+        this.evaluatePlus(evalcontext, currentValue, value);
         break;
       case '-':
-        this.evaluateMinus(currentValue, value);
+        this.evaluateMinus(evalcontext, currentValue, value);
         break;
       case '*':
-        this.evaluateMult(currentValue, value);
+        this.evaluateMult(evalcontext, currentValue, value);
         break;
       case '/':
-        this.evaluateDiv(currentValue, value);
+        this.evaluateDiv(evalcontext, currentValue, value);
         break;
       case '\\':
-        this.evaluateDivRound(currentValue, value);
+        this.evaluateDivRound(evalcontext, currentValue, value);
         break;
       case '&':
-        this.evaluateAppendText(currentValue, value);
+        this.evaluateAppendText(evalcontext, currentValue, value);
         break;
       case '<':
-        this.evaluateMinimumBoundary(currentValue, value);
+        this.evaluateMinimumBoundary(evalcontext, currentValue, value);
         break;
       case '>':
-        this.evaluateMaximumBoundary(currentValue, value);
+        this.evaluateMaximumBoundary(evalcontext, currentValue, value);
         break;
       default:
         throw Error(`Unknown Type '${this.type}' cannot set variable '${this.getExpression()}'`);
@@ -58,50 +58,86 @@ export default class TSVariableSetExpression extends BaseTSExpression {
     return new SingleTSExpressionResult('');
   }
 
-  private evaluateSet(currentValue: string | number | undefined, value: TSExpressionResult) {
+  private evaluateSet(
+    evalcontext: EvaluationContext,
+    currentValue: string | number | undefined,
+    value: TSExpressionResult,
+  ) {
     const num = Number.parseFloat(value.asString());
-    this.assign(Number.isNaN(num) ? value.asString() : num);
+    this.assign(evalcontext, Number.isNaN(num) ? value.asString() : num);
   }
 
-  private evaluatePlus(currentValue: string | number | undefined, value: TSExpressionResult) {
-    this.assign(Number.parseFloat(`${currentValue}`) + value.asNumber());
+  private evaluatePlus(
+    evalcontext: EvaluationContext,
+    currentValue: string | number | undefined,
+    value: TSExpressionResult,
+  ) {
+    this.assign(evalcontext, Number.parseFloat(`${currentValue}`) + value.asNumber());
   }
 
-  private evaluateMinus(currentValue: string | number | undefined, value: TSExpressionResult) {
-    this.assign(Number.parseFloat(`${currentValue}`) - value.asNumber());
+  private evaluateMinus(
+    evalcontext: EvaluationContext,
+    currentValue: string | number | undefined,
+    value: TSExpressionResult,
+  ) {
+    this.assign(evalcontext, Number.parseFloat(`${currentValue}`) - value.asNumber());
   }
 
-  private evaluateMult(currentValue: string | number | undefined, value: TSExpressionResult) {
-    this.assign(Number.parseFloat(`${currentValue}`) * value.asNumber());
+  private evaluateMult(
+    evalcontext: EvaluationContext,
+    currentValue: string | number | undefined,
+    value: TSExpressionResult,
+  ) {
+    this.assign(evalcontext, Number.parseFloat(`${currentValue}`) * value.asNumber());
   }
 
-  private evaluateDiv(currentValue: string | number | undefined, value: TSExpressionResult) {
-    this.assign(Number.parseFloat(`${currentValue}`) / value.asNumber());
+  private evaluateDiv(
+    evalcontext: EvaluationContext,
+    currentValue: string | number | undefined,
+    value: TSExpressionResult,
+  ) {
+    this.assign(evalcontext, Number.parseFloat(`${currentValue}`) / value.asNumber());
   }
 
-  private evaluateDivRound(currentValue: string | number | undefined, value: TSExpressionResult) {
-    this.assign(Math.round(Number.parseFloat(`${currentValue}`) / value.asNumber()));
+  private evaluateDivRound(
+    evalcontext: EvaluationContext,
+    currentValue: string | number | undefined,
+    value: TSExpressionResult,
+  ) {
+    this.assign(evalcontext, Math.round(Number.parseFloat(`${currentValue}`) / value.asNumber()));
   }
 
-  private evaluateMinimumBoundary(currentValue: string | number | undefined, value: TSExpressionResult) {
+  private evaluateMinimumBoundary(
+    evalcontext: EvaluationContext,
+    currentValue: string | number | undefined,
+    value: TSExpressionResult,
+  ) {
     const currentInt = Number.parseFloat(`${currentValue}`);
     const newInt = Number.parseFloat(value.asString());
-    if (Number.isNaN(currentInt) || currentInt < newInt) this.assign(newInt);
+    if (Number.isNaN(currentInt) || currentInt < newInt) this.assign(evalcontext, newInt);
   }
 
-  private evaluateMaximumBoundary(currentValue: string | number | undefined, value: TSExpressionResult) {
+  private evaluateMaximumBoundary(
+    evalcontext: EvaluationContext,
+    currentValue: string | number | undefined,
+    value: TSExpressionResult,
+  ) {
     const currentInt = Number.parseFloat(`${currentValue}`);
     const newInt = value.asNumber();
-    if (Number.isNaN(currentInt) || currentInt > newInt) this.assign(newInt);
+    if (Number.isNaN(currentInt) || currentInt > newInt) this.assign(evalcontext, newInt);
   }
 
-  private evaluateAppendText(currentValue: string | number | undefined, value: TSExpressionResult) {
+  private evaluateAppendText(
+    evalcontext: EvaluationContext,
+    currentValue: string | number | undefined,
+    value: TSExpressionResult,
+  ) {
     const valueString = value.asString();
     const result = currentValue ? `${currentValue}${valueString}` : `${valueString}`;
-    this.assign(result);
+    this.assign(evalcontext, result);
   }
 
-  private assign(value: string | number) {
+  private assign(evalcontext: EvaluationContext, value: string | number) {
     evalcontext.assignVar(this.call.tablename, this.call.variablename, value);
   }
 

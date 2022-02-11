@@ -1,3 +1,4 @@
+import EvaluationContext from './expressions/evaluationcontext';
 import TSExpression from './expressions/tsexpression';
 import { TSExpressionResult } from './expressions/tsexpressionresult';
 import TSExpressions from './expressions/tsexpressions';
@@ -41,11 +42,12 @@ class TSRange {
 
   /**
    * Text result for this range.
+   * @param evalcontext The EvaluationContext to use.
    * @returns strnig representing the evaluated expressions for this range.
    */
-  async evaluate(): Promise<TSExpressionResult> {
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
     try {
-      return await this.expressions.evaluate();
+      return await this.expressions.evaluate(evalcontext);
     } catch (error) {
       throw Error(`Error in Range '${this.upper}-${this.lower}'=>'${this.getExpression()}':\n${error}`);
     }

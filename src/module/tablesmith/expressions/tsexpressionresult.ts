@@ -1,3 +1,4 @@
+import EvaluationContext from './evaluationcontext';
 import TSExpression from './tsexpression';
 
 export enum TS_EXPRESSION_RESULT_TYPE {
@@ -70,6 +71,7 @@ export interface TSExpressionResult {
  * Simple Base implementation with some convenience methods implemented.
  */
 class BaseTSExpressionResult implements TSExpressionResult {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async reroll(): Promise<void> {
     // empty
   }
@@ -130,8 +132,10 @@ export class SingleTSExpressionResult extends BaseTSExpressionResult implements 
 export class RerollableTSExpressionResult extends BaseTSExpressionResult implements TSExpressionResult {
   private result: TSExpressionResult;
   private expression: TSExpression | undefined;
-  constructor(result: TSExpressionResult, expression: TSExpression | undefined) {
+  private evalcontext: EvaluationContext;
+  constructor(evalcontext: EvaluationContext, result: TSExpressionResult, expression: TSExpression | undefined) {
     super();
+    this.evalcontext = evalcontext;
     this.result = result;
     this.expression = expression;
   }
@@ -149,7 +153,7 @@ export class RerollableTSExpressionResult extends BaseTSExpressionResult impleme
   }
   async reroll() {
     if (this.expression) {
-      this.result = await this.expression.evaluate();
+      this.result = await this.expression.evaluate(this.evalcontext);
     }
   }
 }

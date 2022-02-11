@@ -1,3 +1,4 @@
+import EvaluationContext from './evaluationcontext';
 import SelectTuple from './selecttuple';
 import TSExpression, { BaseTSExpression } from './tsexpression';
 import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
@@ -16,14 +17,14 @@ export default class TSSelectExpression extends BaseTSExpression {
     this.defaultValue = defaultValue;
     this.selectTuples = selectTuples;
   }
-  async evaluate(): Promise<TSExpressionResult> {
-    const selectorValue = (await this.selector.evaluate()).asString().trim();
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
+    const selectorValue = (await this.selector.evaluate(evalcontext)).asString().trim();
     let result;
     for (const tuple of this.selectTuples) {
-      if ((await tuple.key.evaluate()).asString().trim() == selectorValue)
-        result = (await tuple.value.evaluate()).asString();
+      if ((await tuple.key.evaluate(evalcontext)).asString().trim() == selectorValue)
+        result = (await tuple.value.evaluate(evalcontext)).asString();
     }
-    return new SingleTSExpressionResult(result ? result : (await this.defaultValue.evaluate()).asString());
+    return new SingleTSExpressionResult(result ? result : (await this.defaultValue.evaluate(evalcontext)).asString());
   }
 
   getExpression(): string {

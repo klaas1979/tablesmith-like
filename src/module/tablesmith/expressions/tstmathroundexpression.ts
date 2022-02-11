@@ -1,3 +1,4 @@
+import EvaluationContext from './evaluationcontext';
 import TSExpression, { BaseTSExpression } from './tsexpression';
 import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
@@ -12,9 +13,9 @@ export default class TSMathRoundExpression extends BaseTSExpression {
     this.param = param;
     this.decimalPlaces = decimalPlaces;
   }
-  async evaluate(): Promise<TSExpressionResult> {
-    const value = (await this.param.evaluate()).asNumber();
-    const decimalPlacesString = (await this.decimalPlaces.evaluate()).asString();
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
+    const value = (await this.param.evaluate(evalcontext)).asNumber();
+    const decimalPlacesString = (await this.decimalPlaces.evaluate(evalcontext)).asString();
     const decimalPlaces = Number.parseInt(decimalPlacesString);
     return new SingleTSExpressionResult(value.toFixed(decimalPlaces));
   }

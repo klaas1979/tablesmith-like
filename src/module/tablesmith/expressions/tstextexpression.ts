@@ -1,3 +1,4 @@
+import EvaluationContext from './evaluationcontext';
 import { BaseTSExpression } from './tsexpression';
 import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
@@ -11,7 +12,8 @@ export default class TSTextExpression extends BaseTSExpression {
     this.text = text;
   }
 
-  async evaluate(): Promise<TSExpressionResult> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
     return new SingleTSExpressionResult(this.text);
   }
 

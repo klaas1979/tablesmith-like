@@ -1,3 +1,4 @@
+import EvaluationContext from './expressions/evaluationcontext';
 import { TSTable } from './tstable';
 
 /**
@@ -56,6 +57,7 @@ class TSTables {
    * @returns Table for name or undefined if no table was found.
    */
   tableForName(name: string): TSTable | undefined {
+    if (name === undefined) return undefined;
     name = name.toLowerCase();
     return this.tables.find((current) => current.getName().toLowerCase() === name);
   }
@@ -89,10 +91,11 @@ class TSTables {
   /**
    * Resets the EvaluationContext back for all contained tables to ensure that no Groups have locked
    * entries and to set back variables in tables to their default declaration.
+   * @param context the EvaluationContext to prepare.
    */
-  resetEvaluationContext() {
+  prepareEvaluationContext(context: EvaluationContext) {
     this.tables.forEach((table) => {
-      table.resetEvaluationContext();
+      table.prepareEvaluationContext(context);
     });
   }
 }

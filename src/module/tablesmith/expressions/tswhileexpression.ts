@@ -1,3 +1,4 @@
+import EvaluationContext from './evaluationcontext';
 import TSExpression, { BaseTSExpression } from './tsexpression';
 import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 import TSExpressions from './tsexpressions';
@@ -13,13 +14,13 @@ export default class TSWhileExpression extends BaseTSExpression {
     this.checkExpression = checkExpression;
     this.block = block;
   }
-  async evaluate(): Promise<TSExpressionResult> {
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
     let result = '';
-    let checkResult = await this.checkExpression.evaluate();
+    let checkResult = await this.checkExpression.evaluate(evalcontext);
     let counter = 0;
     while (checkResult.asString() != '0') {
-      result += (await this.block.evaluate()).asString();
-      checkResult = await this.checkExpression.evaluate();
+      result += (await this.block.evaluate(evalcontext)).asString();
+      checkResult = await this.checkExpression.evaluate(evalcontext);
       counter += 1;
       if (counter > 1000)
         throw Error(`TSWhileExpression.evaluate() looped 1000 times, aborting: ${this.getExpression()}`);

@@ -1,5 +1,6 @@
+import EvaluationContext from '../evaluationcontext';
 import TSExpression, { BaseTSExpression } from '../tsexpression';
-import { TSExpressionResult, SingleTSExpressionResult } from '../tsexpressionresult';
+import { TSExpressionResult } from '../tsexpressionresult';
 
 /**
  * A mathematical Bracket to order the evaluation of mathematical expressions.
@@ -16,7 +17,7 @@ export default class BracketTerm extends BaseTSExpression {
     return `(${this.term.getExpression()})`;
   }
 
-  async evaluate(): Promise<TSExpressionResult> {
-    return this.term.evaluate();
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
+    return this.term.evaluate(evalcontext);
   }
 }

@@ -2,6 +2,7 @@ import { tstables } from '../tstables';
 import TSGroup from '../tsgroup';
 import TSExpression, { BaseTSExpression } from './tsexpression';
 import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
+import EvaluationContext from './evaluationcontext';
 
 /**
  * Simple Text Expression as value of a Range in a Group or part of the value, i.e. prefix or suffix to a TermExpression.
@@ -18,16 +19,16 @@ export default class TSGroupLockExpression extends BaseTSExpression {
     this.groupExpression = groupExpression;
     this.parameters = parameters;
   }
-  async evaluate(): Promise<TSExpressionResult> {
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
     const table = tstables.tableForName(this.tablename);
-    const groupname = (await this.groupExpression.evaluate()).trim();
+    const groupname = (await this.groupExpression.evaluate(evalcontext)).trim();
     const group = table?.groupForName(groupname);
     if (!group)
       throw Error(`Cannot ${this.functionname} group '${groupname}' in table '${this.tablename}', not defined!`);
     let params = '';
     for (const param of this.parameters) {
       if (params.length > 0) params += ',';
-      const paramValue = await param.evaluate();
+      const paramValue = await param.evaluate(evalcontext);
       params += paramValue.asString();
     }
     for (const range of params.split(',')) {

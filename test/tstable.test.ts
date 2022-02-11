@@ -1,10 +1,12 @@
-import { evalcontext } from '../src/module/tablesmith/expressions/evaluationcontextinstance';
+import EvaluationContext from '../src/module/tablesmith/expressions/evaluationcontext';
 import { TSTable } from '../src/module/tablesmith/tstable';
 
 let tstable: TSTable;
+let evalcontext: EvaluationContext;
 describe('TSTable', () => {
   beforeEach(() => {
     tstable = new TSTable('folder', 'tablename');
+    evalcontext = new EvaluationContext();
   });
 
   it('#addGroup with same name throws', () => {
@@ -34,12 +36,12 @@ describe('TSTable#resetEvaluationContext', () => {
 
   it('resets variable declaration', () => {
     evalcontext.assignVar('tablename', 'name', '2');
-    tstable.resetEvaluationContext();
+    tstable.prepareEvaluationContext(evalcontext);
     expect(evalcontext.getVar('tablename', 'name')).toBe('1');
   });
 
   it('unlocks all lockout ranges in groups', () => {
-    tstable.resetEvaluationContext();
+    tstable.prepareEvaluationContext(evalcontext);
     expect(tstable.getGroups()[0]?.firstRange()?.isTaken()).toBeFalsy();
   });
 });

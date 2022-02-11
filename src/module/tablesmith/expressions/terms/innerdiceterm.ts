@@ -1,4 +1,4 @@
-import { evalcontext } from '../evaluationcontextinstance';
+import EvaluationContext from '../evaluationcontext';
 import TSExpression, { BaseTSExpression } from '../tsexpression';
 import { TSExpressionResult, SingleTSExpressionResult } from '../tsexpressionresult';
 /**
@@ -14,10 +14,10 @@ export default class InnerDiceTerm extends BaseTSExpression {
     this.sides = sides;
   }
 
-  async evaluate(): Promise<TSExpressionResult> {
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
     let total = 0;
-    const concreteDices = (await this.dice.evaluate()).asNumber();
-    const concreteSides = (await this.sides.evaluate()).asNumber();
+    const concreteDices = (await this.dice.evaluate(evalcontext)).asNumber();
+    const concreteSides = (await this.sides.evaluate(evalcontext)).asNumber();
     for (let i = 0; i < concreteDices; i++) {
       const roll = evalcontext.roll(concreteSides);
       total += roll;

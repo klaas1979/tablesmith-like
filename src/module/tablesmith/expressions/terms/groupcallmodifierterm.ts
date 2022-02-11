@@ -3,7 +3,8 @@ import PlusTerm from './plusterm';
 import { MODIFIERS } from '../../../foundry/tablecallvalues';
 import TSExpression, { BaseTSExpression } from '../tsexpression';
 import TSTextExpression from '../tstextexpression';
-import { TSExpressionResult, SingleTSExpressionResult } from '../tsexpressionresult';
+import { TSExpressionResult } from '../tsexpressionresult';
+import EvaluationContext from '../evaluationcontext';
 
 /**
  * A modifier for a table group call, consists of the operation "+", "-" or "="(fixed) modifier and the term
@@ -28,7 +29,7 @@ export default class GroupCallModifierTerm extends BaseTSExpression {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async evaluate(): Promise<TSExpressionResult> {
+  async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
     throw Error(
       'Cannot roll this term Group Calls need runtime information about rolled upon Group to get maxValue for range',
     );

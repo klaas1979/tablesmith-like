@@ -1,4 +1,4 @@
-import { evalcontext } from './evaluationcontextinstance';
+import EvaluationContext from './evaluationcontext';
 
 enum TYPE {
   variable = '!',
@@ -17,7 +17,7 @@ export default class CallSplitter {
     return new CallSplitter(TYPE.group);
   }
 
-  split(input: string): { tablename: string; variablename: string } {
+  split(evalcontext: EvaluationContext, input: string): { tablename: string; variablename: string } {
     const tableGroup = input.trim().split(this.type);
     const result = { tablename: '', variablename: '' };
     switch (tableGroup.length) {

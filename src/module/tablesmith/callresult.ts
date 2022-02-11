@@ -1,4 +1,5 @@
 import { TableCallValues } from '../foundry/tablecallvalues';
+import EvaluationContext from './expressions/evaluationcontext';
 import { TSExpressionResult } from './expressions/tsexpressionresult';
 
 /**
@@ -6,7 +7,7 @@ import { TSExpressionResult } from './expressions/tsexpressionresult';
  * from the evaluation of the same table.
  */
 export default class CallResult {
-  private results: TSExpressionResult[] = [];
+  private results: { evalcontext: EvaluationContext; result: TSExpressionResult }[] = [];
   private tableCallValues: TableCallValues | undefined;
   private call: string | undefined;
   private errorMessage = '';
@@ -44,7 +45,11 @@ export default class CallResult {
    * @param callbackFn for iteration.
    */
   forEach(callbackFn: (result: TSExpressionResult, index: number) => void) {
-    this.results.forEach(callbackFn);
+    this.results
+      .map((r) => {
+        return r.result;
+      })
+      .forEach(callbackFn);
   }
 
   /**
@@ -53,7 +58,7 @@ export default class CallResult {
    */
   asString(): string | string[] {
     const array = this.results.map((r) => {
-      return r.asString();
+      return r.result.asString();
     });
     return array.length === 1 ? array[0] : array;
   }
@@ -62,8 +67,8 @@ export default class CallResult {
    * Adds given result to collection.
    * @param result to add to collection.
    */
-  push(result: TSExpressionResult): void {
-    this.results.push(result);
+  push(evalcontext: EvaluationContext, result: TSExpressionResult): void {
+    this.results.push({ evalcontext: evalcontext, result: result });
   }
 
   /**
@@ -72,7 +77,16 @@ export default class CallResult {
    * @returns TSExpressionResult for index.
    */
   get(index: number): TSExpressionResult {
-    return this.results[index];
+    return this.results[index].result;
+  }
+
+  /**
+   * Retrieves evalcontext.
+   * @param index to get evalcontext for.
+   * @returns EvaluationContext for index.
+   */
+  getEvalcontext(index: number): EvaluationContext {
+    return this.results[index].evalcontext;
   }
 
   /**
