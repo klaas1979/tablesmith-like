@@ -73,9 +73,10 @@ class TSTableGroupBuilder {
 
   /**
    * Prepares stack for a Group Call.
+   * @param rerollable boolean indicating if call is rerollable or not.
    */
-  startGroupCall() {
-    this.stack.startGroupCall();
+  startGroupCall(rerollable: boolean) {
+    this.stack.startGroupCall(rerollable);
   }
 
   /**
@@ -217,7 +218,7 @@ class TSTableGroupBuilder {
         throw Error(`Cannot create group Call modifier for operator '${operator}', no Expression provided!`);
       modifierTerm = GroupCallModifierTerm.create(operator, modifierExpression);
     }
-    return new TSGroupCallExpression(tableAndGroup, modifierTerm, params.reverse());
+    return new TSGroupCallExpression(stacked.rerollable, tableAndGroup, modifierTerm, params.reverse());
   }
 
   /**

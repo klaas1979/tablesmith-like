@@ -24,18 +24,18 @@ describe('Parsing {Loop~', () => {
   it('with expression', async () => {
     simpleTable = '%var%,3\n:Start\n1,{Loop~{Calc~8-4},x}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('xxxx');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('xxxx');
   });
 
   it('while with %variable%', async () => {
     simpleTable = '%var%,3\n:Start\n1,{Loop~%var%,x}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('xxx');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('xxx');
   });
 
   it('nesting loops', async () => {
     simpleTable = '%var%,3\n:Start\n1,{Loop~3,{Loop~3,.}x}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('...x...x...x');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('...x...x...x');
   });
 });

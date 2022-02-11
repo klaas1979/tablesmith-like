@@ -15,6 +15,6 @@ describe('Parsing {InputText', () => {
     tablesmith.registerInputTextCallback(cb);
     const table = tablesmith.addTable('folder', filename, simpleTable);
     expect(table.groupForName('Start')?.lastRange()?.getExpression()).toBe('{InputText~default,Prompt}');
-    expect(await tablesmith.evaluate(`[simpletable]`)).toEqual('Promptdefault');
+    expect((await tablesmith.evaluate(`[simpletable]`)).asString()).toEqual('Promptdefault');
   });
 });

@@ -1,6 +1,6 @@
 import { tstables } from '../tstables';
 import TSExpression, { BaseTSExpression } from './tsexpression';
-import TSExpressionResult from './tsexpressionresult';
+import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
 /**
  * Expression to give back range value from group.
@@ -35,7 +35,7 @@ export default class TSGroupRangeValueExpression extends BaseTSExpression {
       default:
         throw Error(`Functionname='${this.functionname}' is unknown for Min/MaxVal`);
     }
-    return new TSExpressionResult(result);
+    return new SingleTSExpressionResult(result);
   }
 
   getExpression(): string {

@@ -1,3 +1,4 @@
+import CallResult from '../../tablesmith/callresult';
 import { TableParameter, TSTable } from '../../tablesmith/tstable';
 import { tstables } from '../../tablesmith/tstables';
 import { Logger } from '../logger';
@@ -13,7 +14,7 @@ export default class TableSelectionFormData {
   callValues: TableCallValues = new TableCallValues();
   parameters: TableParameter[] = [];
   chatResults = true;
-  results: string[] = [];
+  results: CallResult | undefined;
 
   constructor(
     options: { folders: string[]; callValues: TableCallValues } = { folders: [], callValues: new TableCallValues() },

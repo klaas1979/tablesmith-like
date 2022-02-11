@@ -1,7 +1,7 @@
 import { tstables } from '../tstables';
 import TSGroup from '../tsgroup';
 import TSExpression, { BaseTSExpression } from './tsexpression';
-import TSExpressionResult from './tsexpressionresult';
+import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
 /**
  * Simple Text Expression as value of a Range in a Group or part of the value, i.e. prefix or suffix to a TermExpression.
@@ -47,7 +47,7 @@ export default class TSGroupLockExpression extends BaseTSExpression {
         this.changeLockState(group, splitted[0]);
       }
     }
-    return new TSExpressionResult('');
+    return new SingleTSExpressionResult('');
   }
 
   private changeLockState(group: TSGroup, value: number | string): void {

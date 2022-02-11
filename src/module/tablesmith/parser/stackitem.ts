@@ -9,6 +9,7 @@ import STACK_TYPE from './stacktype';
 class StackItem {
   type: STACK_TYPE;
   name: string;
+  rerollable = false;
   strings: string[];
   expressionsStack: TSExpressions[];
   mathSumOperators: string[];

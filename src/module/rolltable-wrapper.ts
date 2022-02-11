@@ -1,8 +1,9 @@
 import { getTablesmithApi, TABLESMITH_ID } from './foundry/helper';
 import { Logger } from './foundry/logger';
 import { libWrapper } from './foundry/shims/libwrappershim';
+import CallResult from './tablesmith/callresult';
 
-const mappedResults = new Map<string, string[]>();
+const mappedResults = new Map<string, CallResult[]>();
 
 /**
  * Wrap methods of RollTable to enhance draws that are a Tablesmith call.
@@ -47,26 +48,10 @@ async function rollTableDrawWrapper(
   return draw;
 }
 
-function storeResult(key: string, result: string | string[]): void {
+function storeResult(key: string, result: CallResult): void {
   if (!mappedResults.get(key)) mappedResults.set(key, []);
-  const resultString = toString(result);
-  mappedResults.get(key)?.push(resultString);
-  Logger.debug(false, 'Storing Tablesmith result for call', key, resultString);
-}
-
-/**
- * Converts result to a string, arrays are joined for this.
- * @param tsResult string or string[] to convert.
- * @returns string representation for result.
- */
-function toString(tsResult: string | string[]): string {
-  let replacedResult;
-  if (typeof tsResult == 'string') {
-    replacedResult = tsResult;
-  } else {
-    replacedResult = tsResult.join('<br />');
-  }
-  return replacedResult;
+  mappedResults.get(key)?.push(result);
+  Logger.debug(false, 'Storing Tablesmith result for call', key, result);
 }
 
 /**
@@ -79,6 +64,16 @@ function tableResultChatTextWrapper(this: TableResult, wrapped: () => string): s
   let chatText = wrapped();
   const mapped = mappedResults.get(chatText);
   const tsResult = mapped?.shift();
-  if (tsResult) chatText = tsResult;
+  if (tsResult) chatText = asString(tsResult);
   return chatText;
+}
+
+function asString(callResult: CallResult): string {
+  if (callResult.isError()) return callResult.getErrorMessage();
+  let result = '';
+  callResult.forEach((r, index) => {
+    result += `<h2>#${index}</h2>`;
+    result += `<p>${r.asString()}</p>`;
+  });
+  return result;
 }

@@ -127,24 +127,24 @@ describe('Parsing {Param~', () => {
     simpleTable =
       '%var%,\n@var,1,Prompt,O1,O2,O3,O4\n:Start\n1,{Param~var,1},{Param~var,2},{Param~var,3},{Param~var,4}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('O1,O2,O3,O4');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('O1,O2,O3,O4');
   });
 
   it('non existing param throws', async () => {
     simpleTable = '%var%,\n@var,1,Prompt,O1,O2,O3,O4\n:Start\n1,{Param~nonExisting,1}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toContain('Error in Group');
+    expect((await tablesmith.evaluate(`[${filename}]`)).getErrorMessage()).toContain('Error in Group');
   });
 
   it('index = 0 throws, must be 1 or greater', async () => {
     simpleTable = '%var%,\n@var,1,Prompt,O1,O2,O3,O4\n:Start\n1,{Param~var,0}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toContain('Error in Group');
+    expect((await tablesmith.evaluate(`[${filename}]`)).getErrorMessage()).toContain('Error in Group');
   });
 
   it('index = 5 throws max is 4', async () => {
     simpleTable = '%var%,\n@var,1,Prompt,O1,O2,O3,O4\n:Start\n1,{Param~var,5}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toContain('Error in Group');
+    expect((await tablesmith.evaluate(`[${filename}]`)).getErrorMessage()).toContain('Error in Group');
   });
 });

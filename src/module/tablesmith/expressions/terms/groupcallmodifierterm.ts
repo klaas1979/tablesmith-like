@@ -3,7 +3,7 @@ import PlusTerm from './plusterm';
 import { MODIFIERS } from '../../../foundry/tablecallvalues';
 import TSExpression, { BaseTSExpression } from '../tsexpression';
 import TSTextExpression from '../tstextexpression';
-import TSExpressionResult from '../tsexpressionresult';
+import { TSExpressionResult, SingleTSExpressionResult } from '../tsexpressionresult';
 
 /**
  * A modifier for a table group call, consists of the operation "+", "-" or "="(fixed) modifier and the term

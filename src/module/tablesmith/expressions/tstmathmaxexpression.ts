@@ -1,5 +1,5 @@
 import TSExpression, { BaseTSExpression } from './tsexpression';
-import TSExpressionResult from './tsexpressionresult';
+import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
 /**
  * Math max function to get bigger of the two values.
@@ -12,7 +12,7 @@ export default class TSMathMaxExpression extends BaseTSExpression {
   }
   async evaluate(): Promise<TSExpressionResult> {
     const nums = await Promise.all(this.values.map(async (value) => (await value.evaluate()).asNumber()));
-    return new TSExpressionResult(Math.max(...nums));
+    return new SingleTSExpressionResult(Math.max(...nums));
   }
   getExpression(): string {
     const expressions = this.values.reduce(

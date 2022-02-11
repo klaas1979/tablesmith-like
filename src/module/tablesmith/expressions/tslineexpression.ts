@@ -1,5 +1,5 @@
 import TSExpression, { BaseTSExpression } from './tsexpression';
-import TSExpressionResult from './tsexpressionresult';
+import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
 /**
  * Simple Line Expression that separates the Output via a Line or other visual cue.
@@ -16,7 +16,7 @@ export default class TSLineExpression extends BaseTSExpression {
   async evaluate(): Promise<TSExpressionResult> {
     this.evaluateAlign();
     this.evaluateWidth();
-    return new TSExpressionResult(`<br/>`);
+    return new SingleTSExpressionResult(`<br/>`);
   }
 
   private async evaluateAlign(): Promise<string> {

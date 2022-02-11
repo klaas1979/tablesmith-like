@@ -124,8 +124,9 @@ GroupCall
           }); }
 StartGroupCall
 // ignore ~ reload toggle for the moment
-  = !'/' '[' '~'? { errorHandling(() => {
-            options?.pf.startGroupCall();
+  = !'/' '[' rerollable:'~'? { errorHandling(() => {
+
+            options?.pf.startGroupCall(rerollable === '~');
           }); }
 Modifier
   = modType:ModifierType _ Expression { errorHandling(() => {

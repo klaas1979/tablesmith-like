@@ -7,6 +7,7 @@ import JournalTables from '../journaltables';
 import { Logger } from '../logger';
 import { TableCallValues } from '../tablecallvalues';
 import TableSelectionFormData from './tableselectionformdata';
+import CallResult from '../../tablesmith/callresult';
 
 const TABLESMITH_SELECTOR = `modules/${TABLESMITH_ID}/templates/tablesmithselector.hbs`;
 
@@ -60,7 +61,7 @@ export default class TableSelectionForm extends FormApplication<
       this.data.setFoldername(expanded['folder']['name']);
       this.data.setTablename(expanded['callValues']['tablename']);
       this.data.callValues.rollCount = expanded['callValues']['rollCount'];
-      this.data.results = [];
+      this.data.results = new CallResult(this.data.callValues);
       this.data.updateParameters(expanded['parameters']);
       Logger.debug(false, 'updatedFormData', this.data);
     }
@@ -95,8 +96,7 @@ export default class TableSelectionForm extends FormApplication<
     if (this.data.callValues.table) {
       this.data.mapParametersToCallValues();
 
-      const results = await tablesmith.evaluate(this.data.callValues);
-      this.data.results = typeof results == 'string' ? [results] : results;
+      this.data.results = await tablesmith.evaluate(this.data.callValues);
       this.render();
       if (this.data.chatResults) {
         new ChatResults().chatResults(this.data.callValues, this.data.results);

@@ -49,7 +49,7 @@ describe('Parsing {Dice~} binding order', () => {
       tablesmith.addTable('folder', filename, simpleTable);
       const expression = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
       expect(expression).toBe(term);
-      expect(await tablesmith.evaluate(`[${filename}]`)).toBe(result);
+      expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe(result);
     });
   });
 });
@@ -68,7 +68,7 @@ describe('Parsing {Dice~} and {Calc~}', () => {
         tablesmith.addTable('folder', filename, simpleTable);
         const expression = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
         expect(expression).toBe(tsCall);
-        expect(await tablesmith.evaluate(`[${filename}]`)).toBeTruthy();
+        expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBeTruthy();
       });
     });
   });
@@ -115,25 +115,25 @@ describe('Abs~', () => {
   it('negative integer', async () => {
     simpleTable = ':Start\n1,{Abs~-10}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('10');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('10');
   });
 
   it('positive integer', async () => {
     simpleTable = ':Start\n1,{Abs~10}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('10');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('10');
   });
 
   it('negative float', async () => {
     simpleTable = ':Start\n1,{Abs~-10.101}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('10.101');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('10.101');
   });
 
   it('positive float', async () => {
     simpleTable = ':Start\n1,{Abs~10.101}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('10.101');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('10.101');
   });
 });
 
@@ -153,25 +153,25 @@ describe('Ceil~', () => {
   it('negative integer', async () => {
     simpleTable = ':Start\n1,{Ceil~-1}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('-1');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('-1');
   });
 
   it('positive integer', async () => {
     simpleTable = ':Start\n1,{Ceil~10}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('10');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('10');
   });
 
   it('negative float', async () => {
     simpleTable = ':Start\n1,{Ceil~-10.101}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('-10');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('-10');
   });
 
   it('positive float', async () => {
     simpleTable = ':Start\n1,{Ceil~10.101}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('11');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('11');
   });
 });
 
@@ -191,25 +191,25 @@ describe('Floor~', () => {
   it('negative integer', async () => {
     simpleTable = ':Start\n1,{Floor~-1}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('-1');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('-1');
   });
 
   it('positive integer', async () => {
     simpleTable = ':Start\n1,{Floor~10}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('10');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('10');
   });
 
   it('negative float', async () => {
     simpleTable = ':Start\n1,{Floor~-10.101}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('-11');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('-11');
   });
 
   it('positive float', async () => {
     simpleTable = ':Start\n1,{Floor~10.101}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('10');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('10');
   });
 });
 
@@ -229,13 +229,13 @@ describe('Trunc~', () => {
   it('negative float', async () => {
     simpleTable = ':Start\n1,{Trunc~-10.101}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('-10');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('-10');
   });
 
   it('positive float', async () => {
     simpleTable = ':Start\n1,{Trunc~10.101}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('10');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('10');
   });
 });
 
@@ -255,7 +255,7 @@ describe('Sqrt~', () => {
   it('integer', async () => {
     simpleTable = ':Start\n1,{Sqrt~9}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('3');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('3');
   });
 });
 
@@ -275,13 +275,13 @@ describe('Round~', () => {
   it('zero places and rounding up', async () => {
     simpleTable = ':Start\n1,{Round~0,2.923456}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('3');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('3');
   });
 
   it('3 places and rounding down', async () => {
     simpleTable = ':Start\n1,{Round~3,2.123456}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('2.123');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('2.123');
   });
 });
 
@@ -301,19 +301,19 @@ describe('Min~', () => {
   it('first smaller returns', async () => {
     simpleTable = ':Start\n1,{Min~0,2.923456}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('0');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('0');
   });
 
   it('second smaller returns', async () => {
     simpleTable = ':Start\n1,{Min~3,2.123456}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('2.123456');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('2.123456');
   });
 
   it('can have 2+ arguments', async () => {
     simpleTable = ':Start\n1,{Min~3,2.123456,1,0,1.5,2.3,100}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('0');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('0');
   });
 });
 
@@ -333,19 +333,19 @@ describe('Max~', () => {
   it('second bigger returns', async () => {
     simpleTable = ':Start\n1,{Max~0,2.923456}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('2.923456');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('2.923456');
   });
 
   it('first bigger returns', async () => {
     simpleTable = ':Start\n1,{Max~3,2.123456}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('3');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('3');
   });
 
   it('can have 2+ arguments', async () => {
     simpleTable = ':Start\n1,{Max~3,2.123456,1,0,1.5,2.3,100}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('100');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('100');
   });
 });
 
@@ -365,13 +365,13 @@ describe('Mod~ (modulo or remainder)', () => {
   it('3 / 2 remainder = 1', async () => {
     simpleTable = ':Start\n1,{Mod~3,2}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('1');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('1');
   });
 
   it('2 / 2 remainder = 0', async () => {
     simpleTable = ':Start\n1,{Mod~2,2}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('0');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('0');
   });
 });
 
@@ -391,12 +391,12 @@ describe('Power~', () => {
   it('2 power 4 with comma as separator', async () => {
     simpleTable = ':Start\n1,{Power~2,4}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('16');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('16');
   });
 
   it('2 power 4 with power "^" as separator', async () => {
     simpleTable = ':Start\n1,{Power~2^4}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('16');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('16');
   });
 });

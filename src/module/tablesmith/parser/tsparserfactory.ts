@@ -73,12 +73,11 @@ class TSParserFactory {
 
   /**
    * Creates a new Group Call Expression that takes a defined GroupCallModifier into account.
-   * @param table to create a Group call for, may be undefined, then this table is used.
-   * @param group to call.
+   * @param rerollable boolean indicating if this group call has the rerollable tag set '~'.
    */
-  startGroupCall(): void {
+  startGroupCall(rerollable: boolean): void {
     if (!this.groupBuilder) throw Error(`Cannot create Expression without defined Group!`);
-    this.groupBuilder.startGroupCall();
+    this.groupBuilder.startGroupCall(rerollable);
   }
 
   /**

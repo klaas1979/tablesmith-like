@@ -1,5 +1,5 @@
 import TSGroup from '../tsgroup';
-import TSExpressionResult from './tsexpressionresult';
+import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
 /**
  * Tablesmith expressions make up the values of a Range. If a Range is rolled the TSExpression
@@ -7,7 +7,16 @@ import TSExpressionResult from './tsexpressionresult';
  */
 export default interface TSExpression {
   /**
+   * Returns if this is an expressions that is rerollable. Normally this is the case
+   * for Groupcalls with the '~' sign at the beginning, and not for other Groupcalls without.
+   * Potentially there may be other TSExpressions that are rerollable.
+   * @returns true for rerollable Expressions, false otherwise.
+   */
+  isRerollable(): boolean;
+
+  /**
    * Returns the result for this expression.
+   * @returns TSExpressionResult wrapped in Promise for async calling.
    */
   evaluate(): Promise<TSExpressionResult>;
 
@@ -27,6 +36,9 @@ export default interface TSExpression {
  * Base implementation with default method implementations.
  */
 export class BaseTSExpression implements TSExpression {
+  isRerollable(): boolean {
+    return false;
+  }
   async evaluate(): Promise<TSExpressionResult> {
     throw Error('Method not implemented.');
   }

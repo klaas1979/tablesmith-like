@@ -1,6 +1,6 @@
 import { evalcontext } from '../evaluationcontextinstance';
 import TSExpression, { BaseTSExpression } from '../tsexpression';
-import TSExpressionResult from '../tsexpressionresult';
+import { TSExpressionResult, SingleTSExpressionResult } from '../tsexpressionresult';
 /**
  * Inner Term for a dice roll, containing one or many dice rolls with possible to be chained by math expressions,
  * i.e. 3d6+2d4. The inner dice while not add Function name to term, but only the bare dice term.
@@ -23,7 +23,7 @@ export default class InnerDiceTerm extends BaseTSExpression {
       total += roll;
     }
 
-    return new TSExpressionResult(total);
+    return new SingleTSExpressionResult(total);
   }
 
   getExpression(): string {

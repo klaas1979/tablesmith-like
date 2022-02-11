@@ -6,7 +6,7 @@ import InnerDiceTerm from './terms/innerdiceterm';
 import IntTerm from './terms/intterm';
 import TSExpression, { BaseTSExpression } from './tsexpression';
 import TSExpressions from './tsexpressions';
-import TSExpressionResult from './tsexpressionresult';
+import { TSExpressionResult, RerollableTSExpressionResult } from './tsexpressionresult';
 
 /**
  * Expression to evaluate / roll on a tables group. If modifier is "=" set fixed result to true and add
@@ -14,15 +14,18 @@ import TSExpressionResult from './tsexpressionresult';
  * the modifer.
  */
 export default class TSGroupCallExpression extends BaseTSExpression {
-  tableAndGroupExpression: TSExpression;
-  groupCallModifier: GroupCallModifierTerm;
-  params: TSExpressions[];
+  private tableAndGroupExpression: TSExpression;
+  private rerollable: boolean;
+  private groupCallModifier: GroupCallModifierTerm;
+  private params: TSExpressions[];
   constructor(
+    rerollable: boolean,
     tableAndGroupExpression: TSExpression,
     groupCallModifier: GroupCallModifierTerm | undefined,
     params: TSExpressions[],
   ) {
     super();
+    this.rerollable = rerollable;
     this.tableAndGroupExpression = tableAndGroupExpression;
     this.groupCallModifier = groupCallModifier ? groupCallModifier : GroupCallModifierTerm.createUnmodified();
     this.params = params;
@@ -41,15 +44,15 @@ export default class TSGroupCallExpression extends BaseTSExpression {
     let evaledParams: string[] = [];
     if (this.params && this.params.length > 0)
       evaledParams = await Promise.all(
-        this.params.map(async (exp) => {
-          return (await exp.evaluate()).asString();
+        this.params.map(async (p) => {
+          return (await p.evaluate()).asString();
         }),
       );
     evalcontext.pushCurrentCallTablename(tsTable.name);
     tsTable.setParametersForEvaluationByIndex(evaledParams);
     const result = await tsGroup.result(termResult.asNumber());
     evalcontext.popCurrentCallTablename();
-    return new TSExpressionResult(result);
+    return new RerollableTSExpressionResult(result, this.rerollable ? this : undefined);
   }
 
   getExpression(): string {

@@ -1,5 +1,5 @@
 import TSExpression, { BaseTSExpression } from './tsexpression';
-import TSExpressionResult from './tsexpressionresult';
+import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
 /**
  * Math Trunc function on contained expression, drops all decimal places.
@@ -14,7 +14,7 @@ export default class TSMathTruncExpression extends BaseTSExpression {
     const valueString = (await this.param.evaluate()).asString();
     const value = Number.parseInt(valueString);
     if (Number.isNaN(value)) throw Error(`Could not get Trunc for non number value '${valueString}'!`);
-    return new TSExpressionResult(value);
+    return new SingleTSExpressionResult(value);
   }
   getExpression(): string {
     return `{Trunc~${this.param.getExpression()}}`;

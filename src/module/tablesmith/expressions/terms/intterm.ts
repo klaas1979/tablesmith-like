@@ -1,5 +1,5 @@
 import { BaseTSExpression } from '../tsexpression';
-import TSExpressionResult from '../tsexpressionresult';
+import { TSExpressionResult, SingleTSExpressionResult } from '../tsexpressionresult';
 
 /**
  * Represents an Integer number as Term.
@@ -14,6 +14,6 @@ export default class IntTerm extends BaseTSExpression {
     return `${this.int}`;
   }
   async evaluate(): Promise<TSExpressionResult> {
-    return new TSExpressionResult(this.int);
+    return new SingleTSExpressionResult(this.int);
   }
 }

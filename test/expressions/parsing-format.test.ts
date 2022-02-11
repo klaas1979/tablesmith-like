@@ -20,30 +20,30 @@ describe('Special chars escaping', () => {
   it('/% results in %', async () => {
     simpleTable = ':Start\n1,/%/%\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('%%');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('%%');
   });
 
   it('/[ results in [', async () => {
     simpleTable = ':Start\n1,/[/[\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('[[');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('[[');
   });
 
   it('/] results in ]', async () => {
     simpleTable = ':Start\n1,/]/]\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe(']]');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe(']]');
   });
   it('/ without char to escape results in /', async () => {
     simpleTable = ':Start\n1,/%/\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('%/');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('%/');
   });
 
   it('/ without char can be chained', async () => {
     simpleTable = ':Start\n1,/%/// other\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('%/// other');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('%/// other');
   });
 });
 
@@ -67,13 +67,13 @@ describe('Parsing {Bold~', () => {
   it('text with b tags', async () => {
     simpleTable = ':Start\n1,{Bold~One}\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('<b>One</b>');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('<b>One</b>');
   });
 
   it('nested expression with b tags', async () => {
     simpleTable = ':Start\n1,{Bold~{Calc~4}[other]}\n:other\n1,value\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('<b>4value</b>');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('<b>4value</b>');
   });
 });
 
@@ -86,7 +86,7 @@ describe('Parsing {Line~', () => {
   it('can be split over many lines', async () => {
     simpleTable = ':Start\n1,One{ \n_ Line~ \n_ center \n_ , \n_ 100 \n_ } \n_ Two\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('One<br/> Two');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('One<br/> Two');
   });
 
   it('Line expression format correct', async () => {
@@ -99,6 +99,6 @@ describe('Parsing {Line~', () => {
   it('for Group with Line formats html', async () => {
     simpleTable = ':Start\n1,One{Line~center,100}Two\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('One<br/>Two');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('One<br/>Two');
   });
 });

@@ -1,6 +1,6 @@
 import { evalcontext } from './evaluationcontextinstance';
 import TSExpression, { BaseTSExpression } from './tsexpression';
-import TSExpressionResult from './tsexpressionresult';
+import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
 /**
  * Expression that asks for Input via Callback and returns entered text.
@@ -19,7 +19,7 @@ export default class TSInputTextExpression extends BaseTSExpression {
     const prompt = (await this.prompt.evaluate()).asString().trim();
     const value = (await this.defaultValue.evaluate()).asString().trim();
     const result = await evalcontext.promptForInputText(prompt, value);
-    return new TSExpressionResult(result);
+    return new SingleTSExpressionResult(result);
   }
 
   getExpression(): string {

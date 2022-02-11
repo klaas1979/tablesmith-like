@@ -1,5 +1,5 @@
 import TSExpression, { BaseTSExpression } from '../tsexpression';
-import TSExpressionResult from '../tsexpressionresult';
+import { TSExpressionResult, SingleTSExpressionResult } from '../tsexpressionresult';
 import TermCalc from './termcalc';
 
 /**
@@ -34,7 +34,7 @@ export class BaseMathTerm extends BaseTSExpression {
       if (!this.termCalc) throw Error('TermCalc not defined, cannot roll for result!');
       const aResult = await this.termA.evaluate(),
         bResult = await this.termB.evaluate();
-      return new TSExpressionResult(this.termCalc.calc(aResult.asNumber(), bResult.asNumber()));
+      return new SingleTSExpressionResult(this.termCalc.calc(aResult.asNumber(), bResult.asNumber()));
     }
   }
 }

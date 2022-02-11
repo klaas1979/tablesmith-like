@@ -1,5 +1,5 @@
 import TSExpression, { BaseTSExpression } from './tsexpression';
-import TSExpressionResult from './tsexpressionresult';
+import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
 /**
  * Math Round function on contaned expression.
@@ -16,7 +16,7 @@ export default class TSMathRoundExpression extends BaseTSExpression {
     const value = (await this.param.evaluate()).asNumber();
     const decimalPlacesString = (await this.decimalPlaces.evaluate()).asString();
     const decimalPlaces = Number.parseInt(decimalPlacesString);
-    return new TSExpressionResult(value.toFixed(decimalPlaces));
+    return new SingleTSExpressionResult(value.toFixed(decimalPlaces));
   }
   getExpression(): string {
     return `{Round~${this.decimalPlaces.getExpression()},${this.param.getExpression()}}`;

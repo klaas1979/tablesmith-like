@@ -1,5 +1,5 @@
 import TSExpression, { BaseTSExpression } from './tsexpression';
-import TSExpressionResult from './tsexpressionresult';
+import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
 /**
  * Math mod function to get remainder of division.
@@ -15,7 +15,7 @@ export default class TSMathModExpression extends BaseTSExpression {
   async evaluate(): Promise<TSExpressionResult> {
     const value1 = (await this.param1.evaluate()).asNumber();
     const value2 = (await this.param2.evaluate()).asNumber();
-    return new TSExpressionResult(value1 % value2);
+    return new SingleTSExpressionResult(value1 % value2);
   }
   getExpression(): string {
     return `{Mod~${this.param1.getExpression()},${this.param2.getExpression()}}`;

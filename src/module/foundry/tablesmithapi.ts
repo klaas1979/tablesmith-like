@@ -6,6 +6,7 @@ import TableSelectionForm from './forms/tableselectionform';
 import ChatResults from './chatresults';
 import { displayTableParseErrors } from './forms/displayparseerrors';
 import ParamInputForm from './forms/paraminputform';
+import CallResult from '../tablesmith/callresult';
 export default class TablesmithApi {
   constructor() {
     JournalTables.loadTablesFromJournal();
@@ -68,10 +69,10 @@ export default class TablesmithApi {
   async evaluateTable(
     call: TableCallValues | string,
     options: { chatResults?: boolean; lenient?: boolean } = { chatResults: true, lenient: false },
-  ): Promise<string | string[]> {
+  ): Promise<CallResult> {
     if (options.lenient && typeof call === 'string') call = this.enhanceCall(call);
-    let result: string | string[] = '';
     const callValues = this.parseEvaluateCall(call);
+    let result: CallResult = new CallResult(callValues ? callValues : call);
     if (callValues) {
       const submitted = await ParamInputForm.gather(callValues);
       if (!submitted)

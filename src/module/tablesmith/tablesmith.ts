@@ -7,6 +7,7 @@ import { tableparser } from './parser/tableparser';
 import { callparser } from './parser/callparser';
 import { html2text } from './parser/html2text';
 import { TableCallValues } from '../foundry/tablecallvalues';
+import CallResult from './callresult';
 
 /**
  * The Tablesmith class to setup the Tablesmith environment, contains all parsed tables and provides needed functionality
@@ -27,12 +28,12 @@ class Tablesmith {
    * roll can be modified by a value using '+' or '-' to add modifier to the roll.
    * @param call TableCallValues or Expression to get evaluated Text Result for,
    * form is [Table.Group] or [Group] with potential added modifier in the form "=int", "+int" or "-int".
-   * @returns result from Table as text.
+   * @returns TableResult or TableResult[] single Result or array of results.
    */
   async evaluate(
     call: TableCallValues | string,
     parameters: { name: string; value: string | undefined }[] = [],
-  ): Promise<string | string[]> {
+  ): Promise<CallResult> {
     try {
       const tableCallValues = this.parseEvaluateCall(call);
       if (!tableCallValues.group)
@@ -40,7 +41,7 @@ class Tablesmith {
           `TSTable for name='${tableCallValues.tablename}' does not contain Group='${tableCallValues.groupname}'! call was '${call}'`,
         );
       const modifier = GroupCallModifierTerm.create(tableCallValues.modifier, tableCallValues.modifierValue);
-      const result = [];
+      const result = new CallResult(tableCallValues);
       for (let count = 0; count < tableCallValues.rollCount; count++) {
         this.resetEvaluationContext();
         evalcontext.pushCurrentCallTablename(tableCallValues.tablename);
@@ -50,10 +51,12 @@ class Tablesmith {
         result.push(await tableCallValues.group.roll(modifier));
         evalcontext.popCurrentCallTablename();
       }
-      return result.length == 1 ? result[0] : result;
+      return result;
     } catch (error) {
       const e = error as Error;
-      return `Error: ${e.message}`;
+      const result = new CallResult(call);
+      result.setErrorMessage(`Error: ${e.message}`);
+      return result;
     }
   }
 

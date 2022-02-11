@@ -1,5 +1,5 @@
 import TSExpression, { BaseTSExpression } from './tsexpression';
-import TSExpressionResult from './tsexpressionresult';
+import { TSExpressionResult, TSExpressionResultCollection } from './tsexpressionresult';
 
 /**
  * Collection of expressions that make up the result of a TSRange or the Before and After parts within a Group.
@@ -17,12 +17,12 @@ export default class TSExpressions extends BaseTSExpression {
    * @returns string resulting text, for evaluating all expressions contained.
    */
   async evaluate(): Promise<TSExpressionResult> {
-    let result = '';
+    const resultCollection = new TSExpressionResultCollection();
     for (const expression of this.expressions) {
       const subResult = await expression.evaluate();
-      result += subResult.asString();
+      resultCollection.addResult(subResult);
     }
-    return new TSExpressionResult(result);
+    return resultCollection.condense();
   }
 
   /**

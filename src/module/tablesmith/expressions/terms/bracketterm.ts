@@ -1,5 +1,5 @@
 import TSExpression, { BaseTSExpression } from '../tsexpression';
-import TSExpressionResult from '../tsexpressionresult';
+import { TSExpressionResult, SingleTSExpressionResult } from '../tsexpressionresult';
 
 /**
  * A mathematical Bracket to order the evaluation of mathematical expressions.

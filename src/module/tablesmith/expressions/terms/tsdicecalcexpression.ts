@@ -1,5 +1,5 @@
 import TSExpression, { BaseTSExpression } from '../tsexpression';
-import TSExpressionResult from '../tsexpressionresult';
+import { TSExpressionResult, SingleTSExpressionResult } from '../tsexpressionresult';
 
 export default class TSDiceCalcExpression extends BaseTSExpression {
   functionName: string;

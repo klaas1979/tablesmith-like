@@ -1,6 +1,6 @@
 import SelectTuple from './selecttuple';
 import TSExpression, { BaseTSExpression } from './tsexpression';
-import TSExpressionResult from './tsexpressionresult';
+import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 import TSExpressions from './tsexpressions';
 
 /**
@@ -23,7 +23,7 @@ export default class TSSelectExpression extends BaseTSExpression {
       if ((await tuple.key.evaluate()).asString().trim() == selectorValue)
         result = (await tuple.value.evaluate()).asString();
     }
-    return new TSExpressionResult(result ? result : (await this.defaultValue.evaluate()).asString());
+    return new SingleTSExpressionResult(result ? result : (await this.defaultValue.evaluate()).asString());
   }
 
   getExpression(): string {

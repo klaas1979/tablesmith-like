@@ -2,6 +2,11 @@ import GroupCallModifierTerm from './expressions/terms/groupcallmodifierterm';
 import InnerDiceTerm from './expressions/terms/innerdiceterm';
 import IntTerm from './expressions/terms/intterm';
 import TSExpression from './expressions/tsexpression';
+import {
+  SingleTSExpressionResult,
+  TSExpressionResult,
+  TSExpressionResultCollection,
+} from './expressions/tsexpressionresult';
 import TSExpressions from './expressions/tsexpressions';
 import TSRange from './tsrange';
 /**
@@ -100,8 +105,8 @@ class TSGroup {
    * Rolls on this group using the provided modifier and returns the result.
    * @param groupCallModifier to modify rolls with.
    */
-  async roll(groupCallModifier: GroupCallModifierTerm): Promise<string> {
-    let result: string | undefined = undefined;
+  async roll(groupCallModifier: GroupCallModifierTerm): Promise<TSExpressionResult> {
+    let result: TSExpressionResult | undefined = undefined;
     const roller = groupCallModifier.modify(this.rollTerm());
     for (let i = 0; result === undefined && i < this.ranges.length * 10; i++) {
       const roll = await roller.evaluate();
@@ -124,7 +129,7 @@ class TSGroup {
         result = await this.result(range.getLower());
       }
     }
-    return result != undefined ? result : '<Non repeating Group maxed out!>';
+    return result != undefined ? result : new SingleTSExpressionResult('<Non repeating Group maxed out!>');
   }
 
   /**
@@ -142,14 +147,14 @@ class TSGroup {
    * @param rollResult The RollResult to lockup the groups text with.
    * @returns evaluated expression for Range donating result.
    */
-  async result(total: number): Promise<string> {
+  async result(total: number): Promise<TSExpressionResult> {
     try {
       const result = this.rangeFor(total);
       this.lastRollTotal = total;
       const beforeValue = await this.before.evaluate();
       const resultValue = await result.evaluate();
       const afterValue = await this.after.evaluate();
-      return `${beforeValue.asString()}${resultValue.asString()}${afterValue.asString()}`;
+      return TSExpressionResultCollection.create(beforeValue, resultValue, afterValue).condense();
     } catch (error) {
       throw Error(`Error in Group '${this.name}'\n${error}`);
     }

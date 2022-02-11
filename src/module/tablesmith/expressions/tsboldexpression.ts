@@ -1,5 +1,5 @@
 import { BaseTSExpression } from './tsexpression';
-import TSExpressionResult from './tsexpressionresult';
+import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 import TSExpressions from './tsexpressions';
 
 /**
@@ -13,7 +13,7 @@ export default class TSBoldExpression extends BaseTSExpression {
   }
   async evaluate(): Promise<TSExpressionResult> {
     const result = await this.expressions.evaluate();
-    return new TSExpressionResult(`<b>${result.asString()}</b>`);
+    return new SingleTSExpressionResult(`<b>${result.asString()}</b>`);
   }
   getExpression(): string {
     return `{Bold~${this.expressions.getExpression()}}`;

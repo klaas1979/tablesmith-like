@@ -21,7 +21,7 @@ describe('Parsing {LastRoll~', () => {
   it('returns roll result for the group it is called from', async () => {
     simpleTable = ':Start\n1,One{LastRoll~}[Other=2]\n:Other\n1,notused\n2,Two{LastRoll~}';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('One1Two2');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('One1Two2');
   });
 });
 
@@ -40,13 +40,13 @@ describe('Parsing {MinVal~', () => {
   it('min value from first range', async () => {
     simpleTable = ':Start\n1-49,{MinVal~Start,1}\n50-100,{MinVal~Start,1}';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('1');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('1');
   });
 
   it('min value from second range', async () => {
     simpleTable = ':Start\n1-49,{MinVal~Start,2}\n50-100,{MinVal~Start,2}';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('50');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('50');
   });
 });
 describe('Parsing {MaxVal~', () => {
@@ -62,12 +62,12 @@ describe('Parsing {MaxVal~', () => {
   it('max value from first range', async () => {
     simpleTable = ':Start\n1-49,{MaxVal~Start,1}\n50-100,{MaxVal~Start,1}';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('49');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('49');
   });
   it('max value from second range', async () => {
     simpleTable = ':Start\n1-49,{MaxVal~Start,2}\n50-100,{MaxVal~Start,2}';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(await tablesmith.evaluate(`[${filename}]`)).toBe('100');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('100');
   });
 });
 

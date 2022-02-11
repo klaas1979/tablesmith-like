@@ -1,3 +1,5 @@
+import CallResult from '../tablesmith/callresult';
+import { TSExpressionResult } from '../tablesmith/expressions/tsexpressionresult';
 import { getGame } from './helper';
 import { TableCallValues } from './tablecallvalues';
 
@@ -5,19 +7,20 @@ export default class ChatResults {
   /**
    * Chats given results.
    * @param expression the results are based on.
-   * @param results retrieved results to chat.
+   * @param result retrieved results to chat.
    */
-  chatResults(callValues: TableCallValues, results: string[] | string): void {
-    if (typeof results == 'string') {
-      this._chatResult(callValues, results, 1);
+  chatResults(callValues: TableCallValues, result: CallResult): void {
+    if (result.size() == 1) {
+      this._chatResult(callValues, result.get(0), 1);
     } else {
-      results.forEach((res, index) => {
+      // TODO iterator erstellen, damit vernünftig iteriert werden kann
+      result.forEach((res, index) => {
         this._chatResult(callValues, res, index + 1);
       });
     }
   }
 
-  _chatResult(callValues: TableCallValues, result: string, index: number) {
+  _chatResult(callValues: TableCallValues, result: TSExpressionResult, index: number) {
     const speaker = ChatMessage.getSpeaker();
     const heading = this._createHeading(callValues, index);
     ChatMessage.create({
@@ -25,7 +28,7 @@ export default class ChatResults {
       user: getGame().user?.id,
       speaker: speaker,
       type: CONST.CHAT_MESSAGE_TYPES.OTHER,
-      content: result,
+      content: result.asString(),
     });
   }
 

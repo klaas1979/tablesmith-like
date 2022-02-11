@@ -1,5 +1,5 @@
 import TSExpression from './expressions/tsexpression';
-import TSExpressionResult from './expressions/tsexpressionresult';
+import { TSExpressionResult } from './expressions/tsexpressionresult';
 import TSExpressions from './expressions/tsexpressions';
 
 class TSRange {

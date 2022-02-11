@@ -1,6 +1,6 @@
 import { tstables } from '../tstables';
 import TSExpression, { BaseTSExpression } from './tsexpression';
-import TSExpressionResult from './tsexpressionresult';
+import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
 /**
  * Expression to give Count in a group.
@@ -17,7 +17,7 @@ export default class TSGroupCountExpression extends BaseTSExpression {
     const groupname = (await this.groupExpression.evaluate()).trim();
     const group = tstables.tableForName(this.tablename)?.groupForName(groupname);
     if (!group) throw Error(`Cannot Count group '${groupname}' in table '${groupname}', not defined!`);
-    return new TSExpressionResult(group.count());
+    return new SingleTSExpressionResult(group.count());
   }
 
   getExpression(): string {

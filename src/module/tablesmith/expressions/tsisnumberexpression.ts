@@ -1,5 +1,5 @@
 import TSExpression, { BaseTSExpression } from './tsexpression';
-import TSExpressionResult from './tsexpressionresult';
+import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
 /**
  * TS Function for IsNumber check.
@@ -13,7 +13,7 @@ export default class TSIsNumberExpression extends BaseTSExpression {
   async evaluate(): Promise<TSExpressionResult> {
     const value = (await this.expression.evaluate()).asString();
     const result = !Number.isNaN(Number.parseFloat(value)) || !Number.isNaN(Number.parseInt(value)) ? '1' : '0';
-    return new TSExpressionResult(result);
+    return new SingleTSExpressionResult(result);
   }
 
   getExpression(): string {

@@ -36,11 +36,13 @@ class Stack {
 
   /**
    * Starts a new Group Call Expression.
+   * @param rerollable boolean indicating if call is rerollable or not.
    */
-  startGroupCall() {
+  startGroupCall(rerollable: boolean) {
     if (this.stacked.length == 0) throw Error(`Stack is empty, cannot start new Group Call!`);
-    const rangeStack = new StackItem(new TSExpressions(), STACK_TYPE.GROUP_CALL);
-    this.stacked.push(rangeStack);
+    const stack = new StackItem(new TSExpressions(), STACK_TYPE.GROUP_CALL);
+    stack.rerollable = rerollable;
+    this.stacked.push(stack);
   }
 
   /**

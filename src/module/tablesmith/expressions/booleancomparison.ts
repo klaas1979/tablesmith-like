@@ -1,5 +1,5 @@
 import { BaseTSExpression } from './tsexpression';
-import TSExpressionResult from './tsexpressionresult';
+import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 import TSExpressions from './tsexpressions';
 
 /**
@@ -41,11 +41,11 @@ export default class BooleanComparison extends BaseTSExpression {
           boolResult = int(e1) >= int(e2);
           break;
         default:
-          return new TSExpressionResult('-1'); // error should throw
+          return new SingleTSExpressionResult('-1'); // error should throw
       }
-      return new TSExpressionResult(boolResult ? '1' : '0');
+      return new SingleTSExpressionResult(boolResult ? '1' : '0');
     } catch (error) {
-      return new TSExpressionResult('-1');
+      return new SingleTSExpressionResult('-1');
     }
   }
 

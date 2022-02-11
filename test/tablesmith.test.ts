@@ -1,3 +1,8 @@
+import {
+  RerollableTSExpressionResult,
+  TSExpressionResultCollection,
+  TS_EXPRESSION_RESULT_TYPE,
+} from '../src/module/tablesmith/expressions/tsexpressionresult';
 import { tablesmith } from '../src/module/tablesmith/tablesmithinstance';
 import { tstables } from '../src/module/tablesmith/tstables';
 
@@ -55,7 +60,7 @@ describe('Tablesmith#evaluate default values and modifiers', () => {
 
   it('[tablename] defaults Group to "Start"', async () => {
     const result = await tablesmith.evaluate(`[${filename}]`);
-    expect(result.length).toBeGreaterThan(1);
+    expect(['One', 'Two']).toContain(result.asString());
   });
 });
 
@@ -70,14 +75,14 @@ describe('Tablesmith#evaluate with params', () => {
     tablesmith.addTable('folder', filename, simpleTable);
     const expression = `[${filename}.Start(p1,p2)]`;
     const result = await tablesmith.evaluate(expression);
-    expect(result).toBe('p2-p1');
+    expect(result.asString()).toBe('p2-p1');
   });
   it('[tablename.Group(,p2)] empty param is using default', async () => {
     simpleTable = '%p2%,default\n@p2,d,Prompt\n%p1%,default\n@p1,d,Prompt\n:Start\n1,%p1%-%p2%';
     tablesmith.addTable('folder', filename, simpleTable);
     const expression = `[${filename}.Start(,p2)]`;
     const result = await tablesmith.evaluate(expression);
-    expect(result).toBe('p2-default');
+    expect(result.asString()).toBe('p2-default');
   });
 
   it('to many params throws', async () => {
@@ -85,7 +90,7 @@ describe('Tablesmith#evaluate with params', () => {
     tablesmith.addTable('folder', filename, simpleTable);
     const expression = `[${filename}.Start(p1,p2,x)]`;
     const result = await tablesmith.evaluate(expression);
-    expect(result).toContain('Error: ');
+    expect(result.getErrorMessage()).toContain('Error: ');
   });
 
   it('tmissing param throws', async () => {
@@ -93,7 +98,7 @@ describe('Tablesmith#evaluate with params', () => {
     tablesmith.addTable('folder', filename, simpleTable);
     const expression = `[${filename}.Start(p1)]`;
     const result = await tablesmith.evaluate(expression);
-    expect(result).toContain('Error: ');
+    expect(result.getErrorMessage()).toContain('Error: ');
   });
 });
 
@@ -108,7 +113,7 @@ describe('Tablesmith#evaluate with count of execution', () => {
     tablesmith.addTable('folder', filename, simpleTable);
     const expression = `[${filename}.Start(p1,p2)]:2`;
     const result = await tablesmith.evaluate(expression);
-    expect(result).toStrictEqual(['p2-p1', 'p2-p1']);
+    expect(result.asString()).toStrictEqual(['p2-p1', 'p2-p1']);
   });
 
   it('[tablename]:100 big roll counts', async () => {
@@ -118,7 +123,7 @@ describe('Tablesmith#evaluate with count of execution', () => {
     const result = await tablesmith.evaluate(expression);
     const expected = [];
     for (let index = 0; index < 100; index++) expected.push('1');
-    expect(result).toStrictEqual(expected);
+    expect(result.asString()).toStrictEqual(expected);
   });
 });
 
@@ -132,21 +137,21 @@ describe('Tablesmith#evaluate GroupCalls', () => {
     simpleTable = ':Start\n1,[other-10]\n:other\n1,One\n2,Two';
     tablesmith.addTable('folder', filename, simpleTable);
     const result = await tablesmith.evaluate(`[${filename}]`);
-    expect(result).toBe('One');
+    expect(result.asString()).toBe('One');
   });
 
   it('call with modifier +10 returns max', async () => {
     simpleTable = ':Start\n1,[other+10]\n:other\n1,One\n2,Two';
     tablesmith.addTable('folder', filename, simpleTable);
     const result = await tablesmith.evaluate(`[${filename}]`);
-    expect(result).toBe('Two');
+    expect(result.asString()).toBe('Two');
   });
 
   it('with = uses given result on table', async () => {
     simpleTable = ':Start\n1,[other=1]\n:other\n1,One\n2,Two';
     tablesmith.addTable('folder', filename, simpleTable);
     const result = await tablesmith.evaluate(`[${filename}]`);
-    expect(result).toBe('One');
+    expect(result.asString()).toBe('One');
   });
 
   it('call to other table with param', async () => {
@@ -155,14 +160,14 @@ describe('Tablesmith#evaluate GroupCalls', () => {
     simpleTable = ':Start\n1,[other.Start(2,1)]';
     tablesmith.addTable('folder', filename, simpleTable);
     const result = await tablesmith.evaluate(`[${filename}]`);
-    expect(result).toBe('1-2');
+    expect(result.asString()).toBe('1-2');
   });
 
   it('call with parameter in modifier', async () => {
     simpleTable = `%var%,2\n:Start\n1,[other=%var%]\n:other\n1,one\n2,two`;
     tablesmith.addTable('folder', filename, simpleTable);
     const result = await tablesmith.evaluate(`[${filename}]`);
-    expect(result).toBe('two');
+    expect(result.asString()).toBe('two');
   });
 });
 
@@ -176,7 +181,7 @@ describe('Tablesmith#evaluate', () => {
     simpleTable = ':Start\n<Before\n>After\n1,One\n';
     tablesmith.addTable('folder', filename, simpleTable);
     const result = await tablesmith.evaluate(`[${filename}]`);
-    expect(result).toBe('BeforeOneAfter');
+    expect(result.asString()).toBe('BeforeOneAfter');
   });
 });
 
@@ -190,7 +195,7 @@ describe('Tablesmith#evaluate Expression', () => {
     simpleTable = ':Start\n1,Calc={Calc~1d1+2},Dice={Dice~1d1+2}\n';
     tablesmith.addTable('folder', filename, simpleTable);
     const result = await tablesmith.evaluate(`[${filename}]`);
-    expect(result).toBe('Calc=3,Dice=3');
+    expect(result.asString()).toBe('Calc=3,Dice=3');
   });
 });
 
@@ -204,20 +209,55 @@ describe('Tablesmith#evaluate Calling Groups', () => {
     simpleTable = `:Start\n1,[${filename}.other]\n\n:other\n1,Other`;
     tablesmith.addTable('folder', filename, simpleTable);
     const result = await tablesmith.evaluate(`[${filename}]`);
-    expect(result).toBe('Other');
+    expect(result.asString()).toBe('Other');
   });
 
   it('Call [group] in same table', async () => {
     simpleTable = `:Start\n1,[other]\n\n:other\n1,Other`;
     tablesmith.addTable('folder', filename, simpleTable);
     const result = await tablesmith.evaluate(`[${filename}]`);
-    expect(result).toBe('Other');
+    expect(result.asString()).toBe('Other');
   });
 
   it('Chained [group] calls in same table', async () => {
     simpleTable = `:first\n1,[second]\n\n:second\n1,[third]\n:third\n1,Third`;
     tablesmith.addTable('folder', filename, simpleTable);
     const result = await tablesmith.evaluate(`[${filename}.first]`);
-    expect(result).toBe('Third');
+    expect(result.asString()).toBe('Third');
+  });
+});
+
+describe('Tablesmith#evaluate Groups with Re-roll Tag ~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+  it('nested [other] Single result (not rerollable)', async () => {
+    simpleTable = `:Start\n1,1[other]2\n:other\n1,x`;
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = await (await tablesmith.evaluate(`[${filename}]`)).get(0);
+    expect(result.type()).toBe(TS_EXPRESSION_RESULT_TYPE.SINGLE);
+    expect(result.asString()).toBe('1x2');
+  });
+  it('nested [~other] result collection', async () => {
+    simpleTable = `:Start\n1,1[~other]2\n:other\n1,x`;
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).get(0);
+    expect(result.type()).toBe(TS_EXPRESSION_RESULT_TYPE.COLLECTION);
+    expect((result as TSExpressionResultCollection).size()).toBe(3);
+    expect((result as TSExpressionResultCollection).results[1].type()).toBe(TS_EXPRESSION_RESULT_TYPE.REROLLABLE);
+    expect(result.asString()).toBe('1x2');
+  });
+  it('nested [~other] reroll does only change rerollable group', async () => {
+    simpleTable = `:Start\n1,{Dice~5d999},[~other]\n:other\n1,{Dice~5d999}`;
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).get(0);
+    expect(result.type()).toBe(TS_EXPRESSION_RESULT_TYPE.COLLECTION);
+    const first = result.asString().split(',');
+    const rerollable = (result as TSExpressionResultCollection).results[1] as RerollableTSExpressionResult;
+    await rerollable.reroll();
+    const second = result.asString().split(',');
+    expect(first[0]).toBe(second[0]);
+    expect(first[1]).not.toBe(second[1]);
   });
 });

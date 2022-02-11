@@ -1,5 +1,5 @@
 import TSExpression, { BaseTSExpression } from './tsexpression';
-import TSExpressionResult from './tsexpressionresult';
+import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 import TSExpressions from './tsexpressions';
 
 /**
@@ -19,7 +19,7 @@ export default class TSLoopExpression extends BaseTSExpression {
     for (let i = 0; i < maxValue; i++) {
       result += (await this.block.evaluate()).asString();
     }
-    return new TSExpressionResult(result);
+    return new SingleTSExpressionResult(result);
   }
 
   getExpression(): string {

@@ -1,5 +1,5 @@
 import TSExpression, { BaseTSExpression } from './tsexpression';
-import TSExpressionResult from './tsexpressionresult';
+import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
 /**
  * Math power function.
@@ -15,7 +15,7 @@ export default class TSMathPowerExpression extends BaseTSExpression {
   async evaluate(): Promise<TSExpressionResult> {
     const value1 = (await this.param1.evaluate()).asNumber();
     const value2 = (await this.param2.evaluate()).asNumber();
-    return new TSExpressionResult(Math.pow(value1, value2));
+    return new SingleTSExpressionResult(Math.pow(value1, value2));
   }
   getExpression(): string {
     return `{Power~${this.param1.getExpression()}^${this.param2.getExpression()}}`;

@@ -1,7 +1,7 @@
 import { evalcontext } from './evaluationcontextinstance';
 import CallSplitter from './callsplitter';
 import TSExpression, { BaseTSExpression } from './tsexpression';
-import TSExpressionResult from './tsexpressionresult';
+import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
 /**
  * Class representing a variable Set expression.
@@ -55,7 +55,7 @@ export default class TSVariableSetExpression extends BaseTSExpression {
       default:
         throw Error(`Unknown Type '${this.type}' cannot set variable '${this.getExpression()}'`);
     }
-    return new TSExpressionResult('');
+    return new SingleTSExpressionResult('');
   }
 
   private evaluateSet(currentValue: string | number | undefined, value: TSExpressionResult) {

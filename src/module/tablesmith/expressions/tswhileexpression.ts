@@ -1,5 +1,5 @@
 import TSExpression, { BaseTSExpression } from './tsexpression';
-import TSExpressionResult from './tsexpressionresult';
+import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 import TSExpressions from './tsexpressions';
 
 /**
@@ -24,7 +24,7 @@ export default class TSWhileExpression extends BaseTSExpression {
       if (counter > 1000)
         throw Error(`TSWhileExpression.evaluate() looped 1000 times, aborting: ${this.getExpression()}`);
     }
-    return new TSExpressionResult(result);
+    return new SingleTSExpressionResult(result);
   }
 
   getExpression(): string {

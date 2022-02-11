@@ -1,6 +1,6 @@
 import { TableParameter } from '../tstable';
 import TSExpression, { BaseTSExpression } from './tsexpression';
-import TSExpressionResult from './tsexpressionresult';
+import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
 /**
  * Param Expression that returns value for index of a param list.
@@ -28,7 +28,7 @@ export default class TSParamExpression extends BaseTSExpression {
       throw Error(
         `Index for Options of variable '${variable}' out of bounds was '${index}' allowed '1-${param.options.length}'`,
       );
-    return new TSExpressionResult(param.options[index - 1].value);
+    return new SingleTSExpressionResult(param.options[index - 1].value);
   }
 
   private async evaluateIndex(): Promise<number> {

@@ -1,6 +1,6 @@
 import BooleanComparison from './booleancomparison';
 import { BaseTSExpression } from './tsexpression';
-import TSExpressionResult from './tsexpressionresult';
+import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
 /**
  * TS Function for chaining boolean expressions "And" or "Or".
@@ -30,7 +30,7 @@ export default class TSLogicalExpression extends BaseTSExpression {
       const numTrueValue = results.reduce((sum, current) => sum + Number.parseInt(current), 0);
       result = numTrueValue == 1 ? '1' : '0';
     }
-    return new TSExpressionResult(result);
+    return new SingleTSExpressionResult(result);
   }
 
   getExpression(): string {

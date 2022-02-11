@@ -1,5 +1,5 @@
 import TSExpression, { BaseTSExpression } from './tsexpression';
-import TSExpressionResult from './tsexpressionresult';
+import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
 /**
  * Math Abs function on contaned expression.
@@ -12,7 +12,7 @@ export default class TSMathAbsExpression extends BaseTSExpression {
   }
   async evaluate(): Promise<TSExpressionResult> {
     const value = (await this.param.evaluate()).asNumber();
-    return new TSExpressionResult(Math.abs(value));
+    return new SingleTSExpressionResult(Math.abs(value));
   }
   getExpression(): string {
     return `{Abs~${this.param.getExpression()}}`;

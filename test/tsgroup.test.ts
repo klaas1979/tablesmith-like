@@ -23,39 +23,39 @@ describe('TSGroup (repeating)', () => {
   });
 
   it('#result stores roll as LastRoll', async () => {
-    await group.result(roll);
+    (await group.result(roll)).asString();
     expect(group.getLastRoll()).toBe(roll);
   });
 
   it('#result returns evaluated expression for roll', async () => {
-    const result = await group.result(roll);
+    const result = (await group.result(roll)).asString();
     expect(result).toBe('One');
   });
 
   it('#result with before add before prior to result', async () => {
     group.getBefore().push(new TSTextExpression('Before'));
-    const result = await group.result(roll);
+    const result = (await group.result(roll)).asString();
     expect(result).toBe('BeforeOne');
   });
 
   it('#result with after add after after result', async () => {
     group.getAfter().push(new TSTextExpression('After'));
-    const result = await group.result(roll);
+    const result = (await group.result(roll)).asString();
     expect(result).toBe('OneAfter');
   });
 
   it('#result with before and after adds both around result', async () => {
     group.getBefore().push(new TSTextExpression('Before'));
     group.getAfter().push(new TSTextExpression('After'));
-    const result = await group.result(roll);
+    const result = (await group.result(roll)).asString();
     expect(result).toBe('BeforeOneAfter');
   });
 
   it('#roll never maxes out', async () => {
     let result = await group.roll(modifier);
-    expect(result).toBe('One');
+    expect(result.asString()).toBe('One');
     result = await group.roll(modifier);
-    expect(result).toBe('One');
+    expect(result.asString()).toBe('One');
   });
 });
 
@@ -75,11 +75,11 @@ describe('TSGroup (non repeating)', () => {
 
   it('#roll on maxed out group', async () => {
     let result = await group.roll(modifier);
-    expect(['One', 'Two']).toContain(result);
+    expect(['One', 'Two']).toContain(result.asString());
     result = await group.roll(modifier);
-    expect(['One', 'Two']).toContain(result);
+    expect(['One', 'Two']).toContain(result.asString());
     result = await group.roll(modifier);
-    expect(result).toBe('<Non repeating Group maxed out!>');
+    expect(result.asString()).toBe('<Non repeating Group maxed out!>');
   });
 
   it('#reset on maxed out group, restores entries', async () => {
@@ -87,11 +87,11 @@ describe('TSGroup (non repeating)', () => {
     await group.roll(modifier);
     await group.roll(modifier);
     result = await group.roll(modifier);
-    expect(result).toBe('<Non repeating Group maxed out!>');
+    expect(result.asString()).toBe('<Non repeating Group maxed out!>');
     group.reset();
     result = await group.roll(modifier);
-    expect(['One', 'Two']).toContain(result);
+    expect(['One', 'Two']).toContain(result.asString());
     result = await group.roll(modifier);
-    expect(['One', 'Two']).toContain(result);
+    expect(['One', 'Two']).toContain(result.asString());
   });
 });

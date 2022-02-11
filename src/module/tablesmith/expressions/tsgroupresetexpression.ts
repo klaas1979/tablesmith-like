@@ -1,6 +1,6 @@
 import { tstables } from '../tstables';
 import TSExpression, { BaseTSExpression } from './tsexpression';
-import TSExpressionResult from './tsexpressionresult';
+import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
 /**
  * Simple Text Expression as value of a Range in a Group or part of the value, i.e. prefix or suffix to a TermExpression.
@@ -18,7 +18,7 @@ export default class TSGroupResetExpression extends BaseTSExpression {
     const group = tstables.tableForName(this.tablename)?.groupForName(groupname);
     if (!group) throw Error(`Cannot reset group '${groupname}' in table '${this.tablename}', not defined!`);
     group.reset();
-    return new TSExpressionResult('');
+    return new SingleTSExpressionResult('');
   }
 
   getExpression(): string {
