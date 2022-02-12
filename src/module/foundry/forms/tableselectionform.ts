@@ -11,7 +11,7 @@ import CallResult from '../../tablesmith/callresult';
 
 const TABLESMITH_SELECTOR = `modules/${TABLESMITH_ID}/templates/tablesmithselector.hbs`;
 
-interface TableSelectionOptions extends FormApplication.Options {
+interface TableSelectionOptions extends FormApplicationOptions {
   someCustomOption?: boolean;
 }
 
