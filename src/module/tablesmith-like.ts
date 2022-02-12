@@ -67,7 +67,7 @@ Hooks.once('setup', async () => {
     },
   );
   Handlebars.registerHelper('ts-callError', function (result: CallResult): string {
-    return result.getErrorMessage().replace('Error: ', '<br>Error: ');
+    return result.getErrorMessage().replace(/Error: /g, '<br>Error: ');
   });
 });
 
