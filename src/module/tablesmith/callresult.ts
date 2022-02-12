@@ -7,10 +7,10 @@ import { TSExpressionResult } from './expressions/tsexpressionresult';
  * from the evaluation of the same table.
  */
 export default class CallResult {
-  private results: { evalcontext: EvaluationContext; result: TSExpressionResult }[] = [];
-  private tableCallValues: TableCallValues | undefined;
-  private call: string | undefined;
-  private errorMessage = '';
+  results: { evalcontext: EvaluationContext; result: TSExpressionResult }[] = [];
+  tableCallValues: TableCallValues | undefined;
+  call: string | undefined;
+  errorMessage = '';
   constructor(callValues: TableCallValues | string) {
     if (typeof callValues === 'string') this.call = callValues;
     else this.tableCallValues = callValues;

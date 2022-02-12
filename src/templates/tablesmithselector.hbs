@@ -28,11 +28,16 @@
   </section>
   <section style="flex0">
     {{#if results}}
-      <h1>{{localize "TABLESMITH.result"}}</h1>
-      {{#each results}}
-        <h2>#{{ts-add @index 1}} of {{../callValues.rollCount}}</h2>
-        <div>{{{this}}}</div>
-      {{/each}}
+      {{#if (ts-callError results)}}
+      <h1>{{localize "TABLESMITH.error"}}</h1>
+      {{{ts-callError results}}}
+      {{else}}
+        <h1>{{localize "TABLESMITH.result"}}</h1>
+        {{#each results.results}}
+          <h2>#{{ts-add @index 1}} of {{../callValues.rollCount}}</h2>
+          <div>{{{ts-result this}}}</div>
+        {{/each}}
+      {{/if}}
     {{/if}}
   </section>
 </form>

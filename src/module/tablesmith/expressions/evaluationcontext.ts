@@ -1,5 +1,6 @@
 import TSGroup from '../tsgroup';
 import twist from './mersennetwister';
+import cloneDeep from 'lodash.cloneDeep';
 
 /**
  * Class providing all needed context for an evaluation, including rolling results, Variables and Parameters
@@ -14,6 +15,14 @@ class EvaluationContext {
     this.variables = new Map();
     this.callTables = [];
     this.lastRolls = new Map();
+  }
+
+  clone(): EvaluationContext {
+    const clone = new EvaluationContext();
+    clone.variables = cloneDeep(this.variables);
+    clone.callTables = cloneDeep(this.callTables);
+    clone.lastRolls = cloneDeep(this.lastRolls);
+    return clone;
   }
 
   /**

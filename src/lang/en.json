@@ -11,6 +11,7 @@
     "no-parse-errors": "No errors parsing tables!",
     "rollcount": "Number of rolls",
     "chatresults": "Add Results to Chat",
+    "error": "Error",
     "result": "Result",
     "folder": "Folder",
     "table": "Table"

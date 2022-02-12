@@ -135,7 +135,7 @@ export class RerollableTSExpressionResult extends BaseTSExpressionResult impleme
   private evalcontext: EvaluationContext;
   constructor(evalcontext: EvaluationContext, result: TSExpressionResult, expression: TSExpression | undefined) {
     super();
-    this.evalcontext = evalcontext;
+    this.evalcontext = evalcontext.clone();
     this.result = result;
     this.expression = expression;
   }
