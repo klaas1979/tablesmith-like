@@ -8,7 +8,7 @@ const TABLESMITH_PARAMS = `modules/${TABLESMITH_ID}/templates/paraminput.hbs`;
 /**
  * Parameter Input for a Table call.
  */
-class ParamInputForm extends FormApplication<FormApplication.Options, TableSelectionFormData, TableSelectionFormData> {
+class ParamInputForm extends FormApplication<FormApplicationOptions, TableSelectionFormData, TableSelectionFormData> {
   data: TableSelectionFormData;
   resolve: (value: unknown) => void;
   private constructor(data: TableSelectionFormData, resolve: (value: unknown) => void) {
