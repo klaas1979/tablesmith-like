@@ -34,7 +34,6 @@
     "@rollup/plugin-commonjs": "^21.0.1",
     "@rollup/plugin-node-resolve": "^13.1.1",
     "@types/jest": "^27.0.3",
-    "@types/lodash.clonedeep": "^4.5.6",
     "@types/node": "^17.0.1",
     "@typescript-eslint/eslint-plugin": "^5.8.0",
     "@typescript-eslint/parser": "^5.8.0",
@@ -65,7 +64,6 @@
     "*.(json|css)": "prettier --write"
   },
   "dependencies": {
-    "lodash.clonedeep": "^4.5.0",
     "peggy": "^1.2.0",
     "ts-pegjs": "^1.2.1"
   }
