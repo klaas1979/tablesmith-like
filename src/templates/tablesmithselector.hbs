@@ -35,7 +35,7 @@
         <h1>{{localize "TABLESMITH.result"}}</h1>
         {{#each results.results}}
           <h2>#{{ts-add @index 1}} of {{../callValues.rollCount}}</h2>
-          <div>{{{ts-result this}}}</div>
+          {{> modules/tablesmith-like/templates/resultpartial.hbs result=this.result resultIndex=@index }}
         {{/each}}
       {{/if}}
     {{/if}}

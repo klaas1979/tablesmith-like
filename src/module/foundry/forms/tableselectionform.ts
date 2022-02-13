@@ -77,17 +77,35 @@ export default class TableSelectionForm extends FormApplication<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async _handleButtonClick(event: { currentTarget: any }) {
     const clickedElement = $(event.currentTarget);
-    const action = clickedElement.data().action;
+    const elementData = clickedElement.data();
+    const action = elementData.action;
     switch (action) {
       case 'evaluate':
         Logger.debug(false, 'pre evaluateTable call', this.data.callValues);
         this._evaluateTable();
         break;
+      case 'group-reroll':
+        this._rerollGroup(elementData);
+        break;
       case 'reload-tables':
         this._reloadTables();
         break;
       default:
-        Logger.error(true, 'Unknown action', action);
+        Logger.error(true, 'Unknown action', action, clickedElement.data());
+    }
+  }
+
+  async _rerollGroup(elementData: JQuery.PlainObject) {
+    const resultIndex = Number.parseInt(elementData.index);
+    const uuid = elementData.uuid;
+    Logger.debug(false, 're roll group', resultIndex, uuid);
+    const result = this.data.results?.results[resultIndex];
+    const evalcontext = result?.evalcontext;
+    const rerollable = evalcontext?.retrieve(uuid);
+    Logger.debug(false, 're roll group', result, evalcontext, rerollable);
+    if (rerollable) {
+      await rerollable?.reroll();
+      this.render();
     }
   }
 

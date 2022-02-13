@@ -19,6 +19,18 @@ export interface TSExpressionResult {
   isRerollable(): boolean;
 
   /**
+   * Returns if this Result is a plain text.
+   * @returns true if text, false if not.
+   */
+  isText(): boolean;
+
+  /**
+   * Returns if this Result is a collection of results.
+   * @returns true if collection, false if not.
+   */
+  isCollection(): boolean;
+
+  /**
    * Rerolls this result, if it is rerollable.
    */
   reroll(): Promise<void>;
@@ -35,12 +47,6 @@ export interface TSExpressionResult {
    * @returns true if it is empty, false if not.
    */
   isEmpty(): boolean;
-
-  /**
-   * Returns the type of this TSExpressionResult.
-   * @returns true if rerollable, false if static.
-   */
-  type(): TS_EXPRESSION_RESULT_TYPE;
 
   /**
    * Returns result as string.
@@ -84,8 +90,11 @@ class BaseTSExpressionResult implements TSExpressionResult {
   isRerollable(): boolean {
     return false;
   }
-  type(): TS_EXPRESSION_RESULT_TYPE {
-    throw Error('Not implemented, needs to be defined in subclass!');
+  isText(): boolean {
+    return false;
+  }
+  isCollection(): boolean {
+    return false;
   }
   asString(): string {
     throw Error('Not implemented, needs to be defined in subclass!');
@@ -109,16 +118,16 @@ class BaseTSExpressionResult implements TSExpressionResult {
  * Single results are the leaves of the tables, normally plain text.
  */
 export class SingleTSExpressionResult extends BaseTSExpressionResult implements TSExpressionResult {
-  private result: string;
+  result: string;
   constructor(result: string | number) {
     super();
     this.result = `${result}`;
   }
+  isText(): boolean {
+    return true;
+  }
   isEmpty(): boolean {
     return this.result.length === 0;
-  }
-  type(): TS_EXPRESSION_RESULT_TYPE {
-    return TS_EXPRESSION_RESULT_TYPE.SINGLE;
   }
   asString(): string {
     return this.result;
@@ -127,23 +136,27 @@ export class SingleTSExpressionResult extends BaseTSExpressionResult implements 
 
 /**
  * A rerollable result is always a single result containing at least on other result, that is rerolled.
+ * If reroll is not set the object acts as a collection for compatibility reasons.
  * The other result maybe a TSExpressionResultCollection.
  */
 export class RerollableTSExpressionResult extends BaseTSExpressionResult implements TSExpressionResult {
-  private result: TSExpressionResult;
-  private expression: TSExpression | undefined;
-  private evalcontext: EvaluationContext;
+  result: TSExpressionResult;
+  results: TSExpressionResult[];
+  expression: TSExpression | undefined;
+  uuid: string | undefined;
+  evalcontext: EvaluationContext | undefined;
   constructor(evalcontext: EvaluationContext, result: TSExpressionResult, expression: TSExpression | undefined) {
     super();
-    this.evalcontext = evalcontext.clone();
-    this.result = result;
     this.expression = expression;
+    this.result = result;
+    this.results = [this.result];
+    if (this.expression) {
+      this.evalcontext = evalcontext.clone();
+      this.uuid = this.evalcontext.store(this);
+    } else this.results = [result];
   }
   isEmpty(): boolean {
-    return !this.result.isRerollable() && this.result.asString().length === 0;
-  }
-  type(): TS_EXPRESSION_RESULT_TYPE {
-    return TS_EXPRESSION_RESULT_TYPE.REROLLABLE;
+    return !this.result?.isRerollable() && this.result?.asString().length === 0;
   }
   asString(): string {
     return this.result.asString();
@@ -151,9 +164,16 @@ export class RerollableTSExpressionResult extends BaseTSExpressionResult impleme
   isRerollable(): boolean {
     return this.expression !== undefined;
   }
-  async reroll() {
+  isCollection(): boolean {
+    return this.expression === undefined;
+  }
+  async reroll(): Promise<void> {
     if (this.expression) {
+      if (!this.evalcontext) throw Error('evalcontext not set for rerollable!');
       this.result = await this.expression.evaluate(this.evalcontext);
+      const rerollableResult = this.result as RerollableTSExpressionResult;
+      this.result = rerollableResult.result;
+      this.results = [this.result];
     }
   }
 }
@@ -172,8 +192,7 @@ export class TSExpressionResultCollection extends BaseTSExpressionResult impleme
     for (let r of this.results) {
       r = r.condense();
       if (!r.isEmpty()) {
-        const isCollection = r.type() === TS_EXPRESSION_RESULT_TYPE.COLLECTION;
-        if (!isCollection && !r.isRerollable() && !result._getLast()?.isRerollable()) {
+        if (!r.isCollection() && !r.isRerollable() && !result._getLast()?.isRerollable()) {
           let prev = result.pop()?.asString();
           prev = prev == undefined ? '' : prev;
           result.addResult(new SingleTSExpressionResult(prev + r.asString()));
@@ -182,6 +201,9 @@ export class TSExpressionResultCollection extends BaseTSExpressionResult impleme
     }
     if (result.size() === 1) return result.results[0];
     return result;
+  }
+  isCollection(): boolean {
+    return true;
   }
   isEmpty(): boolean {
     return this.results.length === 0;

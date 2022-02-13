@@ -1,7 +1,6 @@
 import {
   RerollableTSExpressionResult,
   TSExpressionResultCollection,
-  TS_EXPRESSION_RESULT_TYPE,
 } from '../src/module/tablesmith/expressions/tsexpressionresult';
 import { tablesmith } from '../src/module/tablesmith/tablesmithinstance';
 import { tstables } from '../src/module/tablesmith/tstables';
@@ -236,23 +235,23 @@ describe('Tablesmith#evaluate Groups with Re-roll Tag ~', () => {
     simpleTable = `:Start\n1,1[other]2\n:other\n1,x`;
     tablesmith.addTable('folder', filename, simpleTable);
     const result = await (await tablesmith.evaluate(`[${filename}]`)).get(0);
-    expect(result.type()).toBe(TS_EXPRESSION_RESULT_TYPE.SINGLE);
+    expect(result.isText()).toBeTruthy();
     expect(result.asString()).toBe('1x2');
   });
   it('nested [~other] result collection', async () => {
     simpleTable = `:Start\n1,1[~other]2\n:other\n1,x`;
     tablesmith.addTable('folder', filename, simpleTable);
     const result = (await tablesmith.evaluate(`[${filename}]`)).get(0);
-    expect(result.type()).toBe(TS_EXPRESSION_RESULT_TYPE.COLLECTION);
+    expect(result.isCollection()).toBeTruthy();
     expect((result as TSExpressionResultCollection).size()).toBe(3);
-    expect((result as TSExpressionResultCollection).results[1].type()).toBe(TS_EXPRESSION_RESULT_TYPE.REROLLABLE);
+    expect((result as TSExpressionResultCollection).results[1].isRerollable).toBeTruthy();
     expect(result.asString()).toBe('1x2');
   });
   it('nested [~other] reroll does only change rerollable group', async () => {
     simpleTable = `:Start\n1,{Dice~5d999},[~other]\n:other\n1,{Dice~5d999}`;
     tablesmith.addTable('folder', filename, simpleTable);
     const result = (await tablesmith.evaluate(`[${filename}]`)).get(0);
-    expect(result.type()).toBe(TS_EXPRESSION_RESULT_TYPE.COLLECTION);
+    expect(result.isCollection()).toBeTruthy();
     const first = result.asString().split(',');
     const rerollable = (result as TSExpressionResultCollection).results[1] as RerollableTSExpressionResult;
     await rerollable.reroll();

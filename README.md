@@ -254,7 +254,9 @@ A Table call can donate how many rolls should be done by using the syntax `[Tabl
 
 ### Re Roll Tag
 
-The re roll Tag for a Table-Group call `[~Table.Group]` is not implemented.
+The re roll Tag for a Table-Group call `[~Table.Group]` is working within the Tablesmith Form. Each re-rollable Group has a small icon in front that can be clicked for a re-roll of this particular group.
+
+For other calls the Result object can be used to trigger a re roll programatically.
 
 ### Printing Special Character
 

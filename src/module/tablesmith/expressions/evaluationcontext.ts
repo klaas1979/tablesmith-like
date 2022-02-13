@@ -1,5 +1,7 @@
 import TSGroup from '../tsgroup';
-import twist from './mersennetwister';
+import twist from '../../helpers/mersennetwister';
+import { RerollableTSExpressionResult } from './tsexpressionresult';
+import { generateUUID } from '../../helpers/uuid';
 
 /**
  * Class providing all needed context for an evaluation, including rolling results, Variables and Parameters
@@ -9,15 +11,17 @@ class EvaluationContext {
   variables: Map<string, Map<string, undefined | string | number>>;
   callTables: string[];
   lastRolls: Map<TSGroup, number>;
+  storedRerollables: Map<string, RerollableTSExpressionResult>;
   inputTextCallback: ((prompt: string, defaultValue: string) => Promise<string>) | undefined;
-  constructor() {
+  constructor(storedRerollables: Map<string, RerollableTSExpressionResult> = new Map()) {
     this.variables = new Map();
     this.callTables = [];
     this.lastRolls = new Map();
+    this.storedRerollables = storedRerollables;
   }
 
   clone(): EvaluationContext {
-    const clone = new EvaluationContext();
+    const clone = new EvaluationContext(this.storedRerollables);
     for (const mapTuple of this.variables) {
       const varMap: Map<string, undefined | string | number> = new Map();
       clone.variables.set(mapTuple[0], varMap);
@@ -30,6 +34,25 @@ class EvaluationContext {
       clone.lastRolls.set(tuple[0], tuple[1]);
     }
     return clone;
+  }
+
+  /**
+   * Stores given TSExpressionResult under unique ID and returns the ID.
+   * @returns id for stored result
+   */
+  store(rerollable: RerollableTSExpressionResult): string {
+    const id = generateUUID();
+    this.storedRerollables.set(id, rerollable);
+    return id;
+  }
+
+  /**
+   * Returns RerollableTSExpressionResult for UUID.
+   * @param uuid to get Rerollable for.
+   * @returns rerollable for UUID or undefined, if nothing stored.
+   */
+  retrieve(uuid: string): RerollableTSExpressionResult | undefined {
+    return this.storedRerollables.get(uuid);
   }
 
   /**

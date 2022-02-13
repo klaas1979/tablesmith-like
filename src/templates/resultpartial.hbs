@@ -1,0 +1,12 @@
+{{#if result.isText}}
+  {{{ts-result result}}}
+{{/if}}
+{{#if result.isCollection}}
+  {{#each result.results}}
+    {{> modules/tablesmith-like/templates/resultpartial.hbs result=this resultIndex=../resultIndex }}
+  {{/each}}
+{{/if}}
+{{#if result.isRerollable}}
+  <a data-action="group-reroll" data-index="{{resultIndex}}" data-uuid="{{result.uuid}}" title="Re roll: {{ts-resultSummary result.result}}"><i class="fas fa-dice-d20"></i></a>
+  {{> modules/tablesmith-like/templates/resultpartial.hbs result=result.result resultIndex=resultIndex}}
+{{/if}}
