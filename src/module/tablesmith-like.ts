@@ -34,8 +34,7 @@ import { wrapRollTable } from './rolltable-wrapper';
 import { tablesmith } from './tablesmith/tablesmithinstance';
 import { promptForInputText } from './foundry/forms/inputtextprompt';
 import ChatCommands from './foundry/chatcommands';
-import { TSExpressionResult } from './tablesmith/expressions/tsexpressionresult';
-import CallResult from './tablesmith/callresult';
+import { registerHandlebarHelpers } from './foundry/forms/handlebarhelpers';
 
 // Initialize module
 Hooks.once('init', async () => {
@@ -52,25 +51,9 @@ Hooks.once('init', async () => {
   // Register custom sheets (if any)
 });
 
-// Setup module
+// Register Handlebar helpers
 Hooks.once('setup', async () => {
-  // Do anything after initialization but before ready
-  Handlebars.registerHelper('ts-add', function (a: string, b: string): number {
-    return Number.parseInt(a) + Number.parseInt(b);
-  });
-  Handlebars.registerHelper('ts-result', function (result: TSExpressionResult) {
-    Logger.debug(false, 'ts-result', result);
-    return result.asString();
-  });
-  Handlebars.registerHelper('ts-resultSummary', function (result: TSExpressionResult): string {
-    let summary = result.asString();
-    const length = summary.length;
-    if (length > 300) summary = summary.substring(0, 148) + ' ... ' + summary.substring(length - 147, length);
-    return summary;
-  });
-  Handlebars.registerHelper('ts-callError', function (result: CallResult): string {
-    return result.getErrorMessage().replace(/Error: /g, '<br>Error: ');
-  });
+  registerHandlebarHelpers();
 });
 
 // When ready
@@ -83,7 +66,7 @@ Hooks.once('ready', async () => {
 
 // Add any additional hooks if necessary
 Hooks.once('devModeReady', ({ registerPackageDebugFlag }: DevModeApi): void => {
-  registerPackageDebugFlag(TABLESMITH_ID, 'level', { default: LOG_LEVEL.INFO });
+  registerPackageDebugFlag(TABLESMITH_ID, 'level', { default: LOG_LEVEL.ERROR });
 });
 
 // Add the Chat commands for Tablesmith
