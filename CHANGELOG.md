@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/klaas1979/tablesmith-like/compare/v1.1.1...v1.2.0) (2022-02-13)
+
+
+### Features
+
+* Error messages are displayed if Tables cannot be evaluated ([f10c07f](https://github.com/klaas1979/tablesmith-like/commit/f10c07fc5c8c2e81ea2928de6127039a72f937cc))
+* Re-Roll tag for groups [~Groupname] added to standard form, to customize results. ([e5497f2](https://github.com/klaas1979/tablesmith-like/commit/e5497f258773bc69ebd85aa26cd5ae8de885bb77))
+
 ### [1.1.1](https://github.com/klaas1979/tablesmith-like/compare/v1.1.0...v1.1.1) (2022-02-06)
 
 
