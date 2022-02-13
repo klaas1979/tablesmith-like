@@ -8,6 +8,7 @@ import { Logger } from '../logger';
 import { TableCallValues } from '../tablecallvalues';
 import TableSelectionFormData from './tableselectionformdata';
 import CallResult from '../../tablesmith/callresult';
+import { chatResults } from '../settings';
 
 const TABLESMITH_SELECTOR = `modules/${TABLESMITH_ID}/templates/tablesmithselector.hbs`;
 
@@ -27,6 +28,7 @@ export default class TableSelectionForm extends FormApplication<
   constructor(tableCallValues: TableCallValues, options?: TableSelectionOptions) {
     super(tableCallValues, options);
     this.data = new TableSelectionFormData({ folders: tstables.folders, callValues: new TableCallValues() });
+    this.data.chatResults = chatResults();
   }
   /**
    * Adds additional options to default options.
