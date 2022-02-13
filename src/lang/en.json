@@ -14,6 +14,10 @@
     "error": "Error",
     "result": "Result",
     "folder": "Folder",
-    "table": "Table"
+    "table": "Table",
+    "settings": {
+      "chat-results": "Chat Results",
+      "chat-results-hint": "Should results by default be added to the chat or not"
+    }
   }
 }

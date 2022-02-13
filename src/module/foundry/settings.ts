@@ -5,8 +5,8 @@ import { getGame, SETTING_CHAT, TABLESMITH_ID } from './helper';
  */
 export function registerSettings(): void {
   getGame().settings.register(TABLESMITH_ID, SETTING_CHAT, {
-    name: 'Chat Results',
-    hint: 'Default value indicating if Table results should be added to chat or not',
+    name: getGame().i18n.localize('TABLESMITH.settings.chat-results'),
+    hint: getGame().i18n.localize('TABLESMITH.settings.chat-results-hint'),
     scope: 'world',
     config: true,
     type: Boolean,
