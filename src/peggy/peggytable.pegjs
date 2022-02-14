@@ -320,7 +320,7 @@ FunctionsTwoParams
           }); }
 
 FunctionsManyParams
-  = '{' _ name:(@'Unlock' / @'Lockout' / @'MaxVal' / @'MinVal') '~' { errorHandling(() => {
+  = '{' _ name:(@'InputList' / @'Lockout' / @'MaxVal' / @'MinVal' / @'Unlock') '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 

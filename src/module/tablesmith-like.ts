@@ -36,6 +36,7 @@ import { promptForInputText } from './foundry/forms/inputtextprompt';
 import ChatCommands from './foundry/chatcommands';
 import { registerHandlebarHelpers } from './foundry/forms/handlebarhelpers';
 import { promptMsg } from './foundry/forms/msgprompt';
+import { promptForInputList } from './foundry/forms/inputlistprompt';
 
 // Initialize module
 Hooks.once('init', async () => {
@@ -61,6 +62,7 @@ Hooks.once('setup', async () => {
 Hooks.once('ready', async () => {
   // Do anything once the module is ready
   setTablesmithApi(new TablesmithApi());
+  tablesmith.registerInputListCallback(promptForInputList);
   tablesmith.registerInputTextCallback(promptForInputText);
   tablesmith.registerMsgCallback(promptMsg);
   wrapRollTable();

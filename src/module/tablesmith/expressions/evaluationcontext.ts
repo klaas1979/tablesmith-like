@@ -2,7 +2,7 @@ import TSGroup from '../tsgroup';
 import twist from '../../helpers/mersennetwister';
 import { RerollableTSExpressionResult } from './tsexpressionresult';
 import { generateUUID } from '../../helpers/uuid';
-import { InputListCallback, MsgCallback } from '../inputcallbacktypes';
+import { InputListCallback, InputTextCallback, MsgCallback } from '../inputcallbacktypes';
 
 /**
  * Class providing all needed context for an evaluation, including rolling results, Variables and Parameters
@@ -13,7 +13,8 @@ class EvaluationContext {
   callTables: string[];
   lastRolls: Map<TSGroup, number>;
   storedRerollables: Map<string, RerollableTSExpressionResult>;
-  inputTextCallback: InputListCallback | undefined;
+  inputListCallback: InputListCallback | undefined;
+  inputTextCallback: InputTextCallback | undefined;
   msgCallback: MsgCallback | undefined;
   constructor(storedRerollables: Map<string, RerollableTSExpressionResult> = new Map()) {
     this.variables = new Map();
@@ -142,6 +143,17 @@ class EvaluationContext {
 
   /**
    * Calls the InputText callback and returns its result.
+   * @param prompt to show as question when asking for input selection.
+   * @param defaultValue as index starting at 1.
+   * @returns The selected item index 1 based.
+   */
+  async promptForInputList(defaultValue: number, prompt: string, options: string[]): Promise<number> {
+    if (!this.inputListCallback) throw Error('No InputText Callback is set, cannot prompt for text!');
+    return this.inputListCallback(defaultValue, prompt, options);
+  }
+
+  /**
+   * Calls the InputText callback and returns its result.
    * @param prompt to show as question when asking for input text.
    * @param defaultValue for text.
    * @returns The result for the prompt.
@@ -161,10 +173,18 @@ class EvaluationContext {
   }
 
   /**
-   * Registers the async callback function for InputText.
+   * Registers the async callback function for InputList.
    * @param callback to register as external input function, if a TS InputList is encountered.
    */
-  registerInputTextCallback(callback: InputListCallback): void {
+  registerInputListCallback(callback: InputListCallback): void {
+    this.inputListCallback = callback;
+  }
+
+  /**
+   * Registers the async callback function for InputText.
+   * @param callback to register as external input function, if a TS InputText is encountered.
+   */
+  registerInputTextCallback(callback: InputTextCallback): void {
     this.inputTextCallback = callback;
   }
 

@@ -46,6 +46,7 @@ import InnerDiceTerm from '../expressions/terms/innerdiceterm';
 import BracketTerm from '../expressions/terms/bracketterm';
 import TSInputTextExpression from '../expressions/tsinputtextexpression';
 import TSMsgExpression from '../expressions/tsmsgexpression';
+import TSInputListExpression from '../expressions/tsinputlistexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -305,6 +306,9 @@ class TSTableGroupBuilder {
       case 'Floor':
         result = new TSMathFloorExpression(stacked.popExpressions());
         break;
+      case 'InputList':
+        result = this.createInputListExpression(stacked);
+        break;
       case 'InputText':
         result = this.createInputTextExpression(stacked);
         break;
@@ -405,6 +409,19 @@ class TSTableGroupBuilder {
     const operator = data.popString();
     const booleanComparision = new BooleanComparison(ifExpression1, operator, ifExpression2);
     return new TSIfExpression(data.name, booleanComparision, trueVal, falseVal);
+  }
+
+  private createInputListExpression(data: StackItem): TSInputListExpression {
+    const options = [];
+    if (data.stackSize() < 3) throw Error('Cannot create InputList missing Parameters!');
+    while (data.stackSize() > 2) {
+      const option = data.popExpressions();
+      options.push(option);
+    }
+    options.reverse();
+    const promptExpression = data.popExpressions();
+    const defaultValueExpression = data.popExpressions();
+    return new TSInputListExpression(defaultValueExpression, promptExpression, options);
   }
 
   private createInputTextExpression(data: StackItem): TSInputTextExpression {

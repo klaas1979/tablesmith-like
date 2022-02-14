@@ -8,7 +8,7 @@ import { html2text } from './parser/html2text';
 import { TableCallValues } from '../foundry/tablecallvalues';
 import CallResult from './callresult';
 import EvaluationContext from './expressions/evaluationcontext';
-import { InputListCallback, MsgCallback } from './inputcallbacktypes';
+import { InputListCallback, InputTextCallback, MsgCallback } from './inputcallbacktypes';
 
 /**
  * The Tablesmith class to setup the Tablesmith environment, contains all parsed tables and provides needed functionality
@@ -16,7 +16,8 @@ import { InputListCallback, MsgCallback } from './inputcallbacktypes';
  */
 class Tablesmith {
   evaluateTable: TSTable | undefined;
-  inputTextCallback: InputListCallback | undefined;
+  inputListCallback: InputListCallback | undefined;
+  inputTextCallback: InputTextCallback | undefined;
   msgCallback: MsgCallback | undefined;
 
   /**
@@ -94,6 +95,7 @@ class Tablesmith {
   createEvaluationContext(): EvaluationContext {
     const context = new EvaluationContext();
     tstables.prepareEvaluationContext(context);
+    if (this.inputListCallback) context.registerInputListCallback(this.inputListCallback);
     if (this.inputTextCallback) context.registerInputTextCallback(this.inputTextCallback);
     if (this.msgCallback) context.registerMsgCallback(this.msgCallback);
     return context;
@@ -140,7 +142,14 @@ class Tablesmith {
    * Registers the async callback function for InputText.
    * @param callback to register as external input function, if a TS InputList is encountered.
    */
-  registerInputTextCallback(callback: InputListCallback): void {
+  registerInputListCallback(callback: InputListCallback): void {
+    this.inputListCallback = callback;
+  }
+  /**
+   * Registers the async callback function for InputText.
+   * @param callback to register as external input function, if a TS InputList is encountered.
+   */
+  registerInputTextCallback(callback: InputTextCallback): void {
     this.inputTextCallback = callback;
   }
   /**
