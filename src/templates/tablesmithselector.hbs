@@ -1,38 +1,38 @@
 <form class="editable flexcol" autocomplete="off">
   <section style="flex1">
     <div class="form-group">
-      <label for="rollCount">{{localize "TABLESMITH.rollcount"}}</label>
+      <label for="rollCount">{{localize "TABLESMITH.evaluate.rollcount"}}</label>
       <input name="callValues.rollCount" id="rollCount" type="number" min="1" max="100" value="{{callValues.rollCount}}" />
     </div>
     <div class="form-group">
-      <label for="chatResults">{{localize "TABLESMITH.chatresults"}}</label>
+      <label for="chatResults">{{localize "TABLESMITH.evaluate.chatresults"}}</label>
       <input type="checkbox" name="chatResults" id="chatResults" {{checked chatResults}} />
     </div>
     <div class="form-group">
-      <label for="foldername">{{localize "TABLESMITH.folder"}}</label>
+      <label for="foldername">{{localize "TABLESMITH.evaluate.folder"}}</label>
       <select name="folder.name" id="foldername">
         {{selectOptions folders selected=folder.name nameAttr="name" labelAttr="name"}}
       </select>
     </div>
     <div class="form-group">
-      <label for="callValues.tablename">{{localize "TABLESMITH.table"}}</label>
+      <label for="callValues.tablename">{{localize "TABLESMITH.evaluate.table"}}</label>
       <select name="callValues.tablename" id="callValues.tablename">
         {{selectOptions tables selected=callValues.table.name nameAttr="name" labelAttr="name"}}
       </select>
     </div>
     {{> modules/tablesmith-like/templates/paramspartial.hbs}}
     <div class="flexrow">
-      <button type="button" data-action="evaluate"><i class="fas fa-dice-d20"></i> {{localize "TABLESMITH.evaluate-table"}}</button>
-      <button type="button" data-action="reload-tables"><i class="fas fa-undo"></i> {{localize "TABLESMITH.reload-tables"}}</button>
+      <button type="button" data-action="evaluate"><i class="fas fa-dice-d20"></i> {{localize "TABLESMITH.evaluate.evaluate-table"}}</button>
+      <button type="button" data-action="reload-tables"><i class="fas fa-undo"></i> {{localize "TABLESMITH.reload.tables"}}</button>
     </div>
   </section>
   <section style="flex0">
     {{#if results}}
       {{#if (ts-callError results)}}
-      <h1>{{localize "TABLESMITH.error"}}</h1>
+      <h1>{{localize "TABLESMITH.evaluate.error"}}</h1>
       {{{ts-callError results}}}
       {{else}}
-        <h1>{{localize "TABLESMITH.result"}}</h1>
+        <h1>{{localize "TABLESMITH.evaluate.result"}}</h1>
         {{#each results.results}}
           <h2>#{{ts-add @index 1}} of {{../callValues.rollCount}}</h2>
           {{> modules/tablesmith-like/templates/resultpartial.hbs result=this.result resultIndex=@index }}

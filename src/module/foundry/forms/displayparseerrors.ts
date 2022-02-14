@@ -7,13 +7,13 @@ import JournalTables from '../journaltables';
 export async function displayTableParseErrors() {
   const errors = JournalTables.getParseErrors();
   let html = '';
-  if (errors.length == 0) html = getGame().i18n.localize('TABLESMITH.no-parse-errors');
+  if (errors.length == 0) html = getGame().i18n.localize('TABLESMITH.reload.no-parse-errors');
   for (const error of errors) {
     html += `<h2>'${error.foldername}' / '${error.tablename}'</h2>`;
     html += `<p>${error.error}</p>`;
   }
   Dialog.prompt({
-    title: getGame().i18n.localize('TABLESMITH.parse-errors'),
+    title: getGame().i18n.localize('TABLESMITH.reload.parse-errors'),
     content: html,
     callback: () => {
       // nothing to do on close, just a notification

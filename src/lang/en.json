@@ -1,20 +1,24 @@
 {
   "TABLESMITH": {
     "default-folder": "Default",
-    "evaluation-form": "Tablesmith - Evaluation",
-    "parameter-input": "Tablesmith - Parameter input",
-    "evaluate-table": "Evaluate",
-    "input-text": "Text Input",
-    "reload-tables": "Reload Tables",
-    "tables-reloaded": "Tables have been reloaded!",
-    "parse-errors": "Table parse errors",
-    "no-parse-errors": "No errors parsing tables!",
-    "rollcount": "Number of rolls",
-    "chatresults": "Add Results to Chat",
-    "error": "Error",
-    "result": "Result",
-    "folder": "Folder",
-    "table": "Table",
+    "evaluate": {
+      "chatresults": "Add Results to Chat",
+      "error": "Error",
+      "evaluate-table": "Evaluate",
+      "input-text": "Text Input",
+      "folder": "Folder",
+      "form": "Tablesmith - Evaluation",
+      "parameter-input": "Tablesmith - Parameter input",
+      "rollcount": "Number of rolls",
+      "result": "Result",
+      "table": "Table"
+    },
+    "reload": {
+      "parse-errors": "Table parse errors",
+      "no-parse-errors": "No errors parsing tables!",
+      "tables": "Reload Tables",
+      "tables-reloaded": "Tables have been reloaded!"
+    },
     "settings": {
       "chat-results": "Chat Results",
       "chat-results-hint": "Should results by default be added to the chat or not"

@@ -48,7 +48,7 @@ class ParamInputForm extends FormApplication<FormApplicationOptions, TableSelect
       height: 'auto',
       id: 'tablesmith-param-input',
       template: TABLESMITH_PARAMS,
-      title: getGame().i18n.localize('TABLESMITH.parameter-input'),
+      title: getGame().i18n.localize('TABLESMITH.evaluate.parameter-input'),
       closeOnSubmit: true,
       submitOnChange: false,
     };

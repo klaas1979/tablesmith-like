@@ -10,7 +10,7 @@ import { Logger } from '../logger';
 export async function promptForInputText(prompt: string, defaultValue: string): Promise<string> {
   try {
     let entered = await Dialog.prompt({
-      title: getGame().i18n.localize('TABLESMITH.input-text'),
+      title: getGame().i18n.localize('TABLESMITH.evaluate.input-text'),
       content: `<div class="form-group"><label for="input">${prompt}</label><input id="input" name="input" type="text" value="${defaultValue}"></div>`,
       // When closed it will give us the number
       callback: (html) => html.find('input').val(),

@@ -41,7 +41,7 @@ export default class TableSelectionForm extends FormApplication<
       width: '720',
       id: 'tablesmith-selector',
       template: TABLESMITH_SELECTOR,
-      title: getGame().i18n.localize('TABLESMITH.evaluation-form'),
+      title: getGame().i18n.localize('TABLESMITH.evaluate.form'),
       closeOnSubmit: false,
       submitOnChange: true,
     };
@@ -128,6 +128,6 @@ export default class TableSelectionForm extends FormApplication<
     const errors = JournalTables.reloadTablesFromJournal();
     this.render();
     if (errors.length > 0) displayTableParseErrors();
-    else ui.notifications?.info(getGame().i18n.localize('TABLESMITH.tables-reloaded'));
+    else ui.notifications?.info(getGame().i18n.localize('TABLESMITH.reload.tables-reloaded'));
   }
 }
