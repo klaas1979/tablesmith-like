@@ -45,6 +45,7 @@ import DivTerm from '../expressions/terms/divterm';
 import InnerDiceTerm from '../expressions/terms/innerdiceterm';
 import BracketTerm from '../expressions/terms/bracketterm';
 import TSInputTextExpression from '../expressions/tsinputtextexpression';
+import TSMsgExpression from '../expressions/tsmsgexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -310,6 +311,9 @@ class TSTableGroupBuilder {
       case 'IsNumber':
         result = this.createIsNumberExpression(stacked);
         break;
+      case 'Msg':
+        result = this.createMsgExpression(stacked);
+        break;
       case 'If':
         result = this.createIfExpression(stacked);
         break;
@@ -412,6 +416,11 @@ class TSTableGroupBuilder {
   private createIsNumberExpression(data: StackItem): TSIsNumberExpression {
     const expression = data.popExpressions();
     return new TSIsNumberExpression(expression);
+  }
+
+  private createMsgExpression(data: StackItem): TSMsgExpression {
+    const expression = data.popExpressions();
+    return new TSMsgExpression(expression);
   }
 
   private createLastRollExpression(data: StackItem): TSLastRollExpression {

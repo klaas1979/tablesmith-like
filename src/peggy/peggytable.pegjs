@@ -310,7 +310,7 @@ FunctionsZeroParams
           }); }
 
 FunctionsOneParam
-  = '{' _ name:(@'Bold' / @'Count' / @'IsNumber' / @'Reset') '~' { errorHandling(() => {
+  = '{' _ name:(@'Bold' / @'Count' / @'IsNumber' / @'Msg' / @'Reset') '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 

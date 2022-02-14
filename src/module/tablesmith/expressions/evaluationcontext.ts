@@ -2,6 +2,7 @@ import TSGroup from '../tsgroup';
 import twist from '../../helpers/mersennetwister';
 import { RerollableTSExpressionResult } from './tsexpressionresult';
 import { generateUUID } from '../../helpers/uuid';
+import { InputListCallback, MsgCallback } from '../inputcallbacktypes';
 
 /**
  * Class providing all needed context for an evaluation, including rolling results, Variables and Parameters
@@ -12,7 +13,8 @@ class EvaluationContext {
   callTables: string[];
   lastRolls: Map<TSGroup, number>;
   storedRerollables: Map<string, RerollableTSExpressionResult>;
-  inputTextCallback: ((prompt: string, defaultValue: string) => Promise<string>) | undefined;
+  inputTextCallback: InputListCallback | undefined;
+  msgCallback: MsgCallback | undefined;
   constructor(storedRerollables: Map<string, RerollableTSExpressionResult> = new Map()) {
     this.variables = new Map();
     this.callTables = [];
@@ -150,11 +152,28 @@ class EvaluationContext {
   }
 
   /**
+   * Shows message prompt to user.
+   * @param prompt to show as question when asking for input text.
+   */
+  async promptMsg(prompt: string): Promise<void> {
+    if (!this.msgCallback) throw Error('No Msg Callback is set, cannot prompt message!');
+    return this.msgCallback(prompt);
+  }
+
+  /**
    * Registers the async callback function for InputText.
    * @param callback to register as external input function, if a TS InputList is encountered.
    */
-  registerInputTextCallback(callback: (prompt: string, defaultValue: string) => Promise<string>): void {
+  registerInputTextCallback(callback: InputListCallback): void {
     this.inputTextCallback = callback;
+  }
+
+  /**
+   * Registers the async callback function for Msg.
+   * @param callback to register as external msg function.
+   */
+  registerMsgCallback(callback: MsgCallback): void {
+    this.msgCallback = callback;
   }
 }
 
