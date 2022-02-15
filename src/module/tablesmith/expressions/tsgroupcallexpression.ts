@@ -57,6 +57,7 @@ export default class TSGroupCallExpression extends BaseTSExpression {
 
   getExpression(): string {
     const tableAndGroup = this.tableAndGroupExpression.getExpression();
-    return `[${tableAndGroup}${this.groupCallModifier.getExpression()}]`;
+    const rerollTag = this.rerollable ? '~' : '';
+    return `[${rerollTag}${tableAndGroup}${this.groupCallModifier.getExpression()}]`;
   }
 }
