@@ -320,11 +320,11 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 
 - InputList (Input a list option from the user)
 - InputText (Input a value from the user, showing a prompt)
+- Generate (Generation link)
 - Msg (Message box)
 
 **Not implemented:**
 
-- Generate (Generation link)
 - Iteration (Get the current roll the table is on)
 - Note (Notation)
 - Status (Display status)

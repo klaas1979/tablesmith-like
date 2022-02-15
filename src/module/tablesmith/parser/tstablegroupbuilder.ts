@@ -47,6 +47,7 @@ import BracketTerm from '../expressions/terms/bracketterm';
 import TSInputTextExpression from '../expressions/tsinputtextexpression';
 import TSMsgExpression from '../expressions/tsmsgexpression';
 import TSInputListExpression from '../expressions/tsinputlistexpression';
+import TSGenerateExpression from '../expressions/tsgenerateexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -306,6 +307,9 @@ class TSTableGroupBuilder {
       case 'Floor':
         result = new TSMathFloorExpression(stacked.popExpressions());
         break;
+      case 'Generate':
+        result = this.createGenerateExpression(stacked);
+        break;
       case 'InputList':
         result = this.createInputListExpression(stacked);
         break;
@@ -399,6 +403,13 @@ class TSTableGroupBuilder {
   private createCountExpression(data: StackItem): TSGroupCountExpression {
     const expression = data.popExpressions();
     return new TSGroupCountExpression(this.tsTable.name, expression);
+  }
+
+  private createGenerateExpression(data: StackItem): TSGenerateExpression {
+    const groupCallExpression = data.popExpressions();
+    const textExpression = data.popExpressions();
+    const typeExpression = data.popExpressions();
+    return new TSGenerateExpression(typeExpression, textExpression, groupCallExpression);
   }
 
   private createIfExpression(data: StackItem): TSIfExpression {

@@ -3,6 +3,7 @@ import twist from '../../helpers/mersennetwister';
 import { RerollableTSExpressionResult } from './tsexpressionresult';
 import { generateUUID } from '../../helpers/uuid';
 import { InputListCallback, InputTextCallback, MsgCallback } from '../inputcallbacktypes';
+import TSGenerateExpression from './tsgenerateexpression';
 
 /**
  * Class providing all needed context for an evaluation, including rolling results, Variables and Parameters
@@ -13,18 +14,32 @@ class EvaluationContext {
   callTables: string[];
   lastRolls: Map<TSGroup, number>;
   storedRerollables: Map<string, RerollableTSExpressionResult>;
+  storedGenerateExpressions: Map<TSGenerateExpression, boolean>;
   inputListCallback: InputListCallback | undefined;
   inputTextCallback: InputTextCallback | undefined;
   msgCallback: MsgCallback | undefined;
-  constructor(storedRerollables: Map<string, RerollableTSExpressionResult> = new Map()) {
+  constructor(options?: {
+    storedRerollables: Map<string, RerollableTSExpressionResult>;
+    storedGenerateExpressions: Map<TSGenerateExpression, boolean>;
+  }) {
     this.variables = new Map();
     this.callTables = [];
     this.lastRolls = new Map();
-    this.storedRerollables = storedRerollables;
+    this.storedRerollables = options?.storedRerollables ? options?.storedRerollables : new Map();
+    this.storedGenerateExpressions = options?.storedGenerateExpressions
+      ? options?.storedGenerateExpressions
+      : new Map();
   }
 
+  /**
+   * Clone of EvaluationContext for Rerollable Expressions like Generate or Groups with Reroll Tag.
+   * @returns Clone of this EvaluationContext for Rerollable Expressions.
+   */
   clone(): EvaluationContext {
-    const clone = new EvaluationContext(this.storedRerollables);
+    const clone = new EvaluationContext({
+      storedRerollables: this.storedRerollables,
+      storedGenerateExpressions: this.storedGenerateExpressions,
+    });
     for (const mapTuple of this.variables) {
       const varMap: Map<string, undefined | string | number> = new Map();
       clone.variables.set(mapTuple[0], varMap);
@@ -41,7 +56,8 @@ class EvaluationContext {
 
   /**
    * Stores given TSExpressionResult under unique ID and returns the ID.
-   * @returns id for stored result
+   * @param rerollable to store.
+   * @returns id for stored result.
    */
   store(rerollable: RerollableTSExpressionResult): string {
     const id = generateUUID();
@@ -56,6 +72,24 @@ class EvaluationContext {
    */
   retrieve(uuid: string): RerollableTSExpressionResult | undefined {
     return this.storedRerollables.get(uuid);
+  }
+
+  /**
+   * Adds given Generate Expression as evaluated.
+   * @param generateExpression to store.
+   */
+  addGenerated(generateExpression: TSGenerateExpression): void {
+    this.storedGenerateExpressions.set(generateExpression, true);
+  }
+
+  /**
+   * Checks if given Generate Expression has been evaluated evaluated.
+   * @param generateExpression to check.
+   * @returns boolean true if evaluated once, false if not.
+   */
+  isGenerated(generateExpression: TSGenerateExpression): boolean {
+    const generated = this.storedGenerateExpressions.get(generateExpression);
+    return generated === true ? true : false;
   }
 
   /**

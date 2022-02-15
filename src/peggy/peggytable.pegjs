@@ -174,6 +174,9 @@ TsFunction
   / FunctionsTwoParams _ ExpressionTextNoComma _ ParamSeparatorComma _ ExpressionTextNoComma _ '}' { errorHandling(() => {
             options?.pf.createFunction();
           }); }
+  / FunctionsThreeParams _ ExpressionTextNoComma _ ParamSeparatorComma _ ExpressionTextNoComma _ ParamSeparatorComma _ Expression _ '}' { errorHandling(() => {
+            options?.pf.createFunction();
+          }); }
   / FunctionsManyParams _ ExpressionTextNoComma _ (GroupLockParameter)+ '}' { errorHandling(() => {
             options?.pf.createFunction();
           }); }
@@ -316,6 +319,11 @@ FunctionsOneParam
 
 FunctionsTwoParams
   = '{' _ name:(@'Line' / @'Param' / @'InputText') '~' { errorHandling(() => {
+            options?.pf.startFunction(name);
+          }); }
+
+FunctionsThreeParams
+  = '{' _ name:(@'Generate') '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
