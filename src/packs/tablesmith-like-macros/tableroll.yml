@@ -22,4 +22,3 @@ scope: global
 command: |
   game.modules.get('tablesmith-like').api.showForm()
 folder: null
-
