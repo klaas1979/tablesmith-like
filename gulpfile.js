@@ -4,8 +4,12 @@ const fs = require('fs-extra');
 const gulp = require('gulp');
 const path = require('path');
 const rollupConfig = require('./rollup.config');
-const semver = require('semver');
 const peggy = require('./gulp-peggy');
+
+const through2 = require('through2');
+const yaml = require('js-yaml');
+const Datastore = require('nedb');
+const mergeStream = require('merge-stream');
 
 /********************/
 /*  CONFIGURATION   */
@@ -18,10 +22,10 @@ const distDirectory = './dist';
 const stylesDirectory = `${sourceDirectory}/styles`;
 const stylesExtension = 'css';
 const sourceFileExtension = 'ts';
+const packsDirectory = `${sourceDirectory}/packs`;
 const peggyGrammarExtension = 'pegjs';
 const grammarFilePath = 'src/peggy/';
-const staticFiles = ['assets', 'fonts', 'lang', 'packs', 'templates', 'module.json'];
-const getDownloadURL = (version) => `https://host/path/to/${version}.zip`;
+const staticFiles = ['assets', 'fonts', 'lang', 'templates', 'module.json'];
 
 /********************/
 /* Peggy Parser Gen */
@@ -36,6 +40,34 @@ async function peggyGen() {
     .src(`${grammarFilePath}*.${peggyGrammarExtension}`)
     .pipe(peggy())
     .pipe(gulp.dest(`${buildDirectory}/parser`));
+}
+
+/* ----------------------------------------- */
+/*  Compile Compendia
+/* ----------------------------------------- */
+function compilePacks() {
+  // determine the source folders to process
+  const folders = fs.readdirSync(packsDirectory).filter((file) => {
+    return fs.statSync(path.join(packsDirectory, file)).isDirectory();
+  });
+
+  // process each folder into a compendium db
+  const packs = folders.map((folder) => {
+    const filename = path.resolve(__dirname, distDirectory, 'packs', `${folder}.db`);
+    fs.removeSync(filename);
+    const db = new Datastore({
+      filename: filename,
+      autoload: true,
+    });
+    return gulp.src(path.join(packsDirectory, folder, '/**/*.yml')).pipe(
+      through2.obj((file, enc, cb) => {
+        let json = yaml.loadAll(file.contents.toString());
+        db.insert(json);
+        cb(null, file);
+      }),
+    );
+  });
+  return mergeStream.call(null, packs);
 }
 
 /********************/
@@ -81,7 +113,7 @@ function buildWatchPeggy() {
  */
 function buildWatch() {
   buildWatchPeggy();
-  gulp.watch(`${sourceDirectory}/**/*.${sourceFileExtension}`, { ignoreInitial: false }, buildCode);
+  gulp.watch(`${sourceDirectory}/**/*.${sourceFileExtension}`, { ignoreInitial: false }, buildCode, compilePacks);
   gulp.watch(`${stylesDirectory}/**/*.${stylesExtension}`, { ignoreInitial: false }, buildStyles);
   gulp.watch(
     staticFiles.map((file) => `${sourceDirectory}/${file}`),
@@ -161,91 +193,13 @@ async function linkUserData() {
   }
 }
 
-/********************/
-/*    VERSIONING    */
-/********************/
-
-/**
- * Get the contents of the manifest file as object.
- */
-function getManifest() {
-  const manifestPath = `${sourceDirectory}/module.json`;
-
-  if (fs.existsSync(manifestPath)) {
-    return {
-      file: fs.readJSONSync(manifestPath),
-      name: 'module.json',
-    };
-  }
-}
-
-/**
- * Get the target version based on on the current version and the argument passed as release.
- */
-function getTargetVersion(currentVersion, release) {
-  if (['major', 'premajor', 'minor', 'preminor', 'patch', 'prepatch', 'prerelease'].includes(release)) {
-    return semver.inc(currentVersion, release);
-  } else {
-    return semver.valid(release);
-  }
-}
-
-/**
- * Update version and download URL.
- */
-function bumpVersion(cb) {
-  const packageJson = fs.readJSONSync('package.json');
-  const packageLockJson = fs.existsSync('package-lock.json') ? fs.readJSONSync('package-lock.json') : undefined;
-  const manifest = getManifest();
-
-  if (!manifest) cb(Error('Manifest JSON not found'));
-
-  try {
-    const release = argv.release || argv.r;
-
-    const currentVersion = packageJson.version;
-
-    if (!release) {
-      return cb(Error('Missing release type'));
-    }
-
-    const targetVersion = getTargetVersion(currentVersion, release);
-
-    if (!targetVersion) {
-      return cb(new Error('Error: Incorrect version arguments'));
-    }
-
-    if (targetVersion === currentVersion) {
-      return cb(new Error('Error: Target version is identical to current version'));
-    }
-
-    console.log(`Updating version number to '${targetVersion}'`);
-
-    packageJson.version = targetVersion;
-    fs.writeJSONSync('package.json', packageJson, { spaces: 2 });
-
-    if (packageLockJson) {
-      packageLockJson.version = targetVersion;
-      fs.writeJSONSync('package-lock.json', packageLockJson, { spaces: 2 });
-    }
-
-    manifest.file.version = targetVersion;
-    manifest.file.download = getDownloadURL(targetVersion);
-    fs.writeJSONSync(`${sourceDirectory}/${manifest.name}`, manifest.file, { spaces: 2 });
-
-    return cb();
-  } catch (err) {
-    cb(err);
-  }
-}
-
 const execPeggy = gulp.parallel(peggyCopyDTS, peggyGen);
-const execBuild = gulp.series(execPeggy, gulp.parallel(buildCode, buildStyles, copyFiles));
+const execBuild = gulp.series(execPeggy, gulp.parallel(buildCode, buildStyles, copyFiles, compilePacks));
 
+exports.packs = compilePacks;
 exports.peggy = execPeggy;
 exports.build = gulp.series(clean, execBuild);
 exports.watch = buildWatch;
 exports.watchpeggy = buildWatchPeggy;
 exports.clean = clean;
 exports.link = linkUserData;
-exports.bumpVersion = bumpVersion;

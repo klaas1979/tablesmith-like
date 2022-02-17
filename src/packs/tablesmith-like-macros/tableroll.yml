@@ -1,0 +1,25 @@
+name: "Roll Table"
+type: script
+img: icons/svg/light.svg
+scope: global
+command: |
+  // change the Call to the correct Table and name
+  // Table name without the '.tab' extension
+  let table = 'html';
+  let group = 'Start'; // default group for Tables
+  let parameter = ''; // comma separated list of parameters, leave empty for most tables
+  let rollCount = '1';
+  // let all below as is
+  if (parameter && parameter.length > 0) parameter = `(${parameter})`
+  let groupCall = `[${table}.${group}${parameter}]:${rollCount}`;
+  game.modules.get('tablesmith-like').api.evaluateTable(groupCall)
+folder: null
+---
+name: "Tablesmith"
+type: script
+img: icons/svg/book.svg
+scope: global
+command: |
+  game.modules.get('tablesmith-like').api.showForm()
+folder: null
+
