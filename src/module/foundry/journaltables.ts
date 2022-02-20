@@ -1,7 +1,4 @@
-import { ENTITY_PERMISSIONS } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/constants.mjs';
-import { FolderDataConstructorData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/folderData';
 import { JournalEntryData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
-import { table } from 'console';
 import Tablesmith from '../tablesmith/tablesmith';
 import { tablesmith } from '../tablesmith/tablesmithinstance';
 import { getGame, getJournal, getPacks, PACK_FLAG_FOLDER, TABLESMITH_ID } from './helper';
