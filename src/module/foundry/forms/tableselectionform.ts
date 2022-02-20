@@ -90,7 +90,7 @@ export default class TableSelectionForm extends FormApplication<
         this._rerollGroup(elementData);
         break;
       case 'reload-tables':
-        this._reloadTables();
+        await this._reloadTables();
         break;
       default:
         Logger.error(true, 'Unknown action', action, clickedElement.data());
@@ -124,8 +124,8 @@ export default class TableSelectionForm extends FormApplication<
     } else Logger.warn(false, 'No table selected!');
   }
 
-  _reloadTables() {
-    const errors = JournalTables.reloadTablesFromJournal();
+  async _reloadTables() {
+    const errors = await JournalTables.reloadTablesFromJournal();
     this.render();
     if (errors.length > 0) displayTableParseErrors();
     else ui.notifications?.info(getGame().i18n.localize('TABLESMITH.reload.tables-reloaded'));
