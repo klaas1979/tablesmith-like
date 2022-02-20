@@ -13,8 +13,14 @@
     {
       "name": "tablesmith-like-macros",
       "label": "Tablesmith Macros",
-      "path": "./packs/tablesmith-like-macros.db",
+      "path": "./packs/macros.db",
       "type": "Macro"
+    },
+    {
+      "name": "tablesmith-like-examples",
+      "label": "Tablesmith Example Tables",
+      "path": "./packs/examples.db",
+      "type": "JournalEntry"
     }
   ],
   "dependencies": [

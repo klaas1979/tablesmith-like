@@ -1,30 +1,74 @@
+import { ENTITY_PERMISSIONS } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/constants.mjs';
+import { FolderDataConstructorData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/folderData';
+import { JournalEntryData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
+import { table } from 'console';
 import Tablesmith from '../tablesmith/tablesmith';
 import { tablesmith } from '../tablesmith/tablesmithinstance';
-import { getGame, getJournal } from './helper';
+import { getGame, getJournal, getPacks, PACK_FLAG_FOLDER, TABLESMITH_ID } from './helper';
 import { Logger } from './logger';
+import { importFolders } from './settings';
 
-const parseErrors: { foldername: string; tablename: string; error: string }[] = [];
+const parseErrors: ParseError[] = [];
 const tablesmithExtension = 'tab';
+type ParseError = {
+  foldername: string;
+  tablename: string;
+  error: string;
+};
+
 class JournalTables {
   /** Loads all tables from Tablesmith Journal Folder. */
-  static loadTablesFromJournal(): { foldername: string; tablename: string; error: string }[] {
+  static async loadTablesFromJournal(): Promise<ParseError[]> {
     for (const entry of getJournal().contents) {
       if (JournalTables.isTablesmithTable(entry.name)) {
-        Logger.info(false, `Found Tablesmith folder '${entry.folder?.name}' table '${entry.name}'`, entry.data.content);
         const tablename = JournalTables.tableBasename(entry.name);
-        const folder =
-          entry.folder && entry.folder.name ? entry.folder.name : getGame().i18n.localize('TABLESMITH.default-folder');
+        const folder = this.tableFolder(entry.folder?.name);
+        Logger.info(false, `Found Tablesmith folder '${entry.folder?.name}' table '${entry.name}'`, entry.data.content);
         JournalTables.addTableHandleErrors(tablesmith, folder, tablename, entry.data.content);
       }
     }
+    await this.loadTablesFromPacks();
     return this.getParseErrors();
+  }
+  /** Loads all tables from Compendium of this module. */
+  static async loadTablesFromPacks(): Promise<ParseError[]> {
+    for (const compendiumCollection of getPacks()) {
+      const metadata = compendiumCollection.metadata;
+      if (metadata.name.match(`${TABLESMITH_ID}.*`) && metadata.type === 'JournalEntry') {
+        const tableEntries = await compendiumCollection.getDocuments();
+        for (const tableEntry of tableEntries) {
+          let folder = tableEntry.getFlag(TABLESMITH_ID, PACK_FLAG_FOLDER) as string;
+          folder = this.tableFolder(folder);
+          const data = tableEntry.data as JournalEntryData;
+          if (importFolders().includes(folder)) {
+            Logger.info(
+              false,
+              `Found Table in Pack '${metadata.name}' folder '${folder}' table '${data.name}'`,
+              data.content,
+            );
+            JournalTables.addTableHandleErrors(tablesmith, folder, data.name, data.content);
+          } else
+            Logger.info(
+              false,
+              `Skipping Table in Pack '${metadata.name}' folder '${folder}' table '${
+                data.name
+              }' import Folders '${importFolders().join(',')}'`,
+            );
+        }
+      }
+    }
+    return this.getParseErrors();
+  }
+
+  static tableFolder(folder: string | undefined | null): string {
+    return folder ? folder : getGame().i18n.localize('TABLESMITH.default-folder');
   }
 
   /**
    * Reloads all tables from journal and removes table that do not exist anymore in journal.
    * @returns all parse errors encountered.
    */
-  static reloadTablesFromJournal(): { foldername: string; tablename: string; error: string }[] {
+  static async reloadTablesFromJournal(): Promise<ParseError[]> {
     tablesmith.reset();
     return this.loadTablesFromJournal();
   }
@@ -51,7 +95,7 @@ class JournalTables {
    * Returns all parsing errors.
    * @returns all parse errors.
    */
-  static getParseErrors(): { foldername: string; tablename: string; error: string }[] {
+  static getParseErrors(): ParseError[] {
     return parseErrors;
   }
 

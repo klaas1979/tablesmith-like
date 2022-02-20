@@ -19,8 +19,8 @@ export default class TablesmithApi {
    * @param options.showErrors boolean indicating of errors on reload should be displayed va dialog, defaults
    * to true.
    */
-  reloadTables(options: { showErrors: boolean } = { showErrors: true }): void {
-    const errors = JournalTables.reloadTablesFromJournal();
+  async reloadTables(options: { showErrors: boolean } = { showErrors: true }): Promise<void> {
+    const errors = await JournalTables.reloadTablesFromJournal();
     if (options.showErrors && errors.length > 0) this.displayTableParseErrors();
   }
 

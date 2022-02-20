@@ -62,6 +62,13 @@ function compilePacks() {
     return gulp.src(path.join(packsDirectory, folder, '/**/*.yml')).pipe(
       through2.obj((file, enc, cb) => {
         let json = yaml.loadAll(file.contents.toString());
+        // replace all Journal entries (.tab files) newlines with <br> to ensure correct display
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        for (let [index, entry] of json.entries()) {
+          if (entry['name']?.match(/\.tab/)) {
+            entry.content = entry.content.replaceAll('\n', '<br />');
+          }
+        }
         db.insert(json);
         cb(null, file);
       }),

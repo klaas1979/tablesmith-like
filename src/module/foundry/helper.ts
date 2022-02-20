@@ -2,6 +2,8 @@ import TablesmithApi from './tablesmithapi';
 
 export const TABLESMITH_ID = 'tablesmith-like';
 export const SETTING_CHAT = 'default-chat';
+export const SETTING_IMPORT_FOLDERS = 'journal-import-folders';
+export const PACK_FLAG_FOLDER = 'folder';
 
 /**
  * Returns game instance if initialized.
@@ -14,7 +16,6 @@ export function getGame(): Game {
   }
   return game;
 }
-
 /**
  * Returns journal instance if initialized.
  * Helper to access Types see: https://github.com/League-of-Foundry-Developers/foundry-vtt-types/wiki/FAQ
@@ -22,9 +23,7 @@ export function getGame(): Game {
  */
 export function getJournal(): Journal {
   const journal = getGame().journal;
-  if (!(journal instanceof Journal)) {
-    throw new Error('journal is not initialized yet!');
-  }
+  if (!(journal instanceof Journal)) throw new Error('journal is not initialized yet!');
   return journal;
 }
 
@@ -51,6 +50,17 @@ export function findMacro(name: string): StoredDocument<Macro> | undefined {
     return macro.name == name;
   });
   return macro;
+}
+
+/**
+ * Returns packs instance if initialized.
+ * Helper to access Types see: https://github.com/League-of-Foundry-Developers/foundry-vtt-types/wiki/FAQ
+ * @returns The packs instance from game.
+ */
+export function getPacks(): Collection<CompendiumCollection<CompendiumCollection.Metadata>> {
+  const packs = getGame().packs;
+  if (packs === undefined) throw Error('packs are not initialized yet!');
+  return packs;
 }
 
 interface TablesmithModuleData {

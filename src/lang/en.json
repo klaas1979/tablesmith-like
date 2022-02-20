@@ -22,8 +22,15 @@
       "tables-reloaded": "Tables have been reloaded!"
     },
     "settings": {
-      "chat-results": "Chat Results",
-      "chat-results-hint": "Should results by default be added to the chat or not"
+      "chat-results": {
+        "name": "Chat Results",
+        "hint": "Should results by default be added to the chat or not"
+      },
+      "import-folders": {
+        "name": "Folders to import",
+        "hint": "Comma separated list of all folders to import from provided journal",
+        "default": "Examples"
+      }
     }
   }
 }

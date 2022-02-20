@@ -1,0 +1,26 @@
+name: InputList.tab
+sort: 0
+folder: null
+flags:
+  tablesmith-like:
+    folder: Examples
+content: |
+  :Start
+  1,{InputList~2,Prompt value,A,B,C,D,E}
+permission:
+  default: 0
+---
+name: MultiList.tab
+sort: 0
+folder: null
+flags:
+  tablesmith-like:
+    folder: Examples
+content: |
+  %mvar%,
+  @*mvar,01100,What is your alignment?,chaotic,neutral,lawful,good,evil
+  :Start
+  1,One: %mvar%
+  2,Two: %mvar%
+permission:
+  default: 0
