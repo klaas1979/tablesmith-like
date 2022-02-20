@@ -4,7 +4,8 @@ flags:
     folder: Examples
 content: |
   :Start
-  1,{Generate~0,Summary Text to show for not called,groupToCall}
+  1,Main stuff ....
+  _{CR~} Appendix (not always needed): {Generate~0,Summary Text to show for not called,groupToCall}
   :groupToCall
   1,generated Result{Dice~1d100}
 sort: 0
