@@ -1,9 +1,8 @@
 import { JournalEntryData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
 import Tablesmith from '../tablesmith/tablesmith';
 import { tablesmith } from '../tablesmith/tablesmithinstance';
-import { getGame, getJournal, getPacks, PACK_FLAG_FOLDER, TABLESMITH_ID } from './helper';
+import { getGame, getJournal, getPacks, importFolders, PACK_FLAG_FOLDER, TABLESMITH_ID } from './helper';
 import { Logger } from './logger';
-import { importFolders } from './settings';
 
 const parseErrors: ParseError[] = [];
 const tablesmithExtension = 'tab';

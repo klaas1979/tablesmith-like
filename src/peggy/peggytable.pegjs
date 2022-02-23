@@ -313,22 +313,22 @@ FunctionsZeroParams
           }); }
 
 FunctionsOneParam
-  = '{' _ name:(@'Bold' / @'Count' / @'IsNumber' / @'Msg' / @'Reset') '~' { errorHandling(() => {
+  = '{' _ name:(@'Bold' / @'Count' / @'DSCount' / @'IsNumber' / @'Msg' / @'Reset') '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
 FunctionsTwoParams
-  = '{' _ name:(@'Line' / @'Param' / @'InputText') '~' { errorHandling(() => {
+  = '{' _ name:(@'DSRead' / @'DSWrite' / @'Line' / @'Param' / @'InputText') '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
 FunctionsThreeParams
-  = '{' _ name:(@'Generate') '~' { errorHandling(() => {
+  = '{' _ name:(@'DSGet' / @'Generate') '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
 FunctionsManyParams
-  = '{' _ name:(@'InputList' / @'Lockout' / @'MaxVal' / @'MinVal' / @'Unlock') '~' { errorHandling(() => {
+  = '{' _ name:(@'DSAddNR' / @'DSAdd' / @'DSCreate' / @'InputList' / @'Lockout' / @'MaxVal' / @'MinVal' / @'Unlock') '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 

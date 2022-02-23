@@ -86,6 +86,11 @@ export default class TablesmithApi {
     return result;
   }
 
+  datastores(): Map<string, string> {
+    if (!tablesmith.dsStores) throw Error('Cannot get Datastores, not initialized!');
+    return tablesmith.dsStores.db.datastores();
+  }
+
   /**
    * Fixes common call syntax errors to potentially fix an invalid call.
    * @param call to enhance to valid syntax.

@@ -9,6 +9,7 @@ import { TableCallValues } from '../foundry/tablecallvalues';
 import CallResult from './callresult';
 import EvaluationContext from './expressions/evaluationcontext';
 import { InputListCallback, InputTextCallback, MsgCallback } from './inputcallbacktypes';
+import { DSStores } from './dsstore/dsstores';
 
 /**
  * The Tablesmith class to setup the Tablesmith environment, contains all parsed tables and provides needed functionality
@@ -19,6 +20,7 @@ class Tablesmith {
   inputListCallback: InputListCallback | undefined;
   inputTextCallback: InputTextCallback | undefined;
   msgCallback: MsgCallback | undefined;
+  dsStores: DSStores | undefined;
 
   /**
    * Resets to instance without parsed tables, normally only needed for testing purpose.
@@ -98,6 +100,7 @@ class Tablesmith {
     if (this.inputListCallback) context.registerInputListCallback(this.inputListCallback);
     if (this.inputTextCallback) context.registerInputTextCallback(this.inputTextCallback);
     if (this.msgCallback) context.registerMsgCallback(this.msgCallback);
+    if (this.dsStores) context.registerDSStores(this.dsStores);
     return context;
   }
 
@@ -158,6 +161,13 @@ class Tablesmith {
    */
   registerMsgCallback(callback: MsgCallback): void {
     this.msgCallback = callback;
+  }
+  /**
+   * Registers DSStores backend for all Dataset operations.
+   * @param dsStores to register as external backend.
+   */
+  registerDSStores(dsStores: DSStores): void {
+    this.dsStores = dsStores;
   }
 }
 

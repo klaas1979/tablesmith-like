@@ -37,6 +37,8 @@ import ChatCommands from './foundry/chatcommands';
 import { registerHandlebarHelpers } from './foundry/forms/handlebarhelpers';
 import { promptMsg } from './foundry/forms/msgprompt';
 import { promptForInputList } from './foundry/forms/inputlistprompt';
+import { DSStores } from './tablesmith/dsstore/dsstores';
+import DSDatabase from './foundry/dsdatabase';
 
 // Initialize module
 Hooks.once('init', async () => {
@@ -65,6 +67,8 @@ Hooks.once('ready', async () => {
   tablesmith.registerInputListCallback(promptForInputList);
   tablesmith.registerInputTextCallback(promptForInputText);
   tablesmith.registerMsgCallback(promptMsg);
+  const dsStores = new DSStores(new DSDatabase());
+  tablesmith.registerDSStores(dsStores);
   wrapRollTable();
 });
 

@@ -1,4 +1,4 @@
-import { getGame, SETTING_CHAT, SETTING_IMPORT_FOLDERS, TABLESMITH_ID } from './helper';
+import { getGame, SETTING_CHAT, SETTING_IMPORT_FOLDERS, SETTING_TSD_FOLDER, TABLESMITH_ID } from './helper';
 
 /**
  * All settings to register for module.
@@ -21,21 +21,13 @@ export function registerSettings(): void {
     type: String,
     default: 'Examples',
   });
-}
 
-/**
- * Returns the chat Results setting.
- * @returns boolean true if results should be chatted by default, false if not.
- */
-export function chatResults(): boolean {
-  const chat = getGame().settings.get(TABLESMITH_ID, SETTING_CHAT);
-  return chat !== undefined && `${chat}` === 'true';
-}
-/**
- * All folders of module Journal tables to import.
- * @returns string[] of all folders.
- */
-export function importFolders(): string[] {
-  const folders = getGame().settings.get(TABLESMITH_ID, SETTING_IMPORT_FOLDERS) as string;
-  return folders !== undefined ? folders.split(',') : [];
+  getGame().settings.register(TABLESMITH_ID, SETTING_TSD_FOLDER, {
+    name: 'TABLESMITH.settings.tsd-journal-folder.name',
+    hint: 'TABLESMITH.settings.tsd-journal-folder.hint',
+    scope: 'world',
+    config: true,
+    type: String,
+    default: 'Tablesmith Data',
+  });
 }

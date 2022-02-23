@@ -48,6 +48,12 @@ import TSInputTextExpression from '../expressions/tsinputtextexpression';
 import TSMsgExpression from '../expressions/tsmsgexpression';
 import TSInputListExpression from '../expressions/tsinputlistexpression';
 import TSGenerateExpression from '../expressions/tsgenerateexpression';
+import TSDSCountExpression from '../expressions/tsdscountexpression';
+import TSDSCreateExpression from '../expressions/tsdscreateexpression';
+import DSFieldExpression from '../expressions/dsfieldexpression';
+import TSDSAddExpression from '../expressions/tsdsaddexpression';
+import TSDSGetExpression from '../expressions/tsdsgetexpression';
+import TSDSStoreExpression from '../expressions/tsdsstoreexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -289,6 +295,7 @@ class TSTableGroupBuilder {
         result = this.createBoldExpression(stacked);
         break;
       case 'Calc':
+      case 'Dice':
         result = new TSDiceCalcExpression(stacked.name, stacked.popExpressions());
         break;
       case 'Count':
@@ -301,8 +308,22 @@ class TSTableGroupBuilder {
         stacked.popExpressions();
         result = new TSNewlineExpression();
         break;
-      case 'Dice':
-        result = new TSDiceCalcExpression(stacked.name, stacked.popExpressions());
+      case 'DSCount':
+        result = new TSDSCountExpression(stacked.popExpressions());
+        break;
+      case 'DSAdd':
+      case 'DSAddNR':
+        result = this.createDSAddExpression(stacked);
+        break;
+      case 'DSCreate':
+        result = this.createDSCreateExpression(stacked);
+        break;
+      case 'DSGet':
+        result = this.createDSGetExpression(stacked);
+        break;
+      case 'DSRead':
+      case 'DSWrite':
+        result = this.createDSStoreExpression(stacked);
         break;
       case 'Floor':
         result = new TSMathFloorExpression(stacked.popExpressions());
@@ -323,8 +344,6 @@ class TSTableGroupBuilder {
         result = this.createMsgExpression(stacked);
         break;
       case 'If':
-        result = this.createIfExpression(stacked);
-        break;
       case 'IIf':
         result = this.createIfExpression(stacked);
         break;
@@ -403,6 +422,42 @@ class TSTableGroupBuilder {
   private createCountExpression(data: StackItem): TSGroupCountExpression {
     const expression = data.popExpressions();
     return new TSGroupCountExpression(this.tsTable.name, expression);
+  }
+
+  private createDSAddExpression(data: StackItem): TSDSAddExpression {
+    if (data.stackSize() % 2 === 0) throw Error(`Missing values for DSAdd, if key provided value must be given`);
+    const fields: DSFieldExpression[] = [];
+    while (data.stackSize() > 1) {
+      const value = data.popExpressions();
+      const field = data.popExpressions();
+      fields.push(new DSFieldExpression(field, value));
+    }
+    const storeVariableExpression = data.popExpressions();
+    return new TSDSAddExpression(data.name, storeVariableExpression, fields.reverse());
+  }
+
+  private createDSCreateExpression(data: StackItem): TSDSCreateExpression {
+    if (data.stackSize() % 2 === 0) throw Error(`Missing default values for DSCreate!`);
+    const fields: DSFieldExpression[] = [];
+    while (data.stackSize() > 1) {
+      const defaultvalue = data.popExpressions();
+      const field = data.popExpressions();
+      fields.push(new DSFieldExpression(field, defaultvalue));
+    }
+    const storeVariableExpression = data.popExpressions();
+    return new TSDSCreateExpression(storeVariableExpression, fields.reverse());
+  }
+  private createDSGetExpression(data: StackItem): TSDSGetExpression {
+    const fieldNameExpression = data.popExpressions();
+    const indexExpression = data.popExpressions();
+    const storeVariableExpression = data.popExpressions();
+    return new TSDSGetExpression(storeVariableExpression, indexExpression, fieldNameExpression);
+  }
+
+  private createDSStoreExpression(data: StackItem): TSDSStoreExpression {
+    const storenameExpression = data.popExpressions();
+    const storeVariableExpression = data.popExpressions();
+    return new TSDSStoreExpression(data.name, storeVariableExpression, storenameExpression);
   }
 
   private createGenerateExpression(data: StackItem): TSGenerateExpression {

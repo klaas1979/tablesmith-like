@@ -4,6 +4,8 @@ import { RerollableTSExpressionResult } from './tsexpressionresult';
 import { generateUUID } from '../../helpers/uuid';
 import { InputListCallback, InputTextCallback, MsgCallback } from '../inputcallbacktypes';
 import TSGenerateExpression from './tsgenerateexpression';
+import { DSStores } from '../dsstore/dsstores';
+import { DSStore } from '../dsstore/dsstore';
 
 /**
  * Class providing all needed context for an evaluation, including rolling results, Variables and Parameters
@@ -13,22 +15,24 @@ class EvaluationContext {
   variables: Map<string, Map<string, undefined | string | number>>;
   callTables: string[];
   lastRolls: Map<TSGroup, number>;
+  readStores: Map<string, DSStore>;
   storedRerollables: Map<string, RerollableTSExpressionResult>;
   storedGenerateExpressions: Map<TSGenerateExpression, boolean>;
+  dsStores: DSStores | undefined;
   inputListCallback: InputListCallback | undefined;
   inputTextCallback: InputTextCallback | undefined;
   msgCallback: MsgCallback | undefined;
   constructor(options?: {
-    storedRerollables: Map<string, RerollableTSExpressionResult>;
-    storedGenerateExpressions: Map<TSGenerateExpression, boolean>;
+    readStores?: Map<string, DSStore>;
+    storedRerollables?: Map<string, RerollableTSExpressionResult>;
+    storedGenerateExpressions?: Map<TSGenerateExpression, boolean>;
   }) {
     this.variables = new Map();
     this.callTables = [];
     this.lastRolls = new Map();
-    this.storedRerollables = options?.storedRerollables ? options?.storedRerollables : new Map();
-    this.storedGenerateExpressions = options?.storedGenerateExpressions
-      ? options?.storedGenerateExpressions
-      : new Map();
+    this.readStores = options?.readStores ? options.readStores : new Map();
+    this.storedRerollables = options?.storedRerollables ? options.storedRerollables : new Map();
+    this.storedGenerateExpressions = options?.storedGenerateExpressions ? options.storedGenerateExpressions : new Map();
   }
 
   /**
@@ -37,6 +41,7 @@ class EvaluationContext {
    */
   clone(): EvaluationContext {
     const clone = new EvaluationContext({
+      readStores: this.readStores,
       storedRerollables: this.storedRerollables,
       storedGenerateExpressions: this.storedGenerateExpressions,
     });
@@ -176,6 +181,54 @@ class EvaluationContext {
   }
 
   /**
+   * Creates DSStore into variable.
+   * @param variable to store DSStore in, key to retrieve it later.
+   * @param dsStore to store for variable.
+   */
+  createDSStore(variable: string, dsStore: DSStore) {
+    this.readStores.set(variable, dsStore);
+  }
+  /**
+   * Reads DSStore into variable.
+   * @param variable to store DSStore in, key to retrieve it later.
+   * @param storename to read from Backend.
+   */
+  async readDSStore(variable: string, storename: string) {
+    if (!this.dsStores) throw Error('Could not read DSStore, the DSStores backend is not initialized!');
+    const dsStore = await this.dsStores.get(storename);
+    this.createDSStore(variable, dsStore);
+  }
+  /**
+   * Writes DSStore into backend.
+   * @param variable of DSStore to write.
+   * @param storename to write data to in Backend.
+   */
+  async writeDSStore(variable: string, storename: string) {
+    if (!this.dsStores) throw Error('Could not write DSStore, the DSStores backend is not initialized!');
+    const store = this.readStores.get(variable);
+    if (!store) throw Error(`No DSStore defined for variable '${variable}' cannot write to backend '${storename}'!`);
+    store.name = storename;
+    await this.dsStores.save(store);
+  }
+  /**
+   * Returns the value of field in entry at index for named store.
+   * @param variable name of varialbe DSStore is saved in.
+   * @param index of Entry to get field from.
+   * @param fieldName to get.
+   * @returns string value of field for entry.
+   */
+  getDSStoreEntryField(variable: string, index: number, fieldName: string): string {
+    const store = this.readStores.get(variable);
+    if (!store) throw Error(`No DSStore defined for variable '${variable}', cannot get field for entry!`);
+    const value = store.getEntryField(index, fieldName);
+    return value;
+  }
+
+  getProperty<T, K extends keyof T>(o: T, propertyName: K): T[K] {
+    return o[propertyName]; // o[propertyName] is of type T[K]
+  }
+
+  /**
    * Calls the InputText callback and returns its result.
    * @param prompt to show as question when asking for input selection.
    * @param defaultValue as index starting at 1.
@@ -228,6 +281,14 @@ class EvaluationContext {
    */
   registerMsgCallback(callback: MsgCallback): void {
     this.msgCallback = callback;
+  }
+
+  /**
+   * Registers the DSStores to use as backend.
+   * @param dsStores to register as backend.
+   */
+  registerDSStores(dsStores: DSStores): void {
+    this.dsStores = dsStores;
   }
 }
 

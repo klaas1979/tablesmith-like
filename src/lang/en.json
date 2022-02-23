@@ -30,6 +30,10 @@
         "name": "Folders to import",
         "hint": "Comma separated list of all folders to import from provided journal",
         "default": "Examples"
+      },
+      "tsd-journal-folder": {
+        "name": "Folder for Dataset files",
+        "hint": "The folder that contains all Dataset file Journals"
       }
     }
   }

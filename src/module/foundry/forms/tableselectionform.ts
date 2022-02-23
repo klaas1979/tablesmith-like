@@ -2,13 +2,12 @@ import { tablesmith } from '../../tablesmith/tablesmithinstance';
 import { tstables } from '../../tablesmith/tstables';
 import ChatResults from '../chatresults';
 import { displayTableParseErrors } from './displayparseerrors';
-import { getGame, TABLESMITH_ID } from '../helper';
+import { chatResults, getGame, TABLESMITH_ID } from '../helper';
 import JournalTables from '../journaltables';
 import { Logger } from '../logger';
 import { TableCallValues } from '../tablecallvalues';
 import TableSelectionFormData from './tableselectionformdata';
 import CallResult from '../../tablesmith/callresult';
-import { chatResults } from '../settings';
 
 const TABLESMITH_SELECTOR = `modules/${TABLESMITH_ID}/templates/tablesmithselector.hbs`;
 

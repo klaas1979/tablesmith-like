@@ -285,21 +285,22 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 
 ### Datasets
 
-**Not implemented:**
-
 - DSAdd (Add item)
-- DSCalc (Calculate on items)
 - DSCount (Count items)
 - DSCreate (Create dataset)
-- DSFind (Find an item)
 - DSGet (Get a value from an item)
-- DSRandomize (Randomize items)
 - DSRead (Read in a dataset file)
+- DSWrite (Write dataset to a file)
+
+**Not implemented:**
+
+- DSCalc (Calculate on items)
+- DSFind (Find an item)
+- DSRandomize (Randomize items)
 - DSRemove (Remove an item)
 - DSRoll (Roll for an item)
 - DSSet (Set a value in an item)
 - DSSort (Sort items)
-- DSWrite (Write dataset to a file)
 
 ### Group and Tables
 
