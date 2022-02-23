@@ -33,7 +33,8 @@ export async function getTsdJournal(journalName: string): Promise<StoredDocument
   if (!tsd) {
     let folder = getFolders().contents.find((f) => f.name === folderName);
     if (!folder) folder = await Folder.create({ name: folderName, type: 'JournalEntry' });
-    tsd = await JournalEntry.create({ name: journalName, folder: folder });
+    const hint = getGame().i18n.localize('TABLESMITH.settings.tsd-journal-file.hint');
+    tsd = await JournalEntry.create({ name: journalName, folder: folder, content: hint });
   }
   if (!tsd)
     throw Error(`Could not load nor create Journal for TSD files folder '${folderName}' tsd-file '${journalName}'`);

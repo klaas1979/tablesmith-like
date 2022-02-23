@@ -34,6 +34,9 @@
       "tsd-journal-folder": {
         "name": "Folder for Dataset files",
         "hint": "The folder that contains all Dataset file Journals"
+      },
+      "tsd-journal-file": {
+        "hint": "This file is a Tablesmith-like Dataset with embedded data, see Documentation for more information"
       }
     }
   }
