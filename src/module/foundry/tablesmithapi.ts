@@ -86,7 +86,7 @@ export default class TablesmithApi {
     return result;
   }
 
-  datastores(): Map<string, string> {
+  datastores(): Promise<Map<string, string>> {
     if (!tablesmith.dsStores) throw Error('Cannot get Datastores, not initialized!');
     return tablesmith.dsStores.db.datastores();
   }
