@@ -6,7 +6,7 @@ Use Tablesmith-like tables in FoundryVTT and create complex nested tables. For m
 
 Tablesmith table syntax allows it to create anything from simple tables and nested tables as in Foundry, to complex linked tables with loops, conditionals, parameters and more. Results can be send to chat.
 
-Tablesmith is useful for Character and NPC generation, Solo play, generating Encounters, Inns, Weather and whatever else is needed in your adventure. Within the forum is a files area with a lot tables ranging from simple name tables up to complex content generation of all kind.
+Tablesmith is useful for Character and NPC generation, Solo play, generating Encounters, Inns, Weather and whatever else is needed in your adventure. Within the forum is a files area with a lot tables ranging from simple name tables up to complex content generation of all kind. Tablesmith supports Dataset to store data between calls or rolls and to share data between tables.
 
 ## Table of Contents <!-- omit in TOC -->
 
@@ -21,6 +21,7 @@ Tablesmith is useful for Character and NPC generation, Solo play, generating Enc
   - [Loaded tables](#loaded-tables)
   - [Tables in different Journals or Folders](#tables-in-different-journals-or-folders)
   - [Formatting Tips for Journal Tables](#formatting-tips-for-journal-tables)
+- [Datasets](#datasets)
 - [Implemented Tablesmith Features](#implemented-tablesmith-features)
   - [Groups](#groups)
     - [Splitting Group Entries / Ranges](#splitting-group-entries--ranges)
@@ -40,7 +41,7 @@ Tablesmith is useful for Character and NPC generation, Solo play, generating Enc
   - [Pre-Generation Directives](#pre-generation-directives)
 - [Tablesmith functions](#tablesmith-functions)
   - [Conditional](#conditional)
-  - [Datasets](#datasets)
+  - [Datasets](#datasets-1)
   - [Group and Tables](#group-and-tables)
   - [Interface](#interface)
   - [Logical](#logical)
@@ -114,6 +115,29 @@ Note that the tablename must be unique over all folders and journals as of now.
 ### Formatting Tips for Journal Tables
 
 For long tables it is recommended to use `SHIFT+Enter` instead of `Enter` to save some space. This is purely cosmetic, the parser has no problem with mixed newlines.
+
+## Datasets
+
+There are a number of functions (see below all starting with `DS`) designed to be used with datasets. Datasets are basically tables, consisting of entries that each share the same data fields or attributes or to use table calculation term columns.
+
+Each entry can be thougth of as a row of the table. The table is sorted, with an index donating it's place within the table. The index for the first row or entry starts with `1` (not  with `0`).
+
+An example of something you might put into a dataset would be a collection of loot or monsters or NPCs.
+In case of monsters Each entry might be defined by a name, a type, number of hitdice, and attacks. For a very simple monster the dataset could have the following fields or columns: name, type, hitdice, Thaco20, damage. To create a dataset the function `DSCreate` is used, defining the fields including a default value for each. This container can then be filled by adding entries to it.
+
+Entries are added with `DSAdd`. The fields can be defined directly using `DSAdd` or later with `DSSet`.
+
+The table below is a visual representation of an example monster table.
+
+| Index | name | hitdice | thaco20 | damage|
+|-------|------|------|--------|------|
+|1 | Orc | 2d8+4 | 18 | 1d8+1 |
+|2 | Wolf | 1d6 | 19 | 2d4 |
+|3 | Dragon | 10d8+34 | 3 | 5d6+12 |
+
+Once a dataset is created, and has items added to it, including setting the values for the fields, it can be used, by retrieving those values using `DSGet`. The Dataset is sortable with `DSSort`. Entries can be searched for with `DSFind`. Singl entries can be removed using `DSRemove`.
+
+Datasets can be persisted using `DSWrite` and later reloaded using `DSRead`.
 
 ## Implemented Tablesmith Features
 
