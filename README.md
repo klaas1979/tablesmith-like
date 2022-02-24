@@ -21,7 +21,7 @@ Tablesmith is useful for Character and NPC generation, Solo play, generating Enc
   - [Loaded tables](#loaded-tables)
   - [Tables in different Journals or Folders](#tables-in-different-journals-or-folders)
   - [Formatting Tips for Journal Tables](#formatting-tips-for-journal-tables)
-- [Datasets](#datasets)
+- [Datasets General](#datasets-general)
 - [Implemented Tablesmith Features](#implemented-tablesmith-features)
   - [Groups](#groups)
     - [Splitting Group Entries / Ranges](#splitting-group-entries--ranges)
@@ -41,7 +41,7 @@ Tablesmith is useful for Character and NPC generation, Solo play, generating Enc
   - [Pre-Generation Directives](#pre-generation-directives)
 - [Tablesmith functions](#tablesmith-functions)
   - [Conditional](#conditional)
-  - [Datasets](#datasets-1)
+  - [Datasets](#datasets)
   - [Group and Tables](#group-and-tables)
   - [Interface](#interface)
   - [Logical](#logical)
@@ -116,7 +116,7 @@ Note that the tablename must be unique over all folders and journals as of now.
 
 For long tables it is recommended to use `SHIFT+Enter` instead of `Enter` to save some space. This is purely cosmetic, the parser has no problem with mixed newlines.
 
-## Datasets
+## Datasets General
 
 There are a number of functions (see below all starting with `DS`) designed to be used with datasets. Datasets are basically tables, consisting of entries that each share the same data fields or attributes or to use table calculation term columns.
 
