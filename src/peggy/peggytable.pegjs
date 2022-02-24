@@ -328,7 +328,7 @@ FunctionsThreeParams
           }); }
 
 FunctionsManyParams
-  = '{' _ name:(@'DSAddNR' / @'DSAdd' / @'DSCreate' / @'InputList' / @'Lockout' / @'MaxVal' / @'MinVal' / @'Unlock') '~' { errorHandling(() => {
+  = '{' _ name:(@'DSAddNR' / @'DSAdd' / @'DSSet' / @'DSCreate' / @'InputList' / @'Lockout' / @'MaxVal' / @'MinVal' / @'Unlock') '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 

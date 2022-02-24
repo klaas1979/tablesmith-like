@@ -23,9 +23,9 @@ export default class TSDSAddExpression extends BaseTSExpression {
     const entry = dsStore.createEntry();
     for (const field of this.fieldsExpressions) {
       const name = (await field.name.evaluate(evalcontext)).asString();
-      const defaultvalue = (await field.value.evaluate(evalcontext)).asString();
+      const value = (await field.value.evaluate(evalcontext)).asString();
       Object.defineProperty(entry, name, {
-        value: defaultvalue,
+        value: value,
         writable: true,
       });
     }

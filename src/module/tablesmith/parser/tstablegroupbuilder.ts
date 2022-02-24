@@ -51,9 +51,10 @@ import TSGenerateExpression from '../expressions/tsgenerateexpression';
 import TSDSCountExpression from '../expressions/tsdscountexpression';
 import TSDSCreateExpression from '../expressions/tsdscreateexpression';
 import DSFieldExpression from '../expressions/dsfieldexpression';
-import TSDSAddExpression from '../expressions/tsdsaddexpression';
 import TSDSGetExpression from '../expressions/tsdsgetexpression';
 import TSDSStoreExpression from '../expressions/tsdsstoreexpression';
+import TSDSAddExpression from '../expressions/tsdsaddexpression';
+import TSDSSetExpression from '../expressions/tsdssetexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -321,6 +322,9 @@ class TSTableGroupBuilder {
       case 'DSGet':
         result = this.createDSGetExpression(stacked);
         break;
+      case 'DSSet':
+        result = this.createDSSetExpression(stacked);
+        break;
       case 'DSRead':
       case 'DSWrite':
         result = this.createDSStoreExpression(stacked);
@@ -434,6 +438,19 @@ class TSTableGroupBuilder {
     }
     const storeVariableExpression = data.popExpressions();
     return new TSDSAddExpression(data.name, storeVariableExpression, fields.reverse());
+  }
+
+  private createDSSetExpression(data: StackItem): TSDSSetExpression {
+    if (data.stackSize() % 2 === 1) throw Error(`Missing values for DSSet, if key provided value must be given`);
+    const fields: DSFieldExpression[] = [];
+    while (data.stackSize() > 2) {
+      const value = data.popExpressions();
+      const field = data.popExpressions();
+      fields.push(new DSFieldExpression(field, value));
+    }
+    const indexExpression = data.popExpressions();
+    const storeVariableExpression = data.popExpressions();
+    return new TSDSSetExpression(data.name, storeVariableExpression, fields.reverse(), indexExpression);
   }
 
   private createDSCreateExpression(data: StackItem): TSDSCreateExpression {

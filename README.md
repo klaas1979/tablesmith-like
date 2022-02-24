@@ -314,6 +314,7 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 - DSCreate (Create dataset)
 - DSGet (Get a value from an item)
 - DSRead (Read in a dataset file)
+- DSSet (Set a value in an item)
 - DSWrite (Write dataset to a file)
 
 **Not implemented:**
@@ -323,7 +324,6 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 - DSRandomize (Randomize items)
 - DSRemove (Remove an item)
 - DSRoll (Roll for an item)
-- DSSet (Set a value in an item)
 - DSSort (Sort items)
 
 ### Group and Tables

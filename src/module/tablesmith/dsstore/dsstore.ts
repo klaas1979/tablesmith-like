@@ -44,6 +44,22 @@ export class DSStore {
   }
 
   /**
+   * Returns all fields for entries in this Store.
+   * @returns all field names as string[];
+   */
+  getFields(): string[] {
+    return [...this.fields.keys()];
+  }
+
+  /**
+   * Returns if field exists for name.
+   * @param name of field to check.
+   */
+  hasField(name: string): boolean {
+    return this.fields.has(name);
+  }
+
+  /**
    * Adds field that is valid for this DSStore object.
    * @param name to add as valid field.
    * @param defaultvalue to set for field.
@@ -94,6 +110,6 @@ export class DSStore {
    * @returns string JSON.stringify for stores data.
    */
   getDataAsJsonString(): string {
-    return JSON.stringify(this.data, [...this.fields.keys()]);
+    return JSON.stringify(this.data, this.getFields());
   }
 }

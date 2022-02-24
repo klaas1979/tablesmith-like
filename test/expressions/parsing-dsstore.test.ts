@@ -172,7 +172,7 @@ describe('{DSAdd~', () => {
       expect(result.getErrorMessage()).toContain('Error: ');
     });
     it('non existing field', async () => {
-      simpleTable = `%storevar%,\n:Start\n1,{DSCreate~storevar,v1,0,v2,1}{DSAddNR~storevar,v1,10,v2,11}{DSGet~storevar,1,v3}`;
+      simpleTable = `%storevar%,\n:Start\n1,{DSCreate~storevar,v1,0,v2,1}{DSAddNR~storevar,v1,10,v2,11}{DSGet~storevar,1,v3,1}`;
       tablesmith.addTable('folder', filename, simpleTable);
       const result = await tablesmith.evaluate(`[${filename}]`);
       expect(result.getErrorMessage()).toContain('Error: ');
@@ -183,6 +183,40 @@ describe('{DSAdd~', () => {
       tablesmith.addTable('folder', filename, simpleTable);
       const result = await tablesmith.evaluate(`[${filename}]`);
       expect(result.asString()).toBe('e1_v1=10 e2_v2=13');
+    });
+  });
+  describe('{DSSet~', () => {
+    it('parses correctly', async () => {
+      simpleTable = `%storevar%,\n:Start\n1,{DSSet~storevar,1,fieldname,value,other,more}`;
+      const table = tablesmith.addTable('folder', filename, simpleTable);
+      expect(table.groupForName('Start')?.lastRange()?.getExpression()).toBe(
+        '{DSSet~storevar,1,fieldname,value,other,more}',
+      );
+    });
+    it('invalid index 0', async () => {
+      simpleTable = `%storevar%,\n:Start\n1,{DSCreate~storevar,v1,0,v2,1}{DSSet~storevar,1,v1,1,v2,2}`;
+      tablesmith.addTable('folder', filename, simpleTable);
+      const result = await tablesmith.evaluate(`[${filename}]`);
+      expect(result.getErrorMessage()).toContain('Error: ');
+    });
+    it('invalid index to high', async () => {
+      simpleTable = `%storevar%,\n:Start\n1,{DSCreate~storevar,v1,0,v2,1}{DSAddNR~storevar,v1,10,v2,11}{DSSet~storevar,2,v1,1,v2,2}`;
+      tablesmith.addTable('folder', filename, simpleTable);
+      const result = await tablesmith.evaluate(`[${filename}]`);
+      expect(result.getErrorMessage()).toContain('Error: ');
+    });
+    it('non existing field', async () => {
+      simpleTable = `%storevar%,\n:Start\n1,{DSCreate~storevar,v1,0,v2,1}{DSAddNR~storevar,v1,10,v2,11}{DSSet~storevar,1,v3,1}`;
+      tablesmith.addTable('folder', filename, simpleTable);
+      const result = await tablesmith.evaluate(`[${filename}]`);
+      expect(result.getErrorMessage()).toContain('Error: ');
+    });
+    it('valid index and field', async () => {
+      data.set('store', '[{"v1":"0","v2":"1"},{"v1":"10","v2":"11"},{"v1":"12","v2":"13"}]');
+      simpleTable = `%storevar%,\n:Start\n1,{DSRead~storevar,store}{DSSet~storevar,1,v1,x}{DSSet~storevar,2,v2,y}{DSWrite~storevar,store}`;
+      tablesmith.addTable('folder', filename, simpleTable);
+      await tablesmith.evaluate(`[${filename}]`);
+      expect(data.get('store')).toBe('[{"v1":"0","v2":"1"},{"v1":"x","v2":"11"},{"v1":"12","v2":"y"}]');
     });
   });
   it('parses correctly', async () => {
