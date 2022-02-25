@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/klaas1979/tablesmith-like/compare/v1.2.0...v1.3.0) (2022-02-25)
+
+
+### Features
+
+* DSCalc added ([ec8d638](https://github.com/klaas1979/tablesmith-like/commit/ec8d638adafaf829a306af0e31e03561f3ced910))
+* DSRandomize added ([caa4af9](https://github.com/klaas1979/tablesmith-like/commit/caa4af9b345f0c991013453918da5ff58d2a0928))
+* DSRemove added ([d72b172](https://github.com/klaas1979/tablesmith-like/commit/d72b172954ebbf322fc7fc35f252785dae3c5042))
+* DSSet added to Dataset functions ([8342e71](https://github.com/klaas1979/tablesmith-like/commit/8342e718b52478992ee887949d9fc928bee95bca))
+* Example Tables for some TS-Functions added as compendium pack ([f9f932d](https://github.com/klaas1979/tablesmith-like/commit/f9f932dbfea1030eb3aa986a7152faedb7b4df42))
+* First stab at Dataset with storage as individual Journal entries with data as Flag added (half of DS Functions still missing) ([3fe8391](https://github.com/klaas1979/tablesmith-like/commit/3fe8391bd1a742c0d254981734b812193e82851b))
+* Generate Expression (rerollable Group call placeholder) added ([b28ece2](https://github.com/klaas1979/tablesmith-like/commit/b28ece282d6300751a7834710ea4c69355c2e304))
+* minimal text in TSD Dataset file to give hints that it is a useful file ([a833f02](https://github.com/klaas1979/tablesmith-like/commit/a833f024e7f52b122a15271721e19c56f6038640))
+* packs for Tables can be created from YAML files to easily create examples and include valueable tables ([5e9a738](https://github.com/klaas1979/tablesmith-like/commit/5e9a7388e09a6bcdcf008e6caa3f4497c2c49b26))
+* Settings to indicate if the selection to chat results in Form should be by default true or false ([3b88d18](https://github.com/klaas1979/tablesmith-like/commit/3b88d185237630153a319704c616dcaa93d818d5))
+* TS Function InputList (getting selection from user input) added ([f590c97](https://github.com/klaas1979/tablesmith-like/commit/f590c978581bd2e8145b4b757d46285a3fa18df0))
+* TS-Function Msg (prompting a message) added ([bab55a3](https://github.com/klaas1979/tablesmith-like/commit/bab55a35b5dc10c86c901cf4a53d9ccc58eadf46))
+
+
+### Bug Fixes
+
+* rerolltag added to rerollable Groups for getExpression ([30b54e9](https://github.com/klaas1979/tablesmith-like/commit/30b54e99c0416bc431de13a3dc8efa59b5111f68))
+
 ## [1.2.0](https://github.com/klaas1979/tablesmith-like/compare/v1.1.1...v1.2.0) (2022-02-13)
 
 
