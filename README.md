@@ -314,6 +314,7 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 - DSCount (Count items)
 - DSCreate (Create dataset)
 - DSGet (Get a value from an item)
+- DSRandomize (Randomize items)
 - DSRead (Read in a dataset file)
 - DSSet (Set a value in an item)
 - DSWrite (Write dataset to a file)
@@ -321,7 +322,6 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 **Not implemented:**
 
 - DSFind (Find an item)
-- DSRandomize (Randomize items)
 - DSRemove (Remove an item)
 - DSRoll (Roll for an item)
 - DSSort (Sort items)

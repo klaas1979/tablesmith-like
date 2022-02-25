@@ -68,6 +68,39 @@ describe('Datastores', () => {
     });
   });
 
+  describe('{DSRandomize~', () => {
+    it('parses correctly', async () => {
+      simpleTable = `:Start\n1,{DSRandomize~[groupForStoreVar]}`;
+      const table = tablesmith.addTable('folder', filename, simpleTable);
+      expect(table.groupForName('Start')?.lastRange()?.getExpression()).toBe('{DSRandomize~[groupForStoreVar]}');
+    });
+    it('error for non existing store', async () => {
+      simpleTable = `%storevar%,\n:Start\n1,{DSRandomize~storevar}`;
+      tablesmith.addTable('folder', filename, simpleTable);
+      const result = await tablesmith.evaluate(`[${filename}]`);
+      expect(result.getErrorMessage()).toContain('Error: ');
+    });
+    it('for empty datastore', async () => {
+      data.set('store', '[{"v1":"1"}]');
+      simpleTable = `%storevar%,\n:Start\n1,{DSRead~storevar,store}{DSRandomize~storevar}{DSWrite~storevar,store}`;
+      tablesmith.addTable('folder', filename, simpleTable);
+      const result = await tablesmith.evaluate(`[${filename}]`);
+      expect(result.asString()).toBe('');
+      expect(data.get('store')).toBe('[{"v1":"1"}]');
+    });
+    it('for non empty datastore', async () => {
+      const initialized = '[{"v1":"1"},{"v1":"2"},{"v1":"3"},{"v1":"4"},{"v1":"5"},{"v1":"6"},{"v1":"7"},{"v1":"8"}]';
+      data.set('store', initialized);
+      simpleTable = `%storevar%,\n:Start\n1,{DSRead~storevar,store}{DSRandomize~storevar}{DSWrite~storevar,store}`;
+      tablesmith.addTable('folder', filename, simpleTable);
+      const result = await tablesmith.evaluate(`[${filename}]`);
+      expect(result.asString()).toBe('');
+      // start value with defaults is not randomized
+      expect(data.get('store')).toMatch(/\[{"v1":"1"},/);
+      expect(data.get('store')).not.toBe(initialized);
+    });
+  });
+
   describe('{DSCalc~', () => {
     it('parses correctly', async () => {
       simpleTable = `:Start\n1,{DSCalc~[var],[op],[field]}`;

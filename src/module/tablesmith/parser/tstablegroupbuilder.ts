@@ -56,6 +56,7 @@ import TSDSStoreExpression from '../expressions/tsdsstoreexpression';
 import TSDSAddExpression from '../expressions/tsdsaddexpression';
 import TSDSSetExpression from '../expressions/tsdssetexpression';
 import TSDSCalcExpression from '../expressions/tsdscalcexpression';
+import TSDSRandomizeExpression from '../expressions/tsdsrandomizeexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -328,6 +329,9 @@ class TSTableGroupBuilder {
         break;
       case 'DSSet':
         result = this.createDSSetExpression(stacked);
+        break;
+      case 'DSRandomize':
+        result = new TSDSRandomizeExpression(stacked.popExpressions());
         break;
       case 'DSRead':
       case 'DSWrite':
