@@ -82,10 +82,27 @@ export class DSStore {
   getEntryField(index: number, fieldName: string): string {
     if (index < 1 || index > this.size())
       throw Error(`Cannot get field '${fieldName}' for index '${index}' out of bounds '1-${this.size()}`);
-    if (!this.fields.has(fieldName))
-      throw Error(`Cannot get field '${fieldName}' undefined, valid fields '${[...this.fields.keys()].join(',')}'`);
+    this.checkField(fieldName);
     const fieldValue = this.getEntry(index)[fieldName as keyof object];
     return fieldValue;
+  }
+
+  private checkField(fieldName: string) {
+    if (!this.fields.has(fieldName))
+      throw Error(`Cannot get field '${fieldName}' undefined, valid fields '${[...this.fields.keys()].join(',')}'`);
+  }
+
+  /**
+   * Returns all values as string array for given field.
+   * @param fieldName to get values for.
+   * @returns array of all field values.
+   */
+  fieldValues(fieldName: string): string[] {
+    this.checkField(fieldName);
+    return this.data.slice(1).map((e) => {
+      const entry = e as object;
+      return entry[fieldName as keyof object];
+    });
   }
 
   /**

@@ -55,6 +55,7 @@ import TSDSGetExpression from '../expressions/tsdsgetexpression';
 import TSDSStoreExpression from '../expressions/tsdsstoreexpression';
 import TSDSAddExpression from '../expressions/tsdsaddexpression';
 import TSDSSetExpression from '../expressions/tsdssetexpression';
+import TSDSCalcExpression from '../expressions/tsdscalcexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -316,6 +317,9 @@ class TSTableGroupBuilder {
       case 'DSAddNR':
         result = this.createDSAddExpression(stacked);
         break;
+      case 'DSCalc':
+        result = this.createDSCalcExpression(stacked);
+        break;
       case 'DSCreate':
         result = this.createDSCreateExpression(stacked);
         break;
@@ -438,6 +442,13 @@ class TSTableGroupBuilder {
     }
     const storeVariableExpression = data.popExpressions();
     return new TSDSAddExpression(data.name, storeVariableExpression, fields.reverse());
+  }
+
+  private createDSCalcExpression(data: StackItem): TSDSCalcExpression {
+    const fieldExpression = data.popExpressions();
+    const operationExpression = data.popExpressions();
+    const storeVariableExpression = data.popExpressions();
+    return new TSDSCalcExpression(storeVariableExpression, operationExpression, fieldExpression);
   }
 
   private createDSSetExpression(data: StackItem): TSDSSetExpression {

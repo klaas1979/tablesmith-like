@@ -310,6 +310,7 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 ### Datasets
 
 - DSAdd (Add item)
+- DSCalc (Calculate on items)
 - DSCount (Count items)
 - DSCreate (Create dataset)
 - DSGet (Get a value from an item)
@@ -319,7 +320,6 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 
 **Not implemented:**
 
-- DSCalc (Calculate on items)
 - DSFind (Find an item)
 - DSRandomize (Randomize items)
 - DSRemove (Remove an item)

@@ -67,6 +67,52 @@ describe('Datastores', () => {
       expect(result.asString()).toBe('1');
     });
   });
+
+  describe('{DSCalc~', () => {
+    it('parses correctly', async () => {
+      simpleTable = `:Start\n1,{DSCalc~[var],[op],[field]}`;
+      const table = tablesmith.addTable('folder', filename, simpleTable);
+      expect(table.groupForName('Start')?.lastRange()?.getExpression()).toBe('{DSCalc~[var],[op],[field]}');
+    });
+    it('error for non existing store', async () => {
+      simpleTable = `%storevar%,\n:Start\n1,{DSCalc~storevar,Avg,v1}`;
+      tablesmith.addTable('folder', filename, simpleTable);
+      const result = await tablesmith.evaluate(`[${filename}]`);
+      expect(result.getErrorMessage()).toContain('Error: ');
+    });
+    describe('Avg', () => {
+      it('for empty datastore', async () => {
+        data.set('store', '[{"v1":"1"}]');
+        simpleTable = `%storevar%,\n:Start\n1,{DSRead~storevar,store}{DSCalc~storevar,Avg,v1}`;
+        tablesmith.addTable('folder', filename, simpleTable);
+        const result = await tablesmith.evaluate(`[${filename}]`);
+        expect(result.asString()).toBe('0');
+      });
+      it('correct avg for many values', async () => {
+        data.set('store', '[{"v1":"1"},{"v1":"1"},{"v1":"2"},{"v1":"3"},{"v1":"4"}]');
+        simpleTable = `%storevar%,\n:Start\n1,{DSRead~storevar,store}{DSCalc~storevar,Avg,v1}`;
+        tablesmith.addTable('folder', filename, simpleTable);
+        const result = await tablesmith.evaluate(`[${filename}]`);
+        expect(result.asString()).toBe('2.5');
+      });
+    });
+    describe('Sum', () => {
+      it('for empty datastore', async () => {
+        data.set('store', '[{"v1":"1"}]');
+        simpleTable = `%storevar%,\n:Start\n1,{DSRead~storevar,store}{DSCalc~storevar,Sum,v1}`;
+        tablesmith.addTable('folder', filename, simpleTable);
+        const result = await tablesmith.evaluate(`[${filename}]`);
+        expect(result.asString()).toBe('0');
+      });
+      it('correct avg for many values', async () => {
+        data.set('store', '[{"v1":"1"},{"v1":"1"},{"v1":"2"},{"v1":"3"},{"v1":"4"}]');
+        simpleTable = `%storevar%,\n:Start\n1,{DSRead~storevar,store}{DSCalc~storevar,Sum,v1}`;
+        tablesmith.addTable('folder', filename, simpleTable);
+        const result = await tablesmith.evaluate(`[${filename}]`);
+        expect(result.asString()).toBe('10');
+      });
+    });
+  });
 });
 
 describe('{DSCreate~', () => {
