@@ -318,7 +318,7 @@ FunctionsOneParam
           }); }
 
 FunctionsTwoParams
-  = '{' _ name:(@'DSRead' / @'DSWrite' / @'Line' / @'Param' / @'InputText') '~' { errorHandling(() => {
+  = '{' _ name:(@'DSRead' / @'DSRemove' / @'DSWrite' / @'Line' / @'Param' / @'InputText') '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 

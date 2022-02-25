@@ -316,13 +316,13 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 - DSGet (Get a value from an item)
 - DSRandomize (Randomize items)
 - DSRead (Read in a dataset file)
+- DSRemove (Remove an item)
 - DSSet (Set a value in an item)
 - DSWrite (Write dataset to a file)
 
 **Not implemented:**
 
 - DSFind (Find an item)
-- DSRemove (Remove an item)
 - DSRoll (Roll for an item)
 - DSSort (Sort items)
 

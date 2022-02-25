@@ -36,6 +36,16 @@ export class DSStore {
   }
 
   /**
+   * Removes index from store.
+   * @param index to remove from store.
+   */
+  removeEntry(index: number) {
+    if (index < 1 || index > this.size())
+      throw Error(`Can not remove entry index '${index}' out of bounds=1-${this.size()}`);
+    this.data.splice(index, 1);
+  }
+
+  /**
    * Returns number of stored entries.
    * @returns number of stored entries.
    */

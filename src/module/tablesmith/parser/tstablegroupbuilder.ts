@@ -57,6 +57,7 @@ import TSDSAddExpression from '../expressions/tsdsaddexpression';
 import TSDSSetExpression from '../expressions/tsdssetexpression';
 import TSDSCalcExpression from '../expressions/tsdscalcexpression';
 import TSDSRandomizeExpression from '../expressions/tsdsrandomizeexpression';
+import TSDSRemoveExpression from '../expressions/tsdsremoveexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -333,6 +334,9 @@ class TSTableGroupBuilder {
       case 'DSRandomize':
         result = new TSDSRandomizeExpression(stacked.popExpressions());
         break;
+      case 'DSRemove':
+        result = this.createDSRemoveExpression(stacked);
+        break;
       case 'DSRead':
       case 'DSWrite':
         result = this.createDSStoreExpression(stacked);
@@ -484,6 +488,12 @@ class TSTableGroupBuilder {
     const indexExpression = data.popExpressions();
     const storeVariableExpression = data.popExpressions();
     return new TSDSGetExpression(storeVariableExpression, indexExpression, fieldNameExpression);
+  }
+
+  private createDSRemoveExpression(data: StackItem): TSDSRemoveExpression {
+    const indexExpression = data.popExpressions();
+    const storeVariableExpression = data.popExpressions();
+    return new TSDSRemoveExpression(data.name, storeVariableExpression, indexExpression);
   }
 
   private createDSStoreExpression(data: StackItem): TSDSStoreExpression {

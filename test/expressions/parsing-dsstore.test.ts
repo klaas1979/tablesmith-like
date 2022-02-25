@@ -101,6 +101,44 @@ describe('Datastores', () => {
     });
   });
 
+  describe('{DSRemove~', () => {
+    it('parses correctly', async () => {
+      simpleTable = `:Start\n1,{DSRemove~[groupForStoreVar],12}`;
+      const table = tablesmith.addTable('folder', filename, simpleTable);
+      expect(table.groupForName('Start')?.lastRange()?.getExpression()).toBe('{DSRemove~[groupForStoreVar],12}');
+    });
+    it('error for non existing store', async () => {
+      simpleTable = `%storevar%,\n:Start\n1,{DSRemove~storevar,1}`;
+      tablesmith.addTable('folder', filename, simpleTable);
+      const result = await tablesmith.evaluate(`[${filename}]`);
+      expect(result.getErrorMessage()).toContain('Error: ');
+    });
+    it('empty store cannot remove default', async () => {
+      data.set('store', '[{"v1":"1"}]');
+      simpleTable = `%storevar%,\n:Start\n1,{DSRead~storevar,store}{DSRemove~storevar,1}`;
+      tablesmith.addTable('folder', filename, simpleTable);
+      const result = await tablesmith.evaluate(`[${filename}]`);
+      expect(result.getErrorMessage()).toContain('Error: ');
+    });
+    it('error index to high', async () => {
+      const initialized = '[{"v1":"1"},{"v1":"2"},{"v1":"3"}]';
+      data.set('store', initialized);
+      simpleTable = `%storevar%,\n:Start\n1,{DSRead~storevar,store}{DSRemove~storevar,3}{DSWrite~storevar,store}`;
+      tablesmith.addTable('folder', filename, simpleTable);
+      const result = await tablesmith.evaluate(`[${filename}]`);
+      expect(result.getErrorMessage()).toContain('Error: ');
+    });
+    it('remove at index', async () => {
+      const initialized = '[{"v1":"1"},{"v1":"2"},{"v1":"3"}]';
+      data.set('store', initialized);
+      simpleTable = `%storevar%,\n:Start\n1,{DSRead~storevar,store}{DSRemove~storevar,1}{DSWrite~storevar,store}`;
+      tablesmith.addTable('folder', filename, simpleTable);
+      const result = await tablesmith.evaluate(`[${filename}]`);
+      expect(result.asString()).toBe('');
+      expect(data.get('store')).toBe('[{"v1":"1"},{"v1":"3"}]');
+    });
+  });
+
   describe('{DSCalc~', () => {
     it('parses correctly', async () => {
       simpleTable = `:Start\n1,{DSCalc~[var],[op],[field]}`;
