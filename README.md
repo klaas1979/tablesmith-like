@@ -313,6 +313,7 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 - DSCalc (Calculate on items)
 - DSCount (Count items)
 - DSCreate (Create dataset)
+- DSFind (Find an item) Note: matchers `~` and `!~` behave like `=` and `!=` because the wildcards that are referred to in the basic Tablesmith documentation are not defined further. Different wildcard mechanisms exists, none was choosen as of now. Feel free to create a ticket with the wildcard system explained to get one implemented.
 - DSGet (Get a value from an item)
 - DSRandomize (Randomize items)
 - DSRead (Read in a dataset file)
@@ -322,7 +323,6 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 
 **Not implemented:**
 
-- DSFind (Find an item)
 - DSRoll (Roll for an item)
 - DSSort (Sort items)
 

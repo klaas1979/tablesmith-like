@@ -58,6 +58,8 @@ import TSDSSetExpression from '../expressions/tsdssetexpression';
 import TSDSCalcExpression from '../expressions/tsdscalcexpression';
 import TSDSRandomizeExpression from '../expressions/tsdsrandomizeexpression';
 import TSDSRemoveExpression from '../expressions/tsdsremoveexpression';
+import TSDSFindExpression from '../expressions/tsdsfindexpression';
+import DSFieldCompareExpression from '../expressions/dsfieldcompareexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -325,6 +327,9 @@ class TSTableGroupBuilder {
       case 'DSCreate':
         result = this.createDSCreateExpression(stacked);
         break;
+      case 'DSFind':
+        result = this.createDSFindExpression(stacked);
+        break;
       case 'DSGet':
         result = this.createDSGetExpression(stacked);
         break;
@@ -483,6 +488,21 @@ class TSTableGroupBuilder {
     const storeVariableExpression = data.popExpressions();
     return new TSDSCreateExpression(storeVariableExpression, fields.reverse());
   }
+
+  private createDSFindExpression(data: StackItem): TSDSFindExpression {
+    if (data.stackSize() < 3) throw Error(`Missing finder expressions for DSFind!`);
+    const fields: DSFieldCompareExpression[] = [];
+    while (data.stackSize() > 2) {
+      const defaultvalue = data.popExpressions();
+      const operator = data.popString();
+      const field = data.popExpressions();
+      fields.push(new DSFieldCompareExpression(field, operator, defaultvalue));
+    }
+    const startIndexExpression = data.popExpressions();
+    const storeVariableExpression = data.popExpressions();
+    return new TSDSFindExpression(storeVariableExpression, startIndexExpression, fields.reverse());
+  }
+
   private createDSGetExpression(data: StackItem): TSDSGetExpression {
     const fieldNameExpression = data.popExpressions();
     const indexExpression = data.popExpressions();

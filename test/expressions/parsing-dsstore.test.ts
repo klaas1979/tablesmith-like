@@ -139,6 +139,90 @@ describe('Datastores', () => {
     });
   });
 
+  describe('{DSFind~', () => {
+    it('parses correctly', async () => {
+      simpleTable = `:Start\n1,{DSFind~storevar,12,v1 != name}`;
+      const table = tablesmith.addTable('folder', filename, simpleTable);
+      expect(table.groupForName('Start')?.lastRange()?.getExpression()).toBe('{DSFind~storevar,12,v1!=name}');
+    });
+    it('error for non existing store', async () => {
+      simpleTable = `%storevar%,\n:Start\n1,{DSFind~storevar,1,v1=0}`;
+      tablesmith.addTable('folder', filename, simpleTable);
+      const result = await tablesmith.evaluate(`[${filename}]`);
+      expect(result.getErrorMessage()).toContain('Error: ');
+    });
+    it('empty store nothing found', async () => {
+      data.set('store', '[{"v1":"1"}]');
+      simpleTable = `%storevar%,\n:Start\n1,{DSRead~storevar,store}{DSFind~storevar,1,v1=1}`;
+      tablesmith.addTable('folder', filename, simpleTable);
+      const result = await tablesmith.evaluate(`[${filename}]`);
+      expect(result.asString()).toBe('-1');
+    });
+    it('find multiple matches returns first index', async () => {
+      data.set('store', '[{"v1":"0","v2":"default"},{"v1":"1","v2":"val"},{"v1":"2","v2":"val"}]');
+      simpleTable = `%storevar%,\n:Start\n1,{DSRead~storevar,store}{DSFind~storevar,1,v2=val}`;
+      tablesmith.addTable('folder', filename, simpleTable);
+      const result = await tablesmith.evaluate(`[${filename}]`);
+      expect(result.asString()).toBe('1');
+    });
+    it('find multiple matches start index used', async () => {
+      data.set('store', '[{"v1":"0","v2":"default"},{"v1":"1","v2":"val"},{"v1":"2","v2":"val"}]');
+      simpleTable = `%storevar%,\n:Start\n1,{DSRead~storevar,store}{DSFind~storevar,2,v2=val}`;
+      tablesmith.addTable('folder', filename, simpleTable);
+      const result = await tablesmith.evaluate(`[${filename}]`);
+      expect(result.asString()).toBe('2');
+    });
+    it('find multiple matches first matcher, one second matcher', async () => {
+      data.set('store', '[{"v1":"0","v2":"default"},{"v1":"1","v2":"val"},{"v1":"2","v2":"val"}]');
+      simpleTable = `%storevar%,\n:Start\n1,{DSRead~storevar,store}{DSFind~storevar,1,v2=val,v1=2}`;
+      tablesmith.addTable('folder', filename, simpleTable);
+      const result = await tablesmith.evaluate(`[${filename}]`);
+      expect(result.asString()).toBe('2');
+    });
+    it('find multiple matches first matcher, none second matcher', async () => {
+      data.set('store', '[{"v1":"0","v2":"default"},{"v1":"1","v2":"val"},{"v1":"2","v2":"val"}]');
+      simpleTable = `%storevar%,\n:Start\n1,{DSRead~storevar,store}{DSFind~storevar,1,v2=val,v1=3}`;
+      tablesmith.addTable('folder', filename, simpleTable);
+      const result = await tablesmith.evaluate(`[${filename}]`);
+      expect(result.asString()).toBe('-1');
+    });
+    it('!=', async () => {
+      data.set('store', '[{"v1":"0","v2":"default"},{"v1":"1","v2":"val"},{"v1":"2","v2":"val"}]');
+      simpleTable = `%storevar%,\n:Start\n1,{DSRead~storevar,store}{DSFind~storevar,1,v1!=1}`;
+      tablesmith.addTable('folder', filename, simpleTable);
+      const result = await tablesmith.evaluate(`[${filename}]`);
+      expect(result.asString()).toBe('2');
+    });
+    it('>', async () => {
+      data.set('store', '[{"v1":"0","v2":"default"},{"v1":"1","v2":"val"},{"v1":"2","v2":"val"}]');
+      simpleTable = `%storevar%,\n:Start\n1,{DSRead~storevar,store}{DSFind~storevar,1,v1>1}`;
+      tablesmith.addTable('folder', filename, simpleTable);
+      const result = await tablesmith.evaluate(`[${filename}]`);
+      expect(result.asString()).toBe('2');
+    });
+    it('<', async () => {
+      data.set('store', '[{"v1":"0","v2":"default"},{"v1":"1","v2":"val"},{"v1":"2","v2":"val"}]');
+      simpleTable = `%storevar%,\n:Start\n1,{DSRead~storevar,store}{DSFind~storevar,1,v1<2}`;
+      tablesmith.addTable('folder', filename, simpleTable);
+      const result = await tablesmith.evaluate(`[${filename}]`);
+      expect(result.asString()).toBe('1');
+    });
+    it('<=', async () => {
+      data.set('store', '[{"v1":"0","v2":"default"},{"v1":"1","v2":"val"},{"v1":"2","v2":"val"}]');
+      simpleTable = `%storevar%,\n:Start\n1,{DSRead~storevar,store}{DSFind~storevar,1,v1<=1}`;
+      tablesmith.addTable('folder', filename, simpleTable);
+      const result = await tablesmith.evaluate(`[${filename}]`);
+      expect(result.asString()).toBe('1');
+    });
+    it('>=', async () => {
+      data.set('store', '[{"v1":"0","v2":"default"},{"v1":"1","v2":"val"},{"v1":"2","v2":"val"}]');
+      simpleTable = `%storevar%,\n:Start\n1,{DSRead~storevar,store}{DSFind~storevar,1,v1>=2}`;
+      tablesmith.addTable('folder', filename, simpleTable);
+      const result = await tablesmith.evaluate(`[${filename}]`);
+      expect(result.asString()).toBe('2');
+    });
+  });
+
   describe('{DSCalc~', () => {
     it('parses correctly', async () => {
       simpleTable = `:Start\n1,{DSCalc~[var],[op],[field]}`;

@@ -116,6 +116,61 @@ export class DSStore {
   }
 
   /**
+   * Filters Dataset and returns all indices that match value with operator.
+   * @param startIndex for search.
+   * @param fieldName to filter value in.
+   * @param operator as string for comparison operation.
+   * @param value to compare to with operator.
+   * @returns all indices that match the filter.
+   */
+  filter(startIndex: number, fieldName: string, operator: string, value: string): number[] {
+    this.checkField(fieldName);
+    const matches = this.data.slice(startIndex).map((e, index) => {
+      const realIndex = index + startIndex;
+      const indexMatch = startIndex <= realIndex;
+      const entry = e as object;
+      const fieldValue = entry[fieldName as keyof object];
+      const fieldMatch = this.fieldMatches(fieldValue, operator, value);
+      return indexMatch && fieldMatch ? realIndex : -1;
+    });
+    return matches.filter((i) => {
+      return i > 0;
+    });
+  }
+
+  private fieldMatches(fieldValue: string, operator: string, value: string) {
+    let result = false;
+    const fieldAsNumber = Number.parseFloat(fieldValue);
+    const valueAsNumber = Number.parseFloat(value);
+    const asNumber = !Number.isNaN(fieldAsNumber) && !Number.isNaN(valueAsNumber);
+    switch (operator) {
+      case '<':
+        result = asNumber ? fieldAsNumber < valueAsNumber : fieldValue < value;
+        break;
+      case '>':
+        result = asNumber ? fieldAsNumber > valueAsNumber : fieldValue > value;
+        break;
+      case '=':
+      case '~':
+        result = asNumber ? fieldAsNumber === valueAsNumber : fieldValue === value;
+        break;
+      case '<=':
+        result = asNumber ? fieldAsNumber <= valueAsNumber : fieldValue <= value;
+        break;
+      case '>=':
+        result = asNumber ? fieldAsNumber >= valueAsNumber : fieldValue >= value;
+        break;
+      case '!=':
+      case '!~':
+        result = asNumber ? fieldAsNumber != valueAsNumber : fieldValue != value;
+        break;
+      default:
+        throw Error(`Unknown operator for field comparision '${operator}'`);
+    }
+    return result;
+  }
+
+  /**
    * Shuffles this DSStore.
    */
   shuffle(): void {

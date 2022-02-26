@@ -180,6 +180,14 @@ TsFunction
   / FunctionsManyParams _ ExpressionTextNoComma _ (GroupLockParameter)+ '}' { errorHandling(() => {
             options?.pf.createFunction();
           }); }
+  / DSFindStart _ ExpressionTextNoComma _ ParamSeparatorComma _ ExpressionTextNoComma _ ParamSeparatorComma _ BooleanExpression _ (_ ParamSeparatorComma _ BooleanExpression _ )* '}' { errorHandling(() => {
+            options?.pf.createFunction();
+          }); }
+
+DSFindStart
+  = '{' name:'DSFind' '~' { errorHandling(() => {
+            options?.pf.startFunction(name);
+          }); }
 
 WhileStart
   = '{' name:'While' '~' { errorHandling(() => {
@@ -328,7 +336,7 @@ FunctionsThreeParams
           }); }
 
 FunctionsManyParams
-  = '{' _ name:(@'DSAddNR' / @'DSAdd' / @'DSSet' / @'DSCreate' / @'InputList' / @'Lockout' / @'MaxVal' / @'MinVal' / @'Unlock') '~' { errorHandling(() => {
+  = '{' _ name:(@'DSAddNR' / @'DSAdd' / @'DSCreate' / @'DSSet' / @'InputList' / @'Lockout' / @'MaxVal' / @'MinVal' / @'Unlock') '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
