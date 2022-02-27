@@ -3,7 +3,7 @@ import { tablesmith } from '../tablesmith/tablesmithinstance';
 import { Logger } from './logger';
 import { TableCallValues } from './tablecallvalues';
 import TableSelectionForm from './forms/tableselectionform';
-import ChatResults from './chatresults';
+import ResultsTo from './resultsto';
 import { displayTableParseErrors } from './forms/displayparseerrors';
 import ParamInputForm from './forms/paraminputform';
 import CallResult from '../tablesmith/callresult';
@@ -62,13 +62,31 @@ export default class TablesmithApi {
    * @param call of table to evaluate, may be a call expression or a already parsed
    * TableCallValues object.
    * @param options Options object for evaluation.
-   * @param options.chatResults defaults to true, boolean value if results should be added to chat.
+   * @param options.toChat defaults to true, boolean value if results should be added to chat.
+   * @param options.toJournal defaults to false, boolean value if results should be added to journal.
    * @param options.lenient defaults to false, should the evaluation try to create a valid expression
    * by fixing standard errors?.
+   * @param options.journal? optional object donating the journal to add results to.
+   * @param options.journal.folder folder of Journal file to add results to.
+   * @param options.journal.name Journal Entry name to add results to.
+   * @param options.journalOptions.includeTimestamp boolean true if timestamp should be added to result.
+   * @param options.journalOptions.notify boolean indicating if an UI notification should be shown.
    */
   async evaluateTable(
     call: TableCallValues | string,
-    options: { chatResults?: boolean; lenient?: boolean } = { chatResults: true, lenient: false },
+    options: {
+      toChat?: boolean;
+      toJournal?: boolean;
+      lenient?: boolean;
+      journal?: { folder: string; name: string };
+      journalOptions?: { includeTimestamp?: boolean; notify?: boolean };
+    } = {
+      toChat: true,
+      toJournal: false,
+      lenient: false,
+      journal: undefined,
+      journalOptions: { includeTimestamp: true, notify: true },
+    },
   ): Promise<CallResult> {
     if (options.lenient && typeof call === 'string') call = this.enhanceCall(call);
     const callValues = this.parseEvaluateCall(call);
@@ -79,8 +97,11 @@ export default class TablesmithApi {
         Logger.warn(false, 'Gathering Parameters Form for Table closed, using default parameters!', callValues);
       result = await tablesmith.evaluate(callValues);
       Logger.debug(false, 'Result for', callValues, result);
-      if (options.chatResults) {
-        new ChatResults().chatResults(callValues, result);
+      if (options.toChat) {
+        new ResultsTo().chat(callValues, result);
+      }
+      if (options.toJournal) {
+        new ResultsTo().journal(callValues, result, options.journal, options.journalOptions);
       }
     }
     return result;

@@ -6,6 +6,7 @@ export async function preloadTemplates(): Promise<Handlebars.TemplateDelegate[]>
     `modules/${TABLESMITH_ID}/templates/paraminput.hbs`,
     `modules/${TABLESMITH_ID}/templates/paramspartial.hbs`,
     `modules/${TABLESMITH_ID}/templates/resultpartial.hbs`,
+    `modules/${TABLESMITH_ID}/templates/resulttopartial.hbs`,
     `modules/${TABLESMITH_ID}/templates/tablesmithselector.hbs`,
   ];
 

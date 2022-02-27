@@ -9,10 +9,19 @@ command: |
   let group = 'Start'; // default group for Tables
   let parameter = ''; // comma separated list of parameters, leave empty for most tables
   let rollCount = '1';
-  // let all below as is
+  // options for displaying results in chat or ading to journal
+  let options = {
+    toChat: true, // print result to chat
+    toJournal: false, // add result to a journal entry
+    lenient: false, // try to fix some common errors in calls
+    journal: undefined, // leave undefined for using Journal in settings or use:
+    // journal: { folder: 'Tablesmith', name: 'Roll Results' },
+    journalOptions: { includeTimestamp: true, notify: true },
+  };
+  // do not change below this line
   if (parameter && parameter.length > 0) parameter = `(${parameter})`
   let groupCall = `[${table}.${group}${parameter}]:${rollCount}`;
-  game.modules.get('tablesmith-like').api.evaluateTable(groupCall)
+  game.modules.get('tablesmith-like').api.evaluateTable(groupCall, options)
 folder: null
 ---
 name: "Tablesmith"

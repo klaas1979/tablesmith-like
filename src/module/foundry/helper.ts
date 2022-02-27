@@ -3,10 +3,12 @@ import TablesmithApi from './tablesmithapi';
 export const TABLESMITH_ID = 'tablesmith-like';
 export const PACK_FLAG_FOLDER = 'folder';
 
-export const SETTING_CHAT = 'default-chat';
 export const SETTING_IMPORT_FOLDERS = 'journal-import-folders';
 export const SETTING_TSD_JOURNAL = 'journal-tsd-name';
 export const SETTING_TSD_FOLDER = 'journal-tsd-folder';
+
+export const SETTING_JOURNAL_FOLDER = 'result-journal-folder';
+export const SETTING_JOURNAL_FILE = 'rsulult-journal-file';
 
 /**
  * Returns game instance if initialized.
@@ -18,6 +20,29 @@ export function getGame(): Game {
     throw new Error('game is not initialized yet!');
   }
   return game;
+}
+
+/**
+ * Returns Journal Entry that contains all Dataset as separate flags.
+ * @param journal optional parameter donating the journal to add results to.
+ * @returns stored Journal entry containing the datasets as flags.
+ */
+export async function getResultJournal(journal?: {
+  folder: string;
+  name: string;
+}): Promise<StoredDocument<JournalEntry>> {
+  const folderName = journal ? journal.folder : resultJournalFolder();
+  const journalName = journal ? journal.name : resultJournalName();
+  let tsd = getJournal().contents.find((j) => {
+    return j.name === journalName && j.folder?.name === folderName;
+  });
+  if (!tsd) {
+    let folder = getFolders().contents.find((f) => f.name === folderName);
+    if (!folder) folder = await Folder.create({ name: folderName, type: 'JournalEntry' });
+    tsd = await JournalEntry.create({ name: journalName, folder: folder, content: '' });
+  }
+  if (!tsd) throw Error(`Could not load nor create Journal for Results folder '${folderName}' file '${journalName}'`);
+  return tsd;
 }
 
 /**
@@ -133,14 +158,6 @@ export function getTablesmithApi(): TablesmithApi {
 }
 
 /**
- * Returns the chat Results setting.
- * @returns boolean true if results should be chatted by default, false if not.
- */
-export function chatResults(): boolean {
-  const chat = getGame().settings.get(TABLESMITH_ID, SETTING_CHAT);
-  return chat !== undefined && `${chat}` === 'true';
-}
-/**
  * All folders of module Journal tables to import.
  * @returns string[] of all folders.
  */
@@ -148,6 +165,7 @@ export function importFolders(): string[] {
   const folders = getGame().settings.get(TABLESMITH_ID, SETTING_IMPORT_FOLDERS) as string;
   return folders !== undefined ? folders.split(',') : [];
 }
+
 /**
  * Setting name for the TSD Data Folder.
  * @returns name for the Tablesmith Dataset Folder.
@@ -155,4 +173,22 @@ export function importFolders(): string[] {
 export function tsdJournalFolder(): string {
   const folder = getGame().settings.get(TABLESMITH_ID, SETTING_TSD_FOLDER) as string;
   return folder !== undefined ? `${folder}` : 'Tablesmith';
+}
+
+/**
+ * Setting name for the Result Journal Folder.
+ * @returns name for the Roll Result Folder.
+ */
+export function resultJournalFolder(): string {
+  const folder = getGame().settings.get(TABLESMITH_ID, SETTING_JOURNAL_FOLDER) as string;
+  return folder !== undefined ? `${folder}` : 'Tablesmith';
+}
+
+/**
+ * Setting name for the Result Journal File name.
+ * @returns name for the Roll Result Journal file name.
+ */
+export function resultJournalName(): string {
+  const folder = getGame().settings.get(TABLESMITH_ID, SETTING_JOURNAL_FILE) as string;
+  return folder !== undefined ? `${folder}` : 'Roll Results';
 }

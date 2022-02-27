@@ -97,7 +97,9 @@ The chat commands `ts` and `tablesmith` can be used to call a table directly by 
 
 ### API
 
-The main method to use in the API is `evaluateTable(expression: string)` where the expression is a valid Table call, that may donate the Group to call, define Parameters and the roll count. I.e. `evaluateTable('[Char.name(1,name)]:5')`.
+For the full documentation of API methods see the source documentation in [tablesmithapi.ts](src/module/foundry/tablesmithapi.ts) that is well documented.
+
+The main method to use in the API is `evaluateTable(expression: string, options?: {...})` where the expression is a valid Table call, that may donate the Group to call, define Parameters and the roll count. I.e. `evaluateTable('[Char.name(1,name)]:5')`. The method takes an option argument, to configure the behaviour, i.e. adding result to chat, to a journal, configuring the journal and more. For the full documentation of options see the source documentation linked above.
 
 ## Tablesmith Tables
 

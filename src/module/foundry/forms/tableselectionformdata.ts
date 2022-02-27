@@ -13,7 +13,6 @@ export default class TableSelectionFormData {
   tables: TSTable[] = [];
   callValues: TableCallValues = new TableCallValues();
   parameters: TableParameter[] = [];
-  chatResults = true;
   results: CallResult | undefined;
 
   constructor(

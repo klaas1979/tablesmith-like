@@ -1,8 +1,8 @@
 import { tablesmith } from '../../tablesmith/tablesmithinstance';
 import { tstables } from '../../tablesmith/tstables';
-import ChatResults from '../chatresults';
+import ResultsTo from '../resultsto';
 import { displayTableParseErrors } from './displayparseerrors';
-import { chatResults, getGame, TABLESMITH_ID } from '../helper';
+import { getGame, TABLESMITH_ID } from '../helper';
 import JournalTables from '../journaltables';
 import { Logger } from '../logger';
 import { TableCallValues } from '../tablecallvalues';
@@ -27,7 +27,6 @@ export default class TableSelectionForm extends FormApplication<
   constructor(tableCallValues: TableCallValues, options?: TableSelectionOptions) {
     super(tableCallValues, options);
     this.data = new TableSelectionFormData({ folders: tstables.folders, callValues: new TableCallValues() });
-    this.data.chatResults = chatResults();
   }
   /**
    * Adds additional options to default options.
@@ -58,7 +57,6 @@ export default class TableSelectionForm extends FormApplication<
     if (formData) {
       const expanded = foundry.utils.expandObject(formData);
       Logger.debug(false, 'expandedFormData', expanded);
-      this.data.chatResults = expanded['chatResults'];
       this.data.setFoldername(expanded['folder']['name']);
       this.data.setTablename(expanded['callValues']['tablename']);
       this.data.callValues.rollCount = expanded['callValues']['rollCount'];
@@ -91,6 +89,12 @@ export default class TableSelectionForm extends FormApplication<
       case 'reload-tables':
         await this._reloadTables();
         break;
+      case 'result-to-chat':
+        await this._resultToChat();
+        break;
+      case 'result-to-journal':
+        await this._resultToJournal();
+        break;
       default:
         Logger.error(true, 'Unknown action', action, clickedElement.data());
     }
@@ -117,9 +121,6 @@ export default class TableSelectionForm extends FormApplication<
 
       this.data.results = await tablesmith.evaluate(this.data.callValues);
       this.render();
-      if (this.data.chatResults) {
-        new ChatResults().chatResults(this.data.callValues, this.data.results);
-      }
     } else Logger.warn(false, 'No table selected!');
   }
 
@@ -128,5 +129,17 @@ export default class TableSelectionForm extends FormApplication<
     this.render();
     if (errors.length > 0) displayTableParseErrors();
     else ui.notifications?.info(getGame().i18n.localize('TABLESMITH.reload.tables-reloaded'));
+  }
+
+  async _resultToChat() {
+    if (this.data.results) {
+      new ResultsTo().chat(this.data.callValues, this.data.results);
+    }
+  }
+
+  async _resultToJournal() {
+    if (this.data.results) {
+      new ResultsTo().journal(this.data.callValues, this.data.results);
+    }
   }
 }

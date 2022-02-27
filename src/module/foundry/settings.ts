@@ -1,18 +1,16 @@
-import { getGame, SETTING_CHAT, SETTING_IMPORT_FOLDERS, SETTING_TSD_FOLDER, TABLESMITH_ID } from './helper';
+import {
+  getGame,
+  SETTING_IMPORT_FOLDERS,
+  SETTING_JOURNAL_FILE,
+  SETTING_JOURNAL_FOLDER,
+  SETTING_TSD_FOLDER,
+  TABLESMITH_ID,
+} from './helper';
 
 /**
  * All settings to register for module.
  */
 export function registerSettings(): void {
-  getGame().settings.register(TABLESMITH_ID, SETTING_CHAT, {
-    name: 'TABLESMITH.settings.chat-results.name',
-    hint: 'TABLESMITH.settings.chat-results.hint',
-    scope: 'world',
-    config: true,
-    type: Boolean,
-    default: true,
-  });
-
   getGame().settings.register(TABLESMITH_ID, SETTING_IMPORT_FOLDERS, {
     name: 'TABLESMITH.settings.import-folders.name',
     hint: 'TABLESMITH.settings.import-folders.hint',
@@ -29,5 +27,23 @@ export function registerSettings(): void {
     config: true,
     type: String,
     default: 'Tablesmith Data',
+  });
+
+  getGame().settings.register(TABLESMITH_ID, SETTING_JOURNAL_FOLDER, {
+    name: 'TABLESMITH.settings.journal-folder.name',
+    hint: 'TABLESMITH.settings.journal-folder.hint',
+    scope: 'world',
+    config: true,
+    type: String,
+    default: 'Tablesmith',
+  });
+
+  getGame().settings.register(TABLESMITH_ID, SETTING_JOURNAL_FILE, {
+    name: 'TABLESMITH.settings.journal-file.name',
+    hint: 'TABLESMITH.settings.journal-file.hint',
+    scope: 'world',
+    config: true,
+    type: String,
+    default: 'Roll Results',
   });
 }

@@ -13,7 +13,12 @@
       "parameter-input": "Tablesmith - Parameter input",
       "rollcount": "Number of rolls",
       "result": "Result",
-      "table": "Table"
+      "table": "Table",
+      "result-to": {
+        "chat": "To Chat",
+        "journal": "To Journal",
+        "journal-updated": "Journal updated with results"
+      }
     },
     "reload": {
       "parse-errors": "Table parse errors",
@@ -22,10 +27,6 @@
       "tables-reloaded": "Tables have been reloaded!"
     },
     "settings": {
-      "chat-results": {
-        "name": "Chat Results",
-        "hint": "Should results by default be added to the chat or not"
-      },
       "import-folders": {
         "name": "Folders to import",
         "hint": "Comma separated list of all folders to import from provided journal",
@@ -37,6 +38,14 @@
       },
       "tsd-journal-file": {
         "hint": "This file is a Tablesmith-like Dataset with embedded data, see Documentation for more information"
+      },
+      "journal-folder": {
+        "name": "Result Journal Folder",
+        "hint": "The folder that contains the Journal to write results to"
+      },
+      "journal-file": {
+        "name": "Result Journal Name",
+        "hint": "The Journal name that the results are added to"
       }
     }
   }
