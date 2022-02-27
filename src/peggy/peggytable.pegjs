@@ -125,7 +125,6 @@ GroupCall
 StartGroupCall
 // ignore ~ reload toggle for the moment
   = !'/' '[' rerollable:'~'? { errorHandling(() => {
-
             options?.pf.startGroupCall(rerollable === '~');
           }); }
 Modifier
@@ -550,14 +549,14 @@ int
 = __ ([\n] '_' __)?
 
 __ 'Whitspace'
-  = [\t ]*
+  = [\t \u00A0]*
 
 /* Stuff to ignore within a Table file. */
 Ignore
   = (LineEnd / Comment)+
 
 LineEnd
- = __ '\n'
+ = __ '\n' __
 
 /* The only allowed comments in Tablesmith */
 Comment
