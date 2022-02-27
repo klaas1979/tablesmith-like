@@ -36,7 +36,7 @@ async function rollTableDrawWrapper(
       const tableCallValues = getTablesmithApi().parseEvaluateCall(text);
       if (tableCallValues) {
         Logger.debug(false, 'tableCallValues', tableCallValues);
-        const tsResult = await getTablesmithApi().evaluateTable(tableCallValues, { chatResults: false });
+        const tsResult = await getTablesmithApi().evaluateTable(tableCallValues, { toChat: false });
         storeResult(text, tsResult);
       }
     }
