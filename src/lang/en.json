@@ -2,7 +2,6 @@
   "TABLESMITH": {
     "default-folder": "Default",
     "evaluate": {
-      "chatresults": "Add Results to Chat",
       "error": "Error",
       "evaluate-table": "Evaluate",
       "input-list": "Select Item",
