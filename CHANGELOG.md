@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/klaas1979/tablesmith-like/compare/v1.4.0...v1.5.0) (2022-02-27)
+
+
+### Features
+
+* Results can be added to a journal. API updated to have options for this. Base Journal can be configured via Module options. ([d090f33](https://github.com/klaas1979/tablesmith-like/commit/d090f3395791bfbde6c7c81825bc1d59417d29b1))
+
+
+### Bug Fixes
+
+* Error messages have a basic formatting with newlines rendered ([81d2d34](https://github.com/klaas1979/tablesmith-like/commit/81d2d34c1e17407310bb28dc987c1fb331bcd727))
+
 ## [1.4.0](https://github.com/klaas1979/tablesmith-like/compare/v1.3.0...v1.4.0) (2022-02-27)
 
 
