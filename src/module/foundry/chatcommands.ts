@@ -21,7 +21,7 @@ export default class ChatCommands {
       try {
         const call = match[2];
         if (call) {
-          getTablesmithApi().evaluateTable(call, { chatResults: true, lenient: true });
+          getTablesmithApi().evaluateTable(call, { toChat: true, lenient: true });
         } else Logger.info(false, 'Tablesmith Chat command without arguments, cannot call a table!', data);
         return false;
       } catch (error) {
