@@ -19,7 +19,7 @@ flags:
     folder: Examples
 content: |
   :Start
-  1,<b>bold</b><hline align="center" width="50/%"/> hline not rendered!<em>em</em>
+  1,&lt;b&gt;bold&lt;/b&gt;&lt;hline align="center" width="50/%"/&gt; hline not rendered!&lt;em&gt;em&lt;/em&gt;
 sort: 0
 folder: null
 permission:
