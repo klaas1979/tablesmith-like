@@ -9,8 +9,9 @@ export async function displayTableParseErrors() {
   let html = '';
   if (errors.length == 0) html = getGame().i18n.localize('TABLESMITH.reload.no-parse-errors');
   for (const error of errors) {
+    const errorHtml = error.error.replace(/\n/g, '<br/>');
     html += `<h2>'${error.foldername}' / '${error.tablename}'</h2>`;
-    html += `<p>${error.error}</p>`;
+    html += `<p>${errorHtml}</p>`;
   }
   Dialog.prompt({
     title: getGame().i18n.localize('TABLESMITH.reload.parse-errors'),
