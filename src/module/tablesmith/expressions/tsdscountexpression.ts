@@ -15,7 +15,7 @@ export default class TSDSCountExpression extends BaseTSExpression {
     const variable = (await this.storeVariableExpression.evaluate(evalcontext)).asString();
     const store = evalcontext.readStores.get(variable);
     if (!store) throw Error(`No Datastore read under variable '${variable}'`);
-    return new SingleTSExpressionResult(store.data.length - 1);
+    return new SingleTSExpressionResult(store.size());
   }
 
   getExpression(): string {

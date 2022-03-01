@@ -1,4 +1,7 @@
+import { getGame } from '../../foundry/helper';
 import { DSStore } from './dsstore';
+import { GameDSStore, GAME_DATA } from './gamedsstore';
+import { ObjectArrayDSStore } from './objectarraydsstore';
 
 /**
  * DSStoreDatabase provides the Backend to save the Data to any backend.
@@ -24,10 +27,16 @@ export class DSStores {
    * @returns DSStore containing the parsed Datastructure.
    */
   async get(storename: string): Promise<DSStore> {
-    const jsonData = await this.db.get(storename);
-    if (!jsonData) throw Error(`Could not get DSStore for name '${storename}'`);
-    const data = JSON.parse(jsonData) as Map<string, string>[];
-    return new DSStore(storename, data);
+    let result;
+    if (GAME_DATA.includes(storename)) {
+      result = new GameDSStore(storename, getGame());
+    } else {
+      const jsonData = await this.db.get(storename);
+      if (!jsonData) throw Error(`Could not get DSStore for name '${storename}'`);
+      const data = JSON.parse(jsonData) as Map<string, string>[];
+      result = new ObjectArrayDSStore(storename, data);
+    }
+    return result;
   }
 
   /**

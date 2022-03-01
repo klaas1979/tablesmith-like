@@ -207,7 +207,7 @@ class EvaluationContext {
     if (!this.dsStores) throw Error('Could not write DSStore, the DSStores backend is not initialized!');
     const store = this.readStores.get(variable);
     if (!store) throw Error(`No DSStore defined for variable '${variable}' cannot write to backend '${storename}'!`);
-    store.name = storename;
+    store.setName(storename);
     await this.dsStores.save(store);
   }
   /**
