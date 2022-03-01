@@ -1,5 +1,6 @@
 import { DSStore } from '../../src/module/tablesmith/dsstore/dsstore';
 import { DSStores, DSStoreDatabase } from '../../src/module/tablesmith/dsstore/dsstores';
+import { ObjectArrayDSStore } from '../../src/module/tablesmith/dsstore/objectarraydsstore';
 
 let dsstores: DSStores;
 let db: DSStoreDatabase;
@@ -28,14 +29,14 @@ describe('DSStores', () => {
   it('#get(key) for known key, gets data', async () => {
     value = [{ name: 'name' }];
     data.set(storename, JSON.stringify(value));
-    store = new DSStore(storename, value);
+    store = new ObjectArrayDSStore(storename, value);
     const result = await dsstores.get(storename);
     expect(result).toEqual(store);
   });
 
   it('#save(store) replaces key with new value', async () => {
     value = [{ name: 'name' }];
-    store = new DSStore(storename, value);
+    store = new ObjectArrayDSStore(storename, value);
     await dsstores.save(store);
     expect(data.get(storename)).toEqual(JSON.stringify(value));
   });

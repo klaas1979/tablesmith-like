@@ -4,7 +4,7 @@
 
 Use Tablesmith-like tables in FoundryVTT and create complex nested tables. For more about Tablesmith see the [Tablesmiths Homepage](http://www.mythosa.net/p/tablesmith.html) and the [Forum for TableSmith](https://groups.io/g/tablesmith).
 
-Tablesmith table syntax allows it to create anything from simple tables and nested tables as in Foundry, to complex linked tables with loops, conditionals, parameters and more. Results can be send to chat.
+Tablesmith table syntax allows it to create anything from simple tables and nested tables as in Foundry, to complex linked tables with loops, conditionals, parameters and more. Results can be send to chat or a Journal.
 
 Tablesmith is useful for Character and NPC generation, Solo play, generating Encounters, Inns, Weather and whatever else is needed in your adventure. Within the forum is a files area with a lot tables ranging from simple name tables up to complex content generation of all kind. Tablesmith supports Dataset to store data between calls or rolls and to share data between tables.
 
