@@ -36,7 +36,15 @@ export class GameDSStore implements DSStore {
     throw new Error(`Could not set name on GameDSStore, read only!`);
   }
 
-  private getData(): Actors | CardStacks | CombatEncounters | Items | Journal | Users | Scenes | RollTables {
+  private getData():
+    | StoredDocument<Actor>[]
+    | StoredDocument<Cards>[]
+    | StoredDocument<Combat>[]
+    | StoredDocument<Item>[]
+    | StoredDocument<JournalEntry>[]
+    | StoredDocument<User>[]
+    | StoredDocument<Scene>[]
+    | StoredDocument<RollTable>[] {
     let result;
     Logger.debug(false, 'game data', this.game);
     switch (this.name) {
@@ -68,7 +76,7 @@ export class GameDSStore implements DSStore {
         throw Error(`Could not get data for '${this.name}', unknown!`);
     }
     if (!result) throw Error(`Could not get data for '${this.name}', undefined!`);
-    return result;
+    return result.contents;
   }
 
   /**
@@ -93,7 +101,7 @@ export class GameDSStore implements DSStore {
    * @returns number of stored entries.
    */
   size(): number {
-    return this.getData().contents.length;
+    return this.getData().length;
   }
 
   /**
@@ -131,11 +139,32 @@ export class GameDSStore implements DSStore {
    */
   getEntryField(index: number, fieldName: string): string {
     const realIndex = this.realIndex(index);
-    const entry = this.getData().contents[realIndex];
+    const entry = this.getData()[realIndex];
     if (!entry)
       throw Error(
         `Cannot get '${fieldName}' for index '${index}' using realIndex '${realIndex}' in '${this.name}', entry is undefined!`,
       );
+    return this.getFieldValue(entry, fieldName);
+  }
+
+  /**
+   * Returns field value from given object, throws if undefined.
+   * @param entry to retrieve fieldName from.
+   * @param fieldName to retrieve, may be a deep link via dotted "." notation.
+   * @returns value for field.
+   */
+  private getFieldValue(
+    entry:
+      | StoredDocument<Actor>
+      | StoredDocument<Cards>
+      | StoredDocument<Combat>
+      | StoredDocument<Item>
+      | StoredDocument<JournalEntry>
+      | StoredDocument<User>
+      | StoredDocument<Scene>
+      | StoredDocument<RollTable>,
+    fieldName: string,
+  ) {
     let result: object = entry.toObject();
     const traversed: string[] = [];
     fieldName.split('.').forEach((field) => {
@@ -165,7 +194,11 @@ export class GameDSStore implements DSStore {
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   fieldValues(fieldName: string): string[] {
-    throw Error(`fieldValues() Not implemented yet`);
+    const result = this.getData().map((e) => {
+      return this.getFieldValue(e, fieldName);
+    });
+    Logger.debug(false, 'fieldValues', fieldName, result);
+    return result;
   }
 
   /**
