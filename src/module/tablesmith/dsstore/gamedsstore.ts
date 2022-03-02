@@ -211,7 +211,18 @@ export class GameDSStore implements DSStore {
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   filter(startIndex: number, fieldName: string, operator: string, value: string): number[] {
-    throw Error(`filter() Not implemented yet`);
+    const matches = this.getData()
+      .slice(startIndex - 1)
+      .map((entry, index) => {
+        const realIndex = index + startIndex;
+        const indexMatch = startIndex <= realIndex;
+        const fieldValue = this.getFieldValue(entry, fieldName);
+        const fieldMatch = this.fieldMatches(fieldValue, operator, value);
+        return indexMatch && fieldMatch ? realIndex : -1;
+      });
+    return matches.filter((i) => {
+      return i > 0;
+    });
   }
 
   private fieldMatches(fieldValue: string, operator: string, value: string) {
