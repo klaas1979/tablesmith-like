@@ -22,6 +22,7 @@ Tablesmith is useful for Character and NPC generation, Solo play, generating Enc
   - [Tables in different Journals or Folders](#tables-in-different-journals-or-folders)
   - [Formatting Tips for Journal Tables](#formatting-tips-for-journal-tables)
 - [Datasets General](#datasets-general)
+  - [Foundry Game Data Datasets](#foundry-game-data-datasets)
 - [Implemented Tablesmith Features](#implemented-tablesmith-features)
   - [Groups](#groups)
     - [Splitting Group Entries / Ranges](#splitting-group-entries--ranges)
@@ -140,6 +141,41 @@ The table below is a visual representation of an example monster table.
 Once a dataset is created, and has items added to it, including setting the values for the fields, it can be used, by retrieving those values using `DSGet`. The Dataset is sortable with `DSSort`. Entries can be searched for with `DSFind`. Singl entries can be removed using `DSRemove`.
 
 Datasets can be persisted using `DSWrite` and later reloaded using `DSRead`.
+
+### Foundry Game Data Datasets
+
+To access foundry Gamedata, datasets can be used. The following Game data collections can be accessed by a Dataset:
+
+- game.actors
+- game.cards
+- game.combats
+- game.items
+- game.journal
+- game.users
+- game.scenes
+- game.tables
+
+The Dataset is created by the standard `DSRead` TS function:
+
+```TAB
+%store%,
+:Start
+1,{DSRead~store,game.actors}
+```
+
+To access data the dotted notation can be used to traverse the object. As the Gamedata is system and potentially FoundryVTT version specific the complete path must be used to access data. An example using the FATE System is:
+
+```TAB
+{DSRead~store,game.actors} # Actor dataset
+{DSCount~store} # Count of Charaters
+{DSGet~store,1,name} # getting name
+{DSGet~store,1,_id} #getting id
+{DSGet~store,1,data.skills.Athletics.rank} # traversing to a value
+{DSCalc~store,Sum,data.skills.Athletics.rank} # Using calc with a value
+{DSFind~store,1,data.skills.Athletics.rank=2,name=New Character} # Finding an entity
+```
+
+The Gamedata collections can only be read. All functions that change the dataset like `DSSet`, `DSRemove` or `DSWrite` are not supported.
 
 ## Implemented Tablesmith Features
 
