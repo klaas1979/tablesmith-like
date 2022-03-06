@@ -151,6 +151,50 @@ describe('{CapEachWord~', () => {
   });
 });
 
+describe('{LCase~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('parses correct', async () => {
+    simpleTable = ':Start\n1,{LCase~All Will be LOWER}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe(
+      '{LCase~All Will be LOWER}',
+    );
+  });
+
+  it('all to lower', async () => {
+    simpleTable = ':Start\n1,{LCase~All Will be LOWER}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('all will be lower');
+  });
+});
+
+describe('{UCase~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('parses correct', async () => {
+    simpleTable = ':Start\n1,{UCase~All Will be UPPER}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe(
+      '{UCase~All Will be UPPER}',
+    );
+  });
+
+  it('all to lower', async () => {
+    simpleTable = ':Start\n1,{UCase~All Will be UPPER}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('ALL WILL BE UPPER');
+  });
+});
+
 describe('{Length~', () => {
   beforeEach(() => {
     tablesmith.reset();

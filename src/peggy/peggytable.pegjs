@@ -321,7 +321,7 @@ FunctionsZeroParams
 
 FunctionsOneParam
   = '{' _ name:(@'Bold' / @'CapEachWord' / @'Cap' / @'Count' / @'DSCount' / @'DSRandomize'
-  / @'IsNumber' / @'Italic' / @'Length' / @'Msg' / @'Picture' / @'Reset' / @'Trim') '~' { errorHandling(() => {
+  / @'IsNumber' / @'Italic' / @'LCase' / @'Length' / @'Msg' / @'Picture' / @'Reset' / @'Trim' / @'UCase') '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 

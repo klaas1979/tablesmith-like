@@ -313,6 +313,8 @@ class TSTableGroupBuilder {
         break;
       case 'Cap':
       case 'CapEachWord':
+      case 'LCase':
+      case 'UCase':
       case 'Trim':
         result = new TSTextTransformExpression(stacked.name, stacked.popExpressions());
         break;

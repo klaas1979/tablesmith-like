@@ -24,8 +24,14 @@ export default class TSTextTransformExpression extends BaseTSExpression {
       case 'CapEachWord':
         result = this.capEachWord(text);
         break;
+      case 'LCase':
+        result = text.toLowerCase();
+        break;
       case 'Trim':
         result = text.trim();
+        break;
+      case 'UCase':
+        result = text.toUpperCase();
         break;
       default:
         throw Error(`Unknown function '${this.name}'`);
