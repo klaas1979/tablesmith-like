@@ -443,6 +443,7 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 ### Text
 
 - Find (Find text within other text)
+- Replace (Replace text)
 
 **Not implemented:**
 
@@ -458,7 +459,6 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 - Ordinal (Ordinal number)
 - Plural (Make string plural)
 - PluralIf (Conditional make string plural)
-- Replace (Replace text)
 - UCase (Upper case)
 - Right (Retrieve rightmost characters)
 - Space (Insert spaces)

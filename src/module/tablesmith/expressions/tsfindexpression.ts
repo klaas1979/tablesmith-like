@@ -3,9 +3,7 @@ import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresu
 import EvaluationContext from './evaluationcontext';
 
 /**
- * Expression to evaluate / roll on a tables group. If modifier is "=" set fixed result to true and add
- * Term defining the fixed result. If "+" or "-" are used as modifier add Term that describes the modifier
- * the modifer.
+ * Finds index of text in text, starting with index 1 not 0.
  */
 export default class TSFindExpression extends BaseTSExpression {
   private indexExpression: TSExpression;

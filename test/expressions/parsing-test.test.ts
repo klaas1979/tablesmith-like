@@ -46,3 +46,31 @@ describe('{Find~', () => {
     expect(result).toBe('0');
   });
 });
+
+describe('{Replace~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('parses correct', async () => {
+    simpleTable = ':Start\n1,{Replace~a,@,textatext}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe(
+      '{Replace~a,@,textatext}',
+    );
+  });
+
+  it('replaces matches', async () => {
+    simpleTable = ':Start\n1,{Replace~aa,@@,text aa aa text}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('text @@ @@ text');
+  });
+  it('no match, nothing changes', async () => {
+    simpleTable = ':Start\n1,{Replace~bb,@@,text aa aa text}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('text aa aa text');
+  });
+});

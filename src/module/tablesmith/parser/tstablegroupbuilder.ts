@@ -63,6 +63,7 @@ import TSFormatExpression from '../expressions/tsformatexpression';
 import TSColorExpression from '../expressions/tscolorexpression';
 import TSPictureExpression from '../expressions/tspictureexpression';
 import TSFindExpression from '../expressions/tsfindexpression';
+import TSReplaceExpression from '../expressions/tsreplaceexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -408,6 +409,9 @@ class TSTableGroupBuilder {
       case 'Or':
         result = this.createLogicalExpression(stacked);
         break;
+      case 'Replace':
+        result = this.createReplaceExpression(stacked);
+        break;
       case 'Reset':
         result = this.createResetExpression(stacked);
         break;
@@ -684,6 +688,13 @@ class TSTableGroupBuilder {
     const index = data.popExpressions();
     const variable = data.popExpressions();
     return new TSParamExpression(variable, index, this.tsTable.parameters);
+  }
+
+  private createReplaceExpression(data: StackItem): TSReplaceExpression {
+    const textExpression = data.popExpressions();
+    const replaceExpression = data.popExpressions();
+    const searchExpression = data.popExpressions();
+    return new TSReplaceExpression(searchExpression, replaceExpression, textExpression);
   }
 
   private createResetExpression(data: StackItem): TSGroupResetExpression {
