@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/klaas1979/tablesmith-like/compare/v1.5.0...v1.6.0) (2022-03-06)
+
+
+### Features
+
+* added TS Function 'Cap' and 'CapEachWord' ([874d053](https://github.com/klaas1979/tablesmith-like/commit/874d0533f61ed43673277a0cf9177721d1f24828))
+* added TS Function Italic ([fd46915](https://github.com/klaas1979/tablesmith-like/commit/fd469153d716d401e7be1126dd382e5e78470812))
+* DSFind works for Datasets on DSGameStores (i.e. Actors, Scenes, Cards, ...) ([66de0fd](https://github.com/klaas1979/tablesmith-like/commit/66de0fd0c390e7ac207f45b8300562e55af9d07f))
+* first stab on Datasets to Foundry game instance, i.e. on Actors, Journal or Items ([8abedb6](https://github.com/klaas1979/tablesmith-like/commit/8abedb61b59228bfa3c2cb11f2908fac0b5aeb30))
+* GameDSStore provides data for DSCalc ([3369f3a](https://github.com/klaas1979/tablesmith-like/commit/3369f3addda5c303a30eb3fe0d33247fa5613f1c))
+* TS Function 'Find' added ([b77785b](https://github.com/klaas1979/tablesmith-like/commit/b77785b659a17206882e621d47006f3cb41e237c))
+* TS Function 'Length' ([f30a890](https://github.com/klaas1979/tablesmith-like/commit/f30a8902db5b673f69093eb5992ba2076a7ae07c))
+* TS Function 'Replace' added ([459f890](https://github.com/klaas1979/tablesmith-like/commit/459f890589c92729040c5bd84d3ee4832f6b9e42))
+* TS Function 'Trim' added ([392a31f](https://github.com/klaas1979/tablesmith-like/commit/392a31f8765433c1bb7306730b9649d2825e8293))
+* TS Function 'UCase' added ([6a5de2f](https://github.com/klaas1979/tablesmith-like/commit/6a5de2f5b91e42b5ce7cebd783090fff3b09d300))
+* TS Functions 'AorAn' and 'VowelStart' added ([7335d02](https://github.com/klaas1979/tablesmith-like/commit/7335d02235ee92e93415235bbaea996ab52c51c4))
+* TSFunctions added 'Color' and 'Picture' ([38e6cbc](https://github.com/klaas1979/tablesmith-like/commit/38e6cbc09c1115e8b442d844dd2addff8c2e0ab8))
+
+
+### Bug Fixes
+
+* added simple macro to display all table parse errors ([8beaebd](https://github.com/klaas1979/tablesmith-like/commit/8beaebd2b9aeb7f722e4e8ad9afb396d4b60e005))
+
 ## [1.5.0](https://github.com/klaas1979/tablesmith-like/compare/v1.4.0...v1.5.0) (2022-02-27)
 
 
