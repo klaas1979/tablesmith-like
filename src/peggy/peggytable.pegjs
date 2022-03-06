@@ -320,8 +320,8 @@ FunctionsZeroParams
           }); }
 
 FunctionsOneParam
-  = '{' _ name:(@'Bold' / @'Count' / @'DSCount' / @'DSRandomize' / @'IsNumber' / @'Italic'
-  / @'Length' / @'Msg' / @'Picture' / @'Reset' / @'Trim') '~' { errorHandling(() => {
+  = '{' _ name:(@'Bold' / @'CapEachWord' / @'Cap' / @'Count' / @'DSCount' / @'DSRandomize'
+  / @'IsNumber' / @'Italic' / @'Length' / @'Msg' / @'Picture' / @'Reset' / @'Trim') '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 

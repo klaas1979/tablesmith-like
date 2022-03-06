@@ -442,6 +442,8 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 
 ### Text
 
+- Cap (Capitalize)
+- CapEachWord (Capitalize each word)
 - Find (Find text within other text)
 - Length (Get the length of some text)
 - Replace (Replace text)
@@ -450,8 +452,6 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 **Not implemented:**
 
 - AorAn (A or An)
-- Cap (Capitalize)
-- CapEachWord (Capitalize each word)
 - Char (Retrieve a single character)
 - CommaReplace (Replace or insert commas)
 - LCase (Lower case)

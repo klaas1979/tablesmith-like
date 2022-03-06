@@ -95,6 +95,62 @@ describe('{Trim~', () => {
   });
 });
 
+describe('{Cap~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('parses correct', async () => {
+    simpleTable = ':Start\n1,{Cap~the fox}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Cap~the fox}');
+  });
+
+  it('lets numbers as is', async () => {
+    simpleTable = ':Start\n1,{Cap~12. foxes}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('12. foxes');
+  });
+
+  it('caps first', async () => {
+    simpleTable = ':Start\n1,{Cap~the fox}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('The fox');
+  });
+});
+
+describe('{CapEachWord~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('parses correct', async () => {
+    simpleTable = ':Start\n1,{CapEachWord~the fox}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe(
+      '{CapEachWord~the fox}',
+    );
+  });
+
+  it('lets numbers as is', async () => {
+    simpleTable = ':Start\n1,{CapEachWord~12. foxes}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = await tablesmith.evaluate(`[${filename}]`);
+    expect(result.asString()).toBe('12. Foxes');
+  });
+
+  it('caps first', async () => {
+    simpleTable = ':Start\n1,{CapEachWord~the fox}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('The Fox');
+  });
+});
+
 describe('{Length~', () => {
   beforeEach(() => {
     tablesmith.reset();
