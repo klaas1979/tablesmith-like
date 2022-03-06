@@ -195,6 +195,62 @@ describe('{UCase~', () => {
   });
 });
 
+describe('{VowelStart~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('parses correct', async () => {
+    simpleTable = ':Start\n1,{VowelStart~All}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{VowelStart~All}');
+  });
+
+  ['a', 'A', 'e', 'E', 'I', 'I', 'o', 'O', 'u', 'U'].forEach((vowel) => {
+    it(`vowel '${vowel}'`, async () => {
+      simpleTable = `:Start\n1,{VowelStart~${vowel}}\n`;
+      tablesmith.addTable('folder', filename, simpleTable);
+      const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+      expect(result).toBe('1');
+    });
+  });
+  it('non vowel', async () => {
+    simpleTable = ':Start\n1,{VowelStart~B}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('0');
+  });
+});
+
+describe('{AorAn~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('parses correct', async () => {
+    simpleTable = ':Start\n1,{AorAn~Fox}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{AorAn~Fox}');
+  });
+
+  ['a', 'A', 'e', 'E', 'I', 'I', 'o', 'O', 'u', 'U'].forEach((vowel) => {
+    it(`vowel '${vowel}'`, async () => {
+      simpleTable = `:Start\n1,{AorAn~${vowel}}\n`;
+      tablesmith.addTable('folder', filename, simpleTable);
+      const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+      expect(result).toBe(`an ${vowel}`);
+    });
+  });
+  it('non vowel', async () => {
+    simpleTable = ':Start\n1,{AorAn~B}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('a B');
+  });
+});
+
 describe('{Length~', () => {
   beforeEach(() => {
     tablesmith.reset();

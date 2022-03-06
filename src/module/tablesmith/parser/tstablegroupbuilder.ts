@@ -310,12 +310,14 @@ class TSTableGroupBuilder {
       case 'Dice':
         result = new TSDiceCalcExpression(stacked.name, stacked.popExpressions());
         break;
+      case 'AorAn':
       case 'Cap':
       case 'CapEachWord':
       case 'LCase':
       case 'Length':
       case 'UCase':
       case 'Trim':
+      case 'VowelStart':
         result = new TSTextTransformExpression(stacked.name, stacked.popExpressions());
         break;
       case 'Count':

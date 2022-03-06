@@ -18,6 +18,9 @@ export default class TSTextTransformExpression extends BaseTSExpression {
     const text = (await this.textExpression.evaluate(evalcontext)).asString();
     let result;
     switch (this.name) {
+      case 'AorAn':
+        result = this.isVowelStart(text) ? `an ${text}` : `a ${text}`;
+        break;
       case 'Cap':
         result = text.charAt(0).toUpperCase() + text.slice(1);
         break;
@@ -36,6 +39,9 @@ export default class TSTextTransformExpression extends BaseTSExpression {
       case 'UCase':
         result = text.toUpperCase();
         break;
+      case 'VowelStart':
+        result = this.isVowelStart(text) ? '1' : '0';
+        break;
       default:
         throw Error(`Unknown function '${this.name}'`);
     }
@@ -49,6 +55,10 @@ export default class TSTextTransformExpression extends BaseTSExpression {
         return word.charAt(0).toUpperCase() + word.slice(1);
       })
       .join(' ');
+  }
+
+  private isVowelStart(text: string): boolean {
+    return text.match(/[aeiou].*/i) !== null;
   }
 
   getExpression(): string {

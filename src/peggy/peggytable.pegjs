@@ -320,8 +320,9 @@ FunctionsZeroParams
           }); }
 
 FunctionsOneParam
-  = '{' _ name:(@'Bold' / @'CapEachWord' / @'Cap' / @'Count' / @'DSCount' / @'DSRandomize'
-  / @'IsNumber' / @'Italic' / @'LCase' / @'Length' / @'Msg' / @'Picture' / @'Reset' / @'Trim' / @'UCase') '~' { errorHandling(() => {
+  = '{' _ name:(@'AorAn' / @'Bold' / @'CapEachWord' / @'Cap' / @'Count' / @'DSCount' / @'DSRandomize'
+  / @'IsNumber' / @'Italic' / @'LCase' / @'Length' / @'Msg' / @'Picture' / @'Reset' / @'Trim'
+  / @'UCase' / @'VowelStart') '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 

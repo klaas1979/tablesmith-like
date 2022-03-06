@@ -442,6 +442,7 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 
 ### Text
 
+- AorAn (A or An)
 - Cap (Capitalize)
 - CapEachWord (Capitalize each word)
 - Find (Find text within other text)
@@ -450,10 +451,10 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 - Replace (Replace text)
 - Trim (Trim spaces)
 - UCase (Upper case)
+- VowelStart (Vowel starts)
 
 **Not implemented:**
 
-- AorAn (A or An)
 - Char (Retrieve a single character)
 - CommaReplace (Replace or insert commas)
 - Left (Retrieve leftmost characters)
@@ -464,7 +465,6 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 - Right (Retrieve rightmost characters)
 - Space (Insert spaces)
 - Split (Split)
-- VowelStart (Vowel starts)
 
 ## Special Appreciations
 
