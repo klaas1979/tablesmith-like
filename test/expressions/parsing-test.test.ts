@@ -74,3 +74,23 @@ describe('{Replace~', () => {
     expect(result).toBe('text aa aa text');
   });
 });
+
+describe('{Trim~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('parses correct', async () => {
+    simpleTable = ':Start\n1,{Trim~    textatext    }\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Trim~textatext    }');
+  });
+
+  it('trims', async () => {
+    simpleTable = ':Start\n1,{Trim~    textatext    }\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('textatext');
+  });
+});

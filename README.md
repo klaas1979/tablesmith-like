@@ -444,6 +444,7 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 
 - Find (Find text within other text)
 - Replace (Replace text)
+- Trim (Trim spaces)
 
 **Not implemented:**
 
@@ -463,7 +464,6 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 - Right (Retrieve rightmost characters)
 - Space (Insert spaces)
 - Split (Split)
-- Trim (Trim spaces)
 - VowelStart (Vowel starts)
 
 ## Special Appreciations

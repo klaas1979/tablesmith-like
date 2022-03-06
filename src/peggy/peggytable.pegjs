@@ -320,12 +320,14 @@ FunctionsZeroParams
           }); }
 
 FunctionsOneParam
-  = '{' _ name:(@'Bold' / @'Count' / @'DSCount' / @'DSRandomize' / @'IsNumber' / @'Italic' / @'Msg' / @'Picture' / @'Reset') '~' { errorHandling(() => {
+  = '{' _ name:(@'Bold' / @'Count' / @'DSCount' / @'DSRandomize' / @'IsNumber' / @'Italic'
+  / @'Msg' / @'Picture' / @'Reset' / @'Trim') '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
 FunctionsTwoParams
-  = '{' _ name:(@'Color' / @'DSRead' / @'DSRemove' / @'DSWrite' / @'Line' / @'Param' / @'InputText') '~' { errorHandling(() => {
+  = '{' _ name:(@'Color' / @'DSRead' / @'DSRemove' / @'DSWrite' / @'Line' / @'Param'
+  / @'InputText') '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
@@ -335,7 +337,8 @@ FunctionsThreeParams
           }); }
 
 FunctionsManyParams
-  = '{' _ name:(@'DSAddNR' / @'DSAdd' / @'DSCreate' / @'DSSet' / @'InputList' / @'Lockout' / @'MaxVal' / @'MinVal' / @'Unlock') '~' { errorHandling(() => {
+  = '{' _ name:(@'DSAddNR' / @'DSAdd' / @'DSCreate' / @'DSSet' / @'InputList' / @'Lockout'
+  / @'MaxVal' / @'MinVal' / @'Unlock') '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
@@ -545,11 +548,11 @@ int
  = $([0-9]+)
 
 /** A break within a before, after or Range of a group to make the table more human readable. */
- _'Multi Line Whitespace with _'
+_'Multi Line Whitespace with _'
 = __ ([\n] '_' __)?
 
 __ 'Whitspace'
-  = [\t \u00A0]*
+  = spaces:[\t \u00A0]*
 
 /* Stuff to ignore within a Table file. */
 Ignore

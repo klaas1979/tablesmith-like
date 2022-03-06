@@ -64,6 +64,7 @@ import TSColorExpression from '../expressions/tscolorexpression';
 import TSPictureExpression from '../expressions/tspictureexpression';
 import TSFindExpression from '../expressions/tsfindexpression';
 import TSReplaceExpression from '../expressions/tsreplaceexpression';
+import TSTrimExpression from '../expressions/tstrimexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -429,6 +430,9 @@ class TSTableGroupBuilder {
         break;
       case 'Trunc':
         result = new TSMathTruncExpression(stacked.popExpressions());
+        break;
+      case 'Trim':
+        result = new TSTrimExpression(stacked.popExpressions());
         break;
       case 'Select':
         result = this.createSelectExpression(stacked);
