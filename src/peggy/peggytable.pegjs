@@ -320,12 +320,12 @@ FunctionsZeroParams
           }); }
 
 FunctionsOneParam
-  = '{' _ name:(@'Bold' / @'Count' / @'DSCount' / @'DSRandomize' / @'IsNumber' / @'Italic' / @'Msg' / @'Reset') '~' { errorHandling(() => {
+  = '{' _ name:(@'Bold' / @'Count' / @'DSCount' / @'DSRandomize' / @'IsNumber' / @'Italic' / @'Msg' / @'Picture' / @'Reset') '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
 FunctionsTwoParams
-  = '{' _ name:(@'DSRead' / @'DSRemove' / @'DSWrite' / @'Line' / @'Param' / @'InputText') '~' { errorHandling(() => {
+  = '{' _ name:(@'Color' / @'DSRead' / @'DSRemove' / @'DSWrite' / @'Line' / @'Param' / @'InputText') '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 

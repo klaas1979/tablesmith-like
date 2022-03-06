@@ -96,6 +96,25 @@ describe('{Italic~', () => {
   });
 });
 
+describe('{Picture~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('parsing correct', async () => {
+    simpleTable = ':Start\n1,{Picture~path.png}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Picture~path.png}');
+  });
+
+  it('text with img tag', async () => {
+    simpleTable = ':Start\n1,{Picture~path.png}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('<img src="path.png" />');
+  });
+});
+
 describe('Parsing {Line~', () => {
   beforeEach(() => {
     tablesmith.reset();
@@ -119,5 +138,23 @@ describe('Parsing {Line~', () => {
     simpleTable = ':Start\n1,One{Line~center,100}Two\n';
     tablesmith.addTable('folder', filename, simpleTable);
     expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('One<br/>Two');
+  });
+});
+
+describe('{Color~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('parses correctly', async () => {
+    simpleTable = ':Start\n1,{Color~red,100}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Color~red,100}');
+  });
+  it('adds span with style and color', async () => {
+    simpleTable = ':Start\n1,{Color~red,100}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('<span style="color: red">100</span>');
   });
 });

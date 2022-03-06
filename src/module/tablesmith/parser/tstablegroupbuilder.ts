@@ -60,6 +60,8 @@ import TSDSRemoveExpression from '../expressions/tsdsremoveexpression';
 import TSDSFindExpression from '../expressions/tsdsfindexpression';
 import DSFieldCompareExpression from '../expressions/dsfieldcompareexpression';
 import TSFormatExpression from '../expressions/tsformatexpression';
+import TSColorExpression from '../expressions/tscolorexpression';
+import TSPictureExpression from '../expressions/tspictureexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -315,6 +317,9 @@ class TSTableGroupBuilder {
         stacked.popExpressions();
         result = new TSNewlineExpression();
         break;
+      case 'Color':
+        result = this.createColorExpression(stacked);
+        break;
       case 'DSCount':
         result = new TSDSCountExpression(stacked.popExpressions());
         break;
@@ -405,6 +410,9 @@ class TSTableGroupBuilder {
       case 'Param':
         result = this.createParamExpression(stacked);
         break;
+      case 'Picture':
+        result = new TSPictureExpression(stacked.popExpressions());
+        break;
       case 'Power':
         result = this.createMathPower(stacked);
         break;
@@ -439,6 +447,12 @@ class TSTableGroupBuilder {
   private createFormatExpression(data: StackItem): TSFormatExpression {
     const result = data.popExpressions();
     return new TSFormatExpression(data.name, result);
+  }
+
+  private createColorExpression(data: StackItem): TSColorExpression {
+    const text = data.popExpressions();
+    const color = data.popExpressions();
+    return new TSColorExpression(color, text);
   }
 
   private createCountExpression(data: StackItem): TSGroupCountExpression {

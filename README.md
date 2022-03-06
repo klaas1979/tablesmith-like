@@ -434,14 +434,11 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 ### Formatting and Layout
 
 - Bold (Boldface)
+- Color (Color text)
 - CR (Carriage return)
 - Italic (Italicize text)
 - Line (Insert a horizontal line) **Note:** is printed in HTML, but does nothing in Foundry as the css formatting standard does not display anything.
-
-**Not implemented:**
-
-- Color (Color text)
-- Picture (Display picture)
+- Picture (Display picture) **Note:** the easiest way to get the correct path is to use the *addImage* dialog in a journal and select the correct picture and copy the path from there (without adding the picture to the table).
 
 ### Text
 
