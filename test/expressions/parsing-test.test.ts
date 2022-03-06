@@ -94,3 +94,23 @@ describe('{Trim~', () => {
     expect(result).toBe('textatext');
   });
 });
+
+describe('{Length~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('parses correct', async () => {
+    simpleTable = ':Start\n1,{Length~123456789}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Length~123456789}');
+  });
+
+  it('returns length', async () => {
+    simpleTable = ':Start\n1,{Length~123456789}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('9');
+  });
+});

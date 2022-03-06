@@ -65,6 +65,7 @@ import TSPictureExpression from '../expressions/tspictureexpression';
 import TSFindExpression from '../expressions/tsfindexpression';
 import TSReplaceExpression from '../expressions/tsreplaceexpression';
 import TSTrimExpression from '../expressions/tstrimexpression';
+import TSLengthExpression from '../expressions/tslengthexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -382,6 +383,9 @@ class TSTableGroupBuilder {
         break;
       case 'LastRoll':
         result = this.createLastRollExpression(stacked);
+        break;
+      case 'Length':
+        result = new TSLengthExpression(stacked.popExpressions());
         break;
       case 'Line':
         result = this.createLineExpression(stacked);

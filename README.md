@@ -443,6 +443,7 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 ### Text
 
 - Find (Find text within other text)
+- Length (Get the length of some text)
 - Replace (Replace text)
 - Trim (Trim spaces)
 
@@ -455,7 +456,6 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 - CommaReplace (Replace or insert commas)
 - LCase (Lower case)
 - Left (Retrieve leftmost characters)
-- Length (Get the length of some text)
 - Mid (Retrieve middle characters)
 - Ordinal (Ordinal number)
 - Plural (Make string plural)
