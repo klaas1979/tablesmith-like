@@ -62,6 +62,7 @@ import DSFieldCompareExpression from '../expressions/dsfieldcompareexpression';
 import TSFormatExpression from '../expressions/tsformatexpression';
 import TSColorExpression from '../expressions/tscolorexpression';
 import TSPictureExpression from '../expressions/tspictureexpression';
+import TSFindExpression from '../expressions/tsfindexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -355,6 +356,9 @@ class TSTableGroupBuilder {
       case 'Floor':
         result = new TSMathFloorExpression(stacked.popExpressions());
         break;
+      case 'Find':
+        result = this.createFindExpression(stacked);
+        break;
       case 'Generate':
         result = this.createGenerateExpression(stacked);
         break;
@@ -535,6 +539,13 @@ class TSTableGroupBuilder {
     const storenameExpression = data.popExpressions();
     const storeVariableExpression = data.popExpressions();
     return new TSDSStoreExpression(data.name, storeVariableExpression, storenameExpression);
+  }
+
+  private createFindExpression(data: StackItem): TSFindExpression {
+    const textExpression = data.popExpressions();
+    const searchExpression = data.popExpressions();
+    const indexExpression = data.popExpressions();
+    return new TSFindExpression(indexExpression, searchExpression, textExpression);
   }
 
   private createGenerateExpression(data: StackItem): TSGenerateExpression {

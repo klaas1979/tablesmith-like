@@ -442,12 +442,15 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 
 ### Text
 
+- Find (Find text within other text)
+
+**Not implemented:**
+
 - AorAn (A or An)
 - Cap (Capitalize)
 - CapEachWord (Capitalize each word)
 - Char (Retrieve a single character)
 - CommaReplace (Replace or insert commas)
-- Find (Find text within other text)
 - LCase (Lower case)
 - Left (Retrieve leftmost characters)
 - Length (Get the length of some text)
