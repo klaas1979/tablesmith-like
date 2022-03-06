@@ -27,6 +27,9 @@ export default class TSTextTransformExpression extends BaseTSExpression {
       case 'LCase':
         result = text.toLowerCase();
         break;
+      case 'Length':
+        result = text.length;
+        break;
       case 'Trim':
         result = text.trim();
         break;

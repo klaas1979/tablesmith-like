@@ -64,7 +64,6 @@ import TSColorExpression from '../expressions/tscolorexpression';
 import TSPictureExpression from '../expressions/tspictureexpression';
 import TSFindExpression from '../expressions/tsfindexpression';
 import TSReplaceExpression from '../expressions/tsreplaceexpression';
-import TSLengthExpression from '../expressions/tslengthexpression';
 import TSTextTransformExpression from '../expressions/tstexttransformexpression';
 
 /**
@@ -314,6 +313,7 @@ class TSTableGroupBuilder {
       case 'Cap':
       case 'CapEachWord':
       case 'LCase':
+      case 'Length':
       case 'UCase':
       case 'Trim':
         result = new TSTextTransformExpression(stacked.name, stacked.popExpressions());
@@ -390,9 +390,6 @@ class TSTableGroupBuilder {
         break;
       case 'LastRoll':
         result = this.createLastRollExpression(stacked);
-        break;
-      case 'Length':
-        result = new TSLengthExpression(stacked.popExpressions());
         break;
       case 'Line':
         result = this.createLineExpression(stacked);
