@@ -77,6 +77,25 @@ describe('Parsing {Bold~', () => {
   });
 });
 
+describe('{Italic~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('parsing correct', async () => {
+    simpleTable = ':Start\n1,{Italic~One}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Italic~One}');
+  });
+
+  it('text with em tags', async () => {
+    simpleTable = ':Start\n1,{Italic~One}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('<em>One</em>');
+  });
+});
+
 describe('Parsing {Line~', () => {
   beforeEach(() => {
     tablesmith.reset();

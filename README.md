@@ -435,11 +435,11 @@ The list below is grouped in line with the Tablesmith documentation and shows al
 
 - Bold (Boldface)
 - CR (Carriage return)
+- Italic (Italicize text)
 - Line (Insert a horizontal line) **Note:** is printed in HTML, but does nothing in Foundry as the css formatting standard does not display anything.
 
 **Not implemented:**
 
-- Italic (Italicize text)
 - Color (Color text)
 - Picture (Display picture)
 

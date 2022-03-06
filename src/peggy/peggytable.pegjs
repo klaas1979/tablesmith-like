@@ -320,7 +320,7 @@ FunctionsZeroParams
           }); }
 
 FunctionsOneParam
-  = '{' _ name:(@'Bold' / @'Count' / @'DSCount' / @'DSRandomize' / @'IsNumber' / @'Msg' / @'Reset') '~' { errorHandling(() => {
+  = '{' _ name:(@'Bold' / @'Count' / @'DSCount' / @'DSRandomize' / @'IsNumber' / @'Italic' / @'Msg' / @'Reset') '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 

@@ -9,7 +9,6 @@ import TSWhileExpression from '../expressions/tswhileexpression';
 import TSLoopExpression from '../expressions/tsloopexpression';
 import TSSelectExpression from '../expressions/tsselectexpression';
 import SelectTuple from '../expressions/selecttuple';
-import TSBoldExpression from '../expressions/tsboldexpression';
 import TSMathAbsExpression from '../expressions/tstmathabsexpression';
 import TSMathCeilExpression from '../expressions/tstmathceilexpression';
 import TSMathFloorExpression from '../expressions/tstmathfloorexpression';
@@ -60,6 +59,7 @@ import TSDSRandomizeExpression from '../expressions/tsdsrandomizeexpression';
 import TSDSRemoveExpression from '../expressions/tsdsremoveexpression';
 import TSDSFindExpression from '../expressions/tsdsfindexpression';
 import DSFieldCompareExpression from '../expressions/dsfieldcompareexpression';
+import TSFormatExpression from '../expressions/tsformatexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -298,7 +298,8 @@ class TSTableGroupBuilder {
         result = this.createLogicalExpression(stacked);
         break;
       case 'Bold':
-        result = this.createBoldExpression(stacked);
+      case 'Italic':
+        result = this.createFormatExpression(stacked);
         break;
       case 'Calc':
       case 'Dice':
@@ -435,9 +436,9 @@ class TSTableGroupBuilder {
     return result;
   }
 
-  private createBoldExpression(data: StackItem): TSBoldExpression {
+  private createFormatExpression(data: StackItem): TSFormatExpression {
     const result = data.popExpressions();
-    return new TSBoldExpression(result);
+    return new TSFormatExpression(data.name, result);
   }
 
   private createCountExpression(data: StackItem): TSGroupCountExpression {
