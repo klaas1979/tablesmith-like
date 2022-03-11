@@ -70,3 +70,19 @@ describe('Parsing {Msg', () => {
     expect(msgCalled).toBe('sometext');
   });
 });
+
+describe('Parsing {Note~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('parsing correct', async () => {
+    simpleTable = ':Start\n1,{Note~prompt}\n';
+    const cb = async (prompt: string, defaultValue: string): Promise<string> => prompt + defaultValue;
+    tablesmith.registerInputTextCallback(cb);
+    const table = tablesmith.addTable('folder', filename, simpleTable);
+    expect(table.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Note~prompt}');
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toEqual('prompt');
+  });
+});

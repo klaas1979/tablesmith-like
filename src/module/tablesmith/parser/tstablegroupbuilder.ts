@@ -67,6 +67,7 @@ import TSReplaceExpression from '../expressions/tsreplaceexpression';
 import TSTextTransformExpression from '../expressions/tstexttransformexpression';
 import { normalizeCase } from './tsfunctionnames';
 import TSStatusExpression from '../expressions/tsstatusexpression';
+import TSNoteExpression from '../expressions/tsnoteexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -386,9 +387,6 @@ class TSTableGroupBuilder {
       case 'IsNumber':
         result = this.createIsNumberExpression(stacked);
         break;
-      case 'Msg':
-        result = this.createMsgExpression(stacked);
-        break;
       case 'If':
       case 'IIf':
         result = this.createIfExpression(stacked);
@@ -419,6 +417,12 @@ class TSTableGroupBuilder {
         break;
       case 'Mod':
         result = this.createMathMod(stacked);
+        break;
+      case 'Msg':
+        result = this.createMsgExpression(stacked);
+        break;
+      case 'Note':
+        result = this.createNoteExpression(stacked);
         break;
       case 'Or':
         result = this.createLogicalExpression(stacked);
@@ -603,6 +607,11 @@ class TSTableGroupBuilder {
     const prompt = data.popExpressions();
     const defaultValue = data.popExpressions();
     return new TSInputTextExpression(defaultValue, prompt);
+  }
+
+  private createNoteExpression(data: StackItem): TSNoteExpression {
+    const text = data.popExpressions();
+    return new TSNoteExpression(text);
   }
 
   private createIsNumberExpression(data: StackItem): TSIsNumberExpression {

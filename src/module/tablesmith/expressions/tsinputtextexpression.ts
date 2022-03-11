@@ -1,7 +1,6 @@
 import EvaluationContext from './evaluationcontext';
 import TSExpression, { BaseTSExpression } from './tsexpression';
 import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
-
 /**
  * Expression that asks for Input via Callback and returns entered text.
  */

@@ -86,6 +86,9 @@ export default class TableSelectionForm extends FormApplication<
       case 'group-reroll':
         this._rerollGroup(elementData);
         break;
+      case 'enter-note':
+        this._enterNote(elementData);
+        break;
       case 'reload-tables':
         await this._reloadTables();
         break;
@@ -106,10 +109,24 @@ export default class TableSelectionForm extends FormApplication<
     Logger.debug(false, 're roll group', resultIndex, uuid);
     const result = this.data.results?.results[resultIndex];
     const evalcontext = result?.evalcontext;
-    const rerollable = evalcontext?.retrieve(uuid);
+    const rerollable = evalcontext?.retrieveRerollable(uuid);
     Logger.debug(false, 're roll group', result, evalcontext, rerollable);
     if (rerollable) {
       await rerollable?.reroll();
+      this.render();
+    }
+  }
+
+  async _enterNote(elementData: JQuery.PlainObject) {
+    const resultIndex = Number.parseInt(elementData.index);
+    const uuid = elementData.uuid;
+    Logger.debug(false, 'enter note', resultIndex, uuid);
+    const result = this.data.results?.results[resultIndex];
+    const evalcontext = result?.evalcontext;
+    const note = evalcontext?.retrieveNote(uuid);
+    Logger.debug(false, 'enter note', result, evalcontext, note);
+    if (note) {
+      await note?.reroll();
       this.render();
     }
   }

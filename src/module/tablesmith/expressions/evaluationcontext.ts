@@ -1,6 +1,6 @@
 import TSGroup from '../tsgroup';
 import twist from '../../helpers/mersennetwister';
-import { RerollableTSExpressionResult } from './tsexpressionresult';
+import { NoteTSExpressionResult, RerollableTSExpressionResult } from './tsexpressionresult';
 import { generateUUID } from '../../helpers/uuid';
 import { InputListCallback, InputTextCallback, MsgCallback, StatusCallback } from '../inputcallbacktypes';
 import TSGenerateExpression from './tsgenerateexpression';
@@ -17,6 +17,7 @@ class EvaluationContext {
   lastRolls: Map<TSGroup, number>;
   readStores: Map<string, DSStore>;
   storedRerollables: Map<string, RerollableTSExpressionResult>;
+  storedNotes: Map<string, NoteTSExpressionResult>;
   storedGenerateExpressions: Map<TSGenerateExpression, boolean>;
   dsStores: DSStores | undefined;
   inputListCallback: InputListCallback | undefined;
@@ -26,6 +27,7 @@ class EvaluationContext {
   constructor(options?: {
     readStores?: Map<string, DSStore>;
     storedRerollables?: Map<string, RerollableTSExpressionResult>;
+    storedNotes?: Map<string, NoteTSExpressionResult>;
     storedGenerateExpressions?: Map<TSGenerateExpression, boolean>;
   }) {
     this.variables = new Map();
@@ -33,6 +35,7 @@ class EvaluationContext {
     this.lastRolls = new Map();
     this.readStores = options?.readStores ? options.readStores : new Map();
     this.storedRerollables = options?.storedRerollables ? options.storedRerollables : new Map();
+    this.storedNotes = options?.storedNotes ? options.storedNotes : new Map();
     this.storedGenerateExpressions = options?.storedGenerateExpressions ? options.storedGenerateExpressions : new Map();
   }
 
@@ -65,9 +68,20 @@ class EvaluationContext {
    * @param rerollable to store.
    * @returns id for stored result.
    */
-  store(rerollable: RerollableTSExpressionResult): string {
+  storeRerollable(rerollable: RerollableTSExpressionResult): string {
     const id = generateUUID();
     this.storedRerollables.set(id, rerollable);
+    return id;
+  }
+
+  /**
+   * Stores given TSExpressionResult under unique ID and returns the ID.
+   * @param note to store.
+   * @returns id for stored result.
+   */
+  storeNote(note: NoteTSExpressionResult): string {
+    const id = generateUUID();
+    this.storedNotes.set(id, note);
     return id;
   }
 
@@ -76,8 +90,17 @@ class EvaluationContext {
    * @param uuid to get Rerollable for.
    * @returns rerollable for UUID or undefined, if nothing stored.
    */
-  retrieve(uuid: string): RerollableTSExpressionResult | undefined {
+  retrieveRerollable(uuid: string): RerollableTSExpressionResult | undefined {
     return this.storedRerollables.get(uuid);
+  }
+
+  /**
+   * Returns NoteTSExpressionResult for UUID.
+   * @param uuid to get Note for.
+   * @returns note for UUID or undefined, if nothing stored.
+   */
+  retrieveNote(uuid: string): NoteTSExpressionResult | undefined {
+    return this.storedNotes.get(uuid);
   }
 
   /**

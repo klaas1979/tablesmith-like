@@ -50,6 +50,7 @@ const NAMES = [
   'Max',
   'MaxVal',
   'Mod',
+  'Note',
   'Or',
   'Replace',
   'Reset',

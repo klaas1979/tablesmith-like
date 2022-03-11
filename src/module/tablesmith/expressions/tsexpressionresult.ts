@@ -1,11 +1,6 @@
 import EvaluationContext from './evaluationcontext';
 import TSExpression from './tsexpression';
-
-export enum TS_EXPRESSION_RESULT_TYPE {
-  SINGLE,
-  COLLECTION,
-  REROLLABLE,
-}
+import TSInputTextExpression from './tsinputtextexpression';
 
 /**
  * Tablesmith expressions result is the result a single expression evaluates to. It provides
@@ -17,6 +12,12 @@ export interface TSExpressionResult {
    * @returns true if rerollable, false if static.
    */
   isRerollable(): boolean;
+
+  /**
+   * Returns if this Result is a note expression to enter text.
+   * @returns true if note, false if static.
+   */
+  isNote(): boolean;
 
   /**
    * Returns if this Result is a plain text.
@@ -90,6 +91,9 @@ class BaseTSExpressionResult implements TSExpressionResult {
   isRerollable(): boolean {
     return false;
   }
+  isNote(): boolean {
+    return false;
+  }
   isText(): boolean {
     return false;
   }
@@ -135,6 +139,42 @@ export class SingleTSExpressionResult extends BaseTSExpressionResult implements 
 }
 
 /**
+ * Single results are the leaves of the tables, normally plain text.
+ */
+export class NoteTSExpressionResult extends BaseTSExpressionResult implements TSExpressionResult {
+  text: TSExpressionResult;
+  inputTextExpression: TSInputTextExpression;
+  uuid: string | undefined;
+  evalcontext: EvaluationContext | undefined;
+  constructor(
+    evalcontext: EvaluationContext,
+    text: SingleTSExpressionResult,
+    inputTextExpression: TSInputTextExpression,
+  ) {
+    super();
+    this.evalcontext = evalcontext;
+    this.inputTextExpression = inputTextExpression;
+    this.uuid = this.evalcontext.storeNote(this);
+    this.text = text;
+  }
+  isNote(): boolean {
+    return true;
+  }
+  isEmpty(): boolean {
+    return this.text.asString().length === 0;
+  }
+  asString(): string {
+    return this.text.asString();
+  }
+  async reroll(): Promise<void> {
+    if (this.text) {
+      if (!this.evalcontext) throw Error('evalcontext not set for note!');
+      this.text = await this.inputTextExpression.evaluate(this.evalcontext);
+    }
+  }
+}
+
+/**
  * A rerollable result is always a single result containing at least on other result, that is rerolled.
  * If reroll is not set the object acts as a collection for compatibility reasons.
  * The other result maybe a TSExpressionResultCollection.
@@ -152,7 +192,7 @@ export class RerollableTSExpressionResult extends BaseTSExpressionResult impleme
     this.results = [this.result];
     if (this.expression) {
       this.evalcontext = evalcontext.clone();
-      this.uuid = this.evalcontext.store(this);
+      this.uuid = this.evalcontext.storeRerollable(this);
     } else this.results = [result];
   }
   isEmpty(): boolean {
@@ -192,7 +232,13 @@ export class TSExpressionResultCollection extends BaseTSExpressionResult impleme
     for (let r of this.results) {
       r = r.condense();
       if (!r.isEmpty()) {
-        if (!r.isCollection() && !r.isRerollable() && !result._getLast()?.isRerollable()) {
+        if (
+          !r.isCollection() &&
+          !r.isRerollable() &&
+          !result._getLast()?.isRerollable() &&
+          !r.isNote() &&
+          !result._getLast()?.isNote()
+        ) {
           let prev = result.pop()?.asString();
           prev = prev == undefined ? '' : prev;
           result.addResult(new SingleTSExpressionResult(prev + r.asString()));
@@ -207,9 +253,6 @@ export class TSExpressionResultCollection extends BaseTSExpressionResult impleme
   }
   isEmpty(): boolean {
     return this.results.length === 0;
-  }
-  type(): TS_EXPRESSION_RESULT_TYPE {
-    return TS_EXPRESSION_RESULT_TYPE.COLLECTION;
   }
   asString(): string {
     let result = '';

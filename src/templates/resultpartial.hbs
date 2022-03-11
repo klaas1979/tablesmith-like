@@ -6,6 +6,10 @@
     {{> modules/tablesmith-like/templates/resultpartial.hbs result=this resultIndex=../resultIndex }}
   {{/each}}
 {{/if}}
+{{#if result.isNote}}
+  <a data-action="enter-note" data-index="{{resultIndex}}" data-uuid="{{result.uuid}}" title="Enter note: {{ts-resultSummary result.text}}"><i class="fas fa-solid fa-keyboard"></i></a>
+  {{> modules/tablesmith-like/templates/resultpartial.hbs result=result.text resultIndex=resultIndex }}
+{{/if}}
 {{#if result.isRerollable}}
   <a data-action="group-reroll" data-index="{{resultIndex}}" data-uuid="{{result.uuid}}" title="Re roll: {{ts-resultSummary result.result}}"><i class="fas fas fa-redo"></i></a>
   {{> modules/tablesmith-like/templates/resultpartial.hbs result=result.result resultIndex=resultIndex }}
