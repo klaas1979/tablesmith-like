@@ -321,8 +321,8 @@ FunctionsZeroParams
 
 FunctionsOneParam
   = '{' _ name:(@'AorAn'i / @'Bold'i / @'CapEachWord'i / @'Cap'i / @'Count'i / @'DSCount'i / @'DSRandomize'i
-  / @'IsNumber'i / @'Italic'i / @'LCase'i / @'Length'i / @'Msg'i / @'Picture'i / @'Reset'i / @'Trim'i
-  / @'UCase'i / @'VowelStart'i) '~' { errorHandling(() => {
+  / @'IsNumber'i / @'Italic'i / @'LCase'i / @'Length'i / @'Msg'i / @'Picture'i / @'Reset'i / @'Status'i
+  / @'Trim'i / @'UCase'i / @'VowelStart'i) '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 

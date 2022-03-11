@@ -60,6 +60,7 @@ const NAMES = [
   'Trunc',
   'Select',
   'Sqrt',
+  'Status',
   'Unlock',
   'While',
   'Xor',

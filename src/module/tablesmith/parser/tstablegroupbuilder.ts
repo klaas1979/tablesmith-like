@@ -66,6 +66,7 @@ import TSFindExpression from '../expressions/tsfindexpression';
 import TSReplaceExpression from '../expressions/tsreplaceexpression';
 import TSTextTransformExpression from '../expressions/tstexttransformexpression';
 import { normalizeCase } from './tsfunctionnames';
+import TSStatusExpression from '../expressions/tsstatusexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -448,6 +449,9 @@ class TSTableGroupBuilder {
         break;
       case 'Sqrt':
         result = new TSMathSqrtExpression(stacked.popExpressions());
+        break;
+      case 'Status':
+        result = new TSStatusExpression(stacked.popExpressions());
         break;
       case 'Unlock':
         result = this.createGroupLockExpression(stacked);

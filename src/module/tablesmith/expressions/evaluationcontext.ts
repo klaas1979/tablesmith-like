@@ -2,7 +2,7 @@ import TSGroup from '../tsgroup';
 import twist from '../../helpers/mersennetwister';
 import { RerollableTSExpressionResult } from './tsexpressionresult';
 import { generateUUID } from '../../helpers/uuid';
-import { InputListCallback, InputTextCallback, MsgCallback } from '../inputcallbacktypes';
+import { InputListCallback, InputTextCallback, MsgCallback, StatusCallback } from '../inputcallbacktypes';
 import TSGenerateExpression from './tsgenerateexpression';
 import { DSStores } from '../dsstore/dsstores';
 import { DSStore } from '../dsstore/dsstore';
@@ -22,6 +22,7 @@ class EvaluationContext {
   inputListCallback: InputListCallback | undefined;
   inputTextCallback: InputTextCallback | undefined;
   msgCallback: MsgCallback | undefined;
+  statusCallback: StatusCallback | undefined;
   constructor(options?: {
     readStores?: Map<string, DSStore>;
     storedRerollables?: Map<string, RerollableTSExpressionResult>;
@@ -260,6 +261,15 @@ class EvaluationContext {
   }
 
   /**
+   * Shows message prompt to user.
+   * @param prompt to show as question when asking for input text.
+   */
+  async setStatus(status: string): Promise<void> {
+    if (!this.statusCallback) throw Error('No Status Callback is set, cannot set status!');
+    return this.statusCallback(status);
+  }
+
+  /**
    * Registers the async callback function for InputList.
    * @param callback to register as external input function, if a TS InputList is encountered.
    */
@@ -281,6 +291,14 @@ class EvaluationContext {
    */
   registerMsgCallback(callback: MsgCallback): void {
     this.msgCallback = callback;
+  }
+
+  /**
+   * Registers the async callback function for Status.
+   * @param callback to register as external Status function.
+   */
+  registerStatusCallback(callback: StatusCallback): void {
+    this.statusCallback = callback;
   }
 
   /**

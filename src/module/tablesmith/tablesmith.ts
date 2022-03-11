@@ -8,7 +8,7 @@ import { html2text } from './parser/html2text';
 import { TableCallValues } from '../foundry/tablecallvalues';
 import CallResult from './callresult';
 import EvaluationContext from './expressions/evaluationcontext';
-import { InputListCallback, InputTextCallback, MsgCallback } from './inputcallbacktypes';
+import { InputListCallback, InputTextCallback, MsgCallback, StatusCallback } from './inputcallbacktypes';
 import { DSStores } from './dsstore/dsstores';
 
 /**
@@ -20,6 +20,7 @@ class Tablesmith {
   inputListCallback: InputListCallback | undefined;
   inputTextCallback: InputTextCallback | undefined;
   msgCallback: MsgCallback | undefined;
+  statusCallback: StatusCallback | undefined;
   dsStores: DSStores | undefined;
 
   /**
@@ -100,6 +101,7 @@ class Tablesmith {
     if (this.inputListCallback) context.registerInputListCallback(this.inputListCallback);
     if (this.inputTextCallback) context.registerInputTextCallback(this.inputTextCallback);
     if (this.msgCallback) context.registerMsgCallback(this.msgCallback);
+    if (this.statusCallback) context.registerStatusCallback(this.statusCallback);
     if (this.dsStores) context.registerDSStores(this.dsStores);
     return context;
   }
@@ -161,6 +163,13 @@ class Tablesmith {
    */
   registerMsgCallback(callback: MsgCallback): void {
     this.msgCallback = callback;
+  }
+  /**
+   * Registers the async status callback function for Status.
+   * @param callback to register as external status function.
+   */
+  registerStatusCallback(callback: StatusCallback): void {
+    this.statusCallback = callback;
   }
   /**
    * Registers DSStores backend for all Dataset operations.

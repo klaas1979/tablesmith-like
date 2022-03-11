@@ -39,6 +39,7 @@ import { promptMsg } from './foundry/forms/msgprompt';
 import { promptForInputList } from './foundry/forms/inputlistprompt';
 import { DSStores } from './tablesmith/dsstore/dsstores';
 import DSDatabase from './foundry/dsdatabase';
+import { promptStatus } from './foundry/forms/statusnotification';
 
 // Initialize module
 Hooks.once('init', async () => {
@@ -67,6 +68,7 @@ Hooks.once('ready', async () => {
   tablesmith.registerInputListCallback(promptForInputList);
   tablesmith.registerInputTextCallback(promptForInputText);
   tablesmith.registerMsgCallback(promptMsg);
+  tablesmith.registerStatusCallback(promptStatus);
   const dsStores = new DSStores(new DSDatabase());
   tablesmith.registerDSStores(dsStores);
   wrapRollTable();

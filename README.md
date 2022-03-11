@@ -387,12 +387,12 @@ Tablesmith functionnames are case insensitive, i.e.  `If`, `if`, `iF`, and `IF` 
 - InputText (Input a value from the user, showing a prompt)
 - Generate (Generation link)
 - Msg (Message box)
+- Status (Display status)
 
 **Not implemented:**
 
 - Iteration (Get the current roll the table is on)
 - Note (Notation)
-- Status (Display status)
 
 ### Logical
 
