@@ -65,6 +65,7 @@ import TSPictureExpression from '../expressions/tspictureexpression';
 import TSFindExpression from '../expressions/tsfindexpression';
 import TSReplaceExpression from '../expressions/tsreplaceexpression';
 import TSTextTransformExpression from '../expressions/tstexttransformexpression';
+import { normalizeCase } from './tsfunctionnames';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -198,7 +199,8 @@ class TSTableGroupBuilder {
    * @param name of the function to start parsing.
    */
   startFunction(name: string): void {
-    this.stack.startFunction(name);
+    const normalized = normalizeCase(name);
+    this.stack.startFunction(normalized);
   }
 
   /**

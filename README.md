@@ -337,6 +337,8 @@ No pre generation directives are implemented.
 
 The list below is grouped in line with the Tablesmith documentation and shows all implemented or not yet implemented functions that can be used. For a more in depth documentation see the Tablesmith documentation linked on the Tablesmith Homepage. All additional documentation about Tablesmith functions is derived or copied based on the [Tablesmith Documention by Bruce Gulke](http://www.mythosa.net/p/tablesmith.html). See the [downloadable documentation](https://www.dropbox.com/s/q9j207pszvm9fqu/TSHelp.html?dl=0).
 
+Tablesmith functionnames are case insensitive, i.e.  `If`, `if`, `iF`, and `IF` are all the same.
+
 ### Conditional
 
 - If (Choose one option or another, ternary operator with *expr ? value 1 **/** value 1*)

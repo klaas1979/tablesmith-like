@@ -184,43 +184,43 @@ TsFunction
           }); }
 
 DSFindStart
-  = '{' name:'DSFind' '~' { errorHandling(() => {
+  = '{' name:'DSFind'i '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
 WhileStart
-  = '{' name:'While' '~' { errorHandling(() => {
+  = '{' name:'While'i '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 WhileExpression
   = IfExpressionPart (_ BooleanOperator _ IfExpressionPart)?
 
 LoopStart
-  = '{' _ name:'Loop' '~' { errorHandling(() => {
+  = '{' _ name:'Loop'i '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 LoopExpression
   = IfExpressionPart
 
 SelectStart
-  = '{' _ name:'Select' '~' { errorHandling(() => {
+  = '{' _ name:'Select'i '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 SelectExpression
   = IfExpressionPart
 
 StartLogicalExpression
-  = '{' name:(@'Or' / @'And' / @'Xor') '~' { errorHandling(() => {
+  = '{' name:(@'Or'i / @'And'i / @'Xor'i) '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
 IfSlash
-  = '{' name:'If' '~' { errorHandling(() => {
+  = '{' name:'If'i '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
 IfColon
-  = '{' name:'IIf' '~' { errorHandling(() => {
+  = '{' name:'IIf'i '~' { errorHandling(() => {
             options?.pf.startFunction(name);
 
           }); }
@@ -315,31 +315,31 @@ ExpressionTextNoCommaNorCurlyBraces
   / ValueNoCommaNorCurlyBraces ExpressionTextNoCommaNorCurlyBraces*
 
 FunctionsZeroParams
-  = '{' _ name:(@'CR' / @'LastRoll') '~' { errorHandling(() => {
+  = '{' _ name:(@'CR'i / @'LastRoll'i) '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
 FunctionsOneParam
-  = '{' _ name:(@'AorAn' / @'Bold' / @'CapEachWord' / @'Cap' / @'Count' / @'DSCount' / @'DSRandomize'
-  / @'IsNumber' / @'Italic' / @'LCase' / @'Length' / @'Msg' / @'Picture' / @'Reset' / @'Trim'
-  / @'UCase' / @'VowelStart') '~' { errorHandling(() => {
+  = '{' _ name:(@'AorAn'i / @'Bold'i / @'CapEachWord'i / @'Cap'i / @'Count'i / @'DSCount'i / @'DSRandomize'i
+  / @'IsNumber'i / @'Italic'i / @'LCase'i / @'Length'i / @'Msg'i / @'Picture'i / @'Reset'i / @'Trim'i
+  / @'UCase'i / @'VowelStart'i) '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
 FunctionsTwoParams
-  = '{' _ name:(@'Color' / @'DSRead' / @'DSRemove' / @'DSWrite' / @'Line' / @'Param'
-  / @'InputText') '~' { errorHandling(() => {
+  = '{' _ name:(@'Color'i / @'DSRead'i / @'DSRemove'i / @'DSWrite'i / @'Line'i / @'Param'i
+  / @'InputText'i) '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
 FunctionsThreeParams
-  = '{' _ name:(@'DSCalc' / @'DSGet' / @'Find' / @'Generate' / @'Replace') '~' { errorHandling(() => {
+  = '{' _ name:(@'DSCalc'i / @'DSGet'i / @'Find'i / @'Generate'i / @'Replace'i) '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
 FunctionsManyParams
-  = '{' _ name:(@'DSAddNR' / @'DSAdd' / @'DSCreate' / @'DSSet' / @'InputList' / @'Lockout'
-  / @'MaxVal' / @'MinVal' / @'Unlock') '~' { errorHandling(() => {
+  = '{' _ name:(@'DSAddNR'i / @'DSAdd'i / @'DSCreate'i / @'DSSet'i / @'InputList'i / @'Lockout'i
+  / @'MaxVal'i / @'MinVal'i / @'Unlock'i) '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
@@ -360,7 +360,7 @@ TSMathFunction
   / MathManyParamFunctions
   / MathPowerFunction // has '^' as separator in TS definition
 
-DiceOrCalc = '{' _ name:(@'Dice' / @'Calc') '~'  { errorHandling(() => {
+DiceOrCalc = '{' _ name:(@'Dice'i / @'Calc'i) '~'  { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
@@ -380,17 +380,17 @@ MathManyParamFunctions
           }); }
 
 MathOneParamFunctionsNames
-  = name:(@'Abs' / @'Ceil' / @'Floor' / @'Trunc' / @'Sqrt') '~' { errorHandling(() => {
+  = name:(@'Abs'i / @'Ceil'i / @'Floor'i / @'Trunc'i / @'Sqrt'i) '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
 MathTwoParamFunctionsNames
-  = name:(@'Round' / @'Mod') '~' { errorHandling(() => {
+  = name:(@'Round'i / @'Mod'i) '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
 MathManyParamFunctionsNames
-  = name:(@'Min' / @'Max') '~' { errorHandling(() => {
+  = name:(@'Min'i / @'Max'i) '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
@@ -399,7 +399,7 @@ MathPowerFunction
             options?.pf.createFunction();
           }); }
 
-MathPower = name:'Power' '~' { errorHandling(() => {
+MathPower = name:'Power'i '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
