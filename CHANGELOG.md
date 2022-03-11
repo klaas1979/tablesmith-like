@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.8.0](https://github.com/klaas1979/tablesmith-like/compare/v1.7.0...v1.8.0) (2022-03-11)
+
+
+### Features
+
+* added TS Function 'Note' to enter text into result ([4e9c77e](https://github.com/klaas1979/tablesmith-like/commit/4e9c77ef4d0942dc2c35963c7a806ada06e256bb))
+
 ## [1.7.0](https://github.com/klaas1979/tablesmith-like/compare/v1.6.0...v1.7.0) (2022-03-11)
 
 
