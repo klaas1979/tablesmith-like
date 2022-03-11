@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.7.0](https://github.com/klaas1979/tablesmith-like/compare/v1.6.0...v1.7.0) (2022-03-11)
+
+
+### Features
+
+* added TS Function 'Status' ([4777438](https://github.com/klaas1979/tablesmith-like/commit/4777438308bcaa2082168978026c20f21f65c912))
+* Function names are case insensitive, to write easier tables withouth proper case. ([6e272c4](https://github.com/klaas1979/tablesmith-like/commit/6e272c4495a15587e156ef9b0666f079247d2408))
+
 ## [1.6.0](https://github.com/klaas1979/tablesmith-like/compare/v1.5.0...v1.6.0) (2022-03-06)
 
 
