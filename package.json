@@ -1,6 +1,6 @@
 {
   "name": "tablesmith-like",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "Use Tablesmith-like tables in FoundryVTT and create complex nested tables.",
   "license": "MIT",
   "homepage": "https://github.com/klaas1979/tablesmith-like",

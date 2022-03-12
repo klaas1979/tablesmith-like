@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.9.0](https://github.com/klaas1979/tablesmith-like/compare/v1.8.0...v1.9.0) (2022-03-12)
+
+
+### Features
+
+* added Function Char ([3f5ea46](https://github.com/klaas1979/tablesmith-like/commit/3f5ea4604dcf0f204ac941a19a1e7baa05c29c74))
+* added Function CommaReplace ([d7af0f8](https://github.com/klaas1979/tablesmith-like/commit/d7af0f88bcc76d9be7ddaab89c090c63b0a157f8))
+* added Function Split ([9a43b07](https://github.com/klaas1979/tablesmith-like/commit/9a43b0714972b68146fcba0f9c23dab392d20dbd))
+* added Funtions Left and Right ([0ce95b9](https://github.com/klaas1979/tablesmith-like/commit/0ce95b98344013d91a3d48f41756b4982ac385b6))
+* Function Mid added ([1d7a2d9](https://github.com/klaas1979/tablesmith-like/commit/1d7a2d971433617c1950d2b51e5a5fba3f0032a8))
+
 ## [1.8.0](https://github.com/klaas1979/tablesmith-like/compare/v1.7.0...v1.8.0) (2022-03-11)
 
 
