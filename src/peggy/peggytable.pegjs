@@ -348,7 +348,7 @@ FunctionsTwoParams
           }); }
 
 FunctionsThreeParams
-  = '{' _ name:(@'DSCalc'i / @'DSGet'i / @'Find'i / @'Generate'i / @'Mid'i
+  = '{' _ name:(@'CommaReplace'i / @'DSCalc'i / @'DSGet'i / @'Find'i / @'Generate'i / @'Mid'i
   / @'Replace'i) '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }

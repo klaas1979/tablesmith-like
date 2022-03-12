@@ -21,6 +21,7 @@ const NAMES = [
   'Char',
   'CR',
   'Color',
+  'CommaReplace',
   'DSCount',
   'DSAdd',
   'DSAddNR',

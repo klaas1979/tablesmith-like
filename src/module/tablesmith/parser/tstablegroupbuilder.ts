@@ -438,6 +438,7 @@ class TSTableGroupBuilder {
       case 'Or':
         result = this.createLogicalExpression(stacked);
         break;
+      case 'CommaReplace':
       case 'Replace':
         result = this.createReplaceExpression(stacked);
         break;
@@ -747,7 +748,7 @@ class TSTableGroupBuilder {
     const textExpression = data.popExpressions();
     const replaceExpression = data.popExpressions();
     const searchExpression = data.popExpressions();
-    return new TSReplaceExpression(searchExpression, replaceExpression, textExpression);
+    return new TSReplaceExpression(data.name, searchExpression, replaceExpression, textExpression);
   }
 
   private createResetExpression(data: StackItem): TSGroupResetExpression {

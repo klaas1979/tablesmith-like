@@ -75,6 +75,49 @@ describe('{Replace~', () => {
   });
 });
 
+describe('{CommaReplace~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('parses correct', async () => {
+    simpleTable = ':Start\n1,{CommaReplace~0,@,1,2,3}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe(
+      '{CommaReplace~0,@,1,2,3}',
+    );
+  });
+
+  it('replaces comma for type=0', async () => {
+    simpleTable = ':Start\n1,{CommaReplace~0,@,1,2,3}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('1@2@3');
+  });
+
+  it('replaces text to comma for type=1', async () => {
+    simpleTable = ':Start\n1,{CommaReplace~1,@,1@2@3}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('1,2,3');
+  });
+
+  it('no match, nothing changes', async () => {
+    simpleTable = ':Start\n1,{CommaReplace~0,@,123}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('123');
+  });
+
+  it('unknown type results in error', async () => {
+    simpleTable = ':Start\n1,{CommaReplace~2,@,123}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).getErrorMessage();
+    expect(result).toContain('Error: ');
+  });
+});
+
 describe('{Trim~', () => {
   beforeEach(() => {
     tablesmith.reset();
