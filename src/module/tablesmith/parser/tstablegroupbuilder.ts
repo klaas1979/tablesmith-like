@@ -396,6 +396,7 @@ class TSTableGroupBuilder {
       case 'LastRoll':
         result = this.createLastRollExpression(stacked);
         break;
+      case 'Char':
       case 'Left':
       case 'Right':
         result = this.createLeftRightExpression(stacked);

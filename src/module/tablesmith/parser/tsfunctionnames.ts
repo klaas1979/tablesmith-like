@@ -18,6 +18,7 @@ const NAMES = [
   'VowelStart',
   'Count',
   'Ceil',
+  'Char',
   'CR',
   'Color',
   'DSCount',

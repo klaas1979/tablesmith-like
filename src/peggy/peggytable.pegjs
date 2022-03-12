@@ -327,8 +327,8 @@ FunctionsOneParam
           }); }
 
 FunctionsTwoParams
-  = '{' _ name:(@'Color'i / @'DSRead'i / @'DSRemove'i / @'DSWrite'i / @'InputText'i / @'Line'i / @'Left'i
-  / @'Param'i / @'Right'i) '~' { errorHandling(() => {
+  = '{' _ name:(@'Char'i / @'Color'i / @'DSRead'i / @'DSRemove'i / @'DSWrite'i / @'InputText'i / @'Line'i
+  / @'Left'i / @'Param'i / @'Right'i) '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 

@@ -298,6 +298,47 @@ describe('{Left~', () => {
   });
 });
 
+describe('{Char~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('parses correct', async () => {
+    simpleTable = ':Start\n1,{Char~5,123456789}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Char~5,123456789}');
+  });
+
+  it('index 0 empty string', async () => {
+    simpleTable = ':Start\n1,{Char~0,123456789}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('');
+  });
+
+  it('last index', async () => {
+    simpleTable = ':Start\n1,{Char~9,123456789}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('9');
+  });
+
+  it('index above length error', async () => {
+    simpleTable = ':Start\n1,{Char~10,123456789}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).getErrorMessage();
+    expect(result).toContain('Error: ');
+  });
+
+  it('char at index', async () => {
+    simpleTable = ':Start\n1,{Char~5,123456789}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('5');
+  });
+});
+
 describe('{Right~', () => {
   beforeEach(() => {
     tablesmith.reset();

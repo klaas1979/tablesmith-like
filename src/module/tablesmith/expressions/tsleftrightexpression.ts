@@ -24,6 +24,9 @@ export default class TSLeftRightExpression extends BaseTSExpression {
       throw Error(`Cannot get '${this.name}' number '${number}' out of bounds 0-${length}`);
     let result;
     switch (this.name) {
+      case 'Char':
+        result = text.slice(number - 1, number);
+        break;
       case 'Left':
         result = text.slice(0, number);
         break;
