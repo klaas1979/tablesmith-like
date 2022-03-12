@@ -68,6 +68,7 @@ import TSTextTransformExpression from '../expressions/tstexttransformexpression'
 import { normalizeCase } from './tsfunctionnames';
 import TSStatusExpression from '../expressions/tsstatusexpression';
 import TSNoteExpression from '../expressions/tsnoteexpression';
+import TSLeftRightExpression from '../expressions/tsleftrightexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -394,6 +395,10 @@ class TSTableGroupBuilder {
       case 'LastRoll':
         result = this.createLastRollExpression(stacked);
         break;
+      case 'Left':
+      case 'Right':
+        result = this.createLeftRightExpression(stacked);
+        break;
       case 'Line':
         result = this.createLineExpression(stacked);
         break;
@@ -627,6 +632,12 @@ class TSTableGroupBuilder {
   private createLastRollExpression(data: StackItem): TSLastRollExpression {
     data.popExpressions();
     return new TSLastRollExpression();
+  }
+
+  private createLeftRightExpression(data: StackItem): TSLeftRightExpression {
+    const text = data.popExpressions();
+    const number = data.popExpressions();
+    return new TSLeftRightExpression(data.name, number, text);
   }
 
   private createLineExpression(data: StackItem): TSLineExpression {

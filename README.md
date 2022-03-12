@@ -449,8 +449,10 @@ Tablesmith functionnames are case insensitive, i.e.  `If`, `if`, `iF`, and `IF` 
 - CapEachWord (Capitalize each word)
 - Find (Find text within other text)
 - LCase (Lower case)
+- Left (Retrieve leftmost characters)
 - Length (Get the length of some text)
 - Replace (Replace text)
+- Right (Retrieve rightmost characters)
 - Trim (Trim spaces)
 - UCase (Upper case)
 - VowelStart (Vowel starts)
@@ -459,12 +461,10 @@ Tablesmith functionnames are case insensitive, i.e.  `If`, `if`, `iF`, and `IF` 
 
 - Char (Retrieve a single character)
 - CommaReplace (Replace or insert commas)
-- Left (Retrieve leftmost characters)
 - Mid (Retrieve middle characters)
 - Ordinal (Ordinal number)
 - Plural (Make string plural)
 - PluralIf (Conditional make string plural)
-- Right (Retrieve rightmost characters)
 - Space (Insert spaces)
 - Split (Split)
 

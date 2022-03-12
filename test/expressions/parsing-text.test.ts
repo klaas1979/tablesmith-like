@@ -270,3 +270,71 @@ describe('{Length~', () => {
     expect(result).toBe('9');
   });
 });
+
+describe('{Left~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('parses correct', async () => {
+    simpleTable = ':Start\n1,{Left~5,123456789}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Left~5,123456789}');
+  });
+
+  it('0 chars empty string', async () => {
+    simpleTable = ':Start\n1,{Left~0,123456789}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('');
+  });
+
+  it('returns leftmost', async () => {
+    simpleTable = ':Start\n1,{Left~5,123456789}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('12345');
+  });
+});
+
+describe('{Right~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('parses correct', async () => {
+    simpleTable = ':Start\n1,{Right~5,123456789}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Right~5,123456789}');
+  });
+
+  it('0 chars empty string', async () => {
+    simpleTable = ':Start\n1,{Right~0,123456789}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('');
+  });
+
+  it('-1 error', async () => {
+    simpleTable = ':Start\n1,{Right~-1,123456789}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).getErrorMessage();
+    expect(result).toContain('Error: ');
+  });
+
+  it('longer than string error', async () => {
+    simpleTable = ':Start\n1,{Right~10,123456789}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).getErrorMessage();
+    expect(result).toContain('Error: ');
+  });
+
+  it('returns rightmost chars', async () => {
+    simpleTable = ':Start\n1,{Right~5,123456789}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('56789');
+  });
+});
