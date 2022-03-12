@@ -69,6 +69,7 @@ import { normalizeCase } from './tsfunctionnames';
 import TSStatusExpression from '../expressions/tsstatusexpression';
 import TSNoteExpression from '../expressions/tsnoteexpression';
 import TSLeftRightExpression from '../expressions/tsleftrightexpression';
+import TSMidExpression from '../expressions/tsmidtexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -420,6 +421,9 @@ class TSTableGroupBuilder {
       case 'MaxVal':
         result = this.createGroupRangeValueExpression(stacked);
         break;
+      case 'Mid':
+        result = this.createMidExpression(stacked);
+        break;
       case 'Mod':
         result = this.createMathMod(stacked);
         break;
@@ -638,6 +642,13 @@ class TSTableGroupBuilder {
     const text = data.popExpressions();
     const number = data.popExpressions();
     return new TSLeftRightExpression(data.name, number, text);
+  }
+
+  private createMidExpression(data: StackItem): TSMidExpression {
+    const text = data.popExpressions();
+    const start = data.popExpressions();
+    const length = data.popExpressions();
+    return new TSMidExpression(length, start, text);
   }
 
   private createLineExpression(data: StackItem): TSLineExpression {

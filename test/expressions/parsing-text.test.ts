@@ -338,3 +338,58 @@ describe('{Right~', () => {
     expect(result).toBe('56789');
   });
 });
+
+describe('{Mid~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('parses correct', async () => {
+    simpleTable = ':Start\n1,{Mid~3,2,123456789}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{Mid~3,2,123456789}');
+  });
+
+  it('0 chars empty string', async () => {
+    simpleTable = ':Start\n1,{Mid~0,3,123456789}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('');
+  });
+
+  it('-1 error', async () => {
+    simpleTable = ':Start\n1,{Mid~-1,3,123456789}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).getErrorMessage();
+    expect(result).toContain('Error: ');
+  });
+
+  it('longer than string error', async () => {
+    simpleTable = ':Start\n1,{Mid~7,4,123456789}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).getErrorMessage();
+    expect(result).toContain('Error: ');
+  });
+
+  it('right edge', async () => {
+    simpleTable = ':Start\n1,{Mid~2,8,123456789}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('89');
+  });
+
+  it('left edge', async () => {
+    simpleTable = ':Start\n1,{Mid~2,1,123456789}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('12');
+  });
+
+  it('mid chars', async () => {
+    simpleTable = ':Start\n1,{Mid~3,3,123456789}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('345');
+  });
+});

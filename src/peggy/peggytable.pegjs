@@ -333,7 +333,8 @@ FunctionsTwoParams
           }); }
 
 FunctionsThreeParams
-  = '{' _ name:(@'DSCalc'i / @'DSGet'i / @'Find'i / @'Generate'i / @'Replace'i) '~' { errorHandling(() => {
+  = '{' _ name:(@'DSCalc'i / @'DSGet'i / @'Find'i / @'Generate'i / @'Mid'i
+  / @'Replace'i) '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 

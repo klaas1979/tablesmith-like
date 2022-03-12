@@ -50,6 +50,7 @@ const NAMES = [
   'MinVal',
   'Max',
   'MaxVal',
+  'Mid',
   'Mod',
   'Note',
   'Or',

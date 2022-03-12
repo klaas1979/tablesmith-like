@@ -451,6 +451,7 @@ Tablesmith functionnames are case insensitive, i.e.  `If`, `if`, `iF`, and `IF` 
 - LCase (Lower case)
 - Left (Retrieve leftmost characters)
 - Length (Get the length of some text)
+- Mid (Retrieve middle characters)
 - Replace (Replace text)
 - Right (Retrieve rightmost characters)
 - Trim (Trim spaces)
@@ -461,7 +462,6 @@ Tablesmith functionnames are case insensitive, i.e.  `If`, `if`, `iF`, and `IF` 
 
 - Char (Retrieve a single character)
 - CommaReplace (Replace or insert commas)
-- Mid (Retrieve middle characters)
 - Ordinal (Ordinal number)
 - Plural (Make string plural)
 - PluralIf (Conditional make string plural)
