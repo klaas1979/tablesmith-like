@@ -179,12 +179,20 @@ TsFunction
   / FunctionsManyParams _ ExpressionTextNoComma _ (GroupLockParameter)+ '}' { errorHandling(() => {
             options?.pf.createFunction();
           }); }
+  / SplitStart _ ExpressionTextNoComma _ ParamSeparatorComma _ ExpressionTextQuotation _ (GroupLockParameter)+ '}' { errorHandling(() => {
+            options?.pf.createFunction();
+          }); }
   / DSFindStart _ ExpressionTextNoComma _ ParamSeparatorComma _ ExpressionTextNoComma _ ParamSeparatorComma _ BooleanExpression _ (_ ParamSeparatorComma _ BooleanExpression _ )* '}' { errorHandling(() => {
             options?.pf.createFunction();
           }); }
 
 DSFindStart
   = '{' name:'DSFind'i '~' { errorHandling(() => {
+            options?.pf.startFunction(name);
+          }); }
+
+SplitStart
+  = '{' name:'Split'i '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
@@ -301,6 +309,13 @@ ExpressionTextNoComma
   / TsFunction ExpressionTextNoComma*
   / VariableGet ExpressionTextNoComma*
   / ValueNoComma ExpressionTextNoComma*
+
+/* Expressions where text is not matching "," that are allowed as value in a Select. */
+ExpressionTextQuotation
+  = GroupCall ExpressionTextQuotation*
+  / TsFunction ExpressionTextQuotation*
+  / VariableGet ExpressionTextQuotation*
+  / ValueQuotation ExpressionTextQuotation*
 
 ExpressionTextNoCommaNorPower
   = GroupCall ExpressionTextNoCommaNorPower*
@@ -519,6 +534,15 @@ ValueNoComma
  /** Text that is allowed within an selections where a comma ',' happens. */
  PlainTextNoComma
  = text:([^,{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ { return text.join(''); }
+
+ValueQuotation
+  = text:PlainTextQuotation { errorHandling(() => {
+            options?.pf.createText(text);
+          }); }
+
+ /** Text that is allowed within an selections where a comma ',' happens. */
+ PlainTextQuotation
+ = '"' text:([^"{}[\]%|/\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ '"' { return text.join(''); }
 
 ValueNoCommaNorPower
   = text:PlainTextNoCommaNorPower { errorHandling(() => {

@@ -64,6 +64,7 @@ const NAMES = [
   'Round',
   'Trunc',
   'Select',
+  'Split',
   'Sqrt',
   'Status',
   'Unlock',

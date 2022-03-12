@@ -455,6 +455,7 @@ Tablesmith functionnames are case insensitive, i.e.  `If`, `if`, `iF`, and `IF` 
 - Mid (Retrieve middle characters)
 - Replace (Replace text)
 - Right (Retrieve rightmost characters)
+- Split (Split)
 - Trim (Trim spaces)
 - UCase (Upper case)
 - VowelStart (Vowel starts)
@@ -466,7 +467,6 @@ Tablesmith functionnames are case insensitive, i.e.  `If`, `if`, `iF`, and `IF` 
 - Plural (Make string plural)
 - PluralIf (Conditional make string plural)
 - Space (Insert spaces)
-- Split (Split)
 
 ## Special Appreciations
 

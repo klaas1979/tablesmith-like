@@ -434,3 +434,47 @@ describe('{Mid~', () => {
     expect(result).toBe('345');
   });
 });
+
+describe('{Split~', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('parses correct', async () => {
+    simpleTable = '%vs%,1,2,3\n%v1%,\n%v2%,\n%v3%,\n:Start\n1,{Split~vs,",",v1,v2,v3}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe(
+      '{Split~vs,",",v1,v2,v3}',
+    );
+  });
+
+  it('quotation can be used before and after', async () => {
+    simpleTable = '%vs%,1,2,3\n%v1%,\n%v2%,\n%v3%,\n:Start\n1,"{Split~vs,",",v1,v2,v3}%v3% %v2% %v1%"\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('"3 2 1"');
+  });
+
+  it('splits into vars', async () => {
+    simpleTable = '%vs%,1,2,3\n%v1%,\n%v2%,\n%v3%,\n:Start\n1,{Split~vs,",",v1,v2,v3}%v3% %v2% %v1%\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('3 2 1');
+  });
+
+  it('splits into vars, missing values not set', async () => {
+    simpleTable =
+      '%vs%,1,2,3\n%v1%,\n%v2%,\n%v3%,\n%v4%,missing\n:Start\n1,{Split~vs,",",v1,v2,v3}%v4% %v3% %v2% %v1%\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('missing 3 2 1');
+  });
+
+  it('splits into vars, missing vars tail ommitted', async () => {
+    simpleTable = '%vs%,1,2,3\n%v1%,\n%v2%,\n:Start\n1,{Split~vs,",",v1,v2}%v2% %v1%\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('2 1');
+  });
+});

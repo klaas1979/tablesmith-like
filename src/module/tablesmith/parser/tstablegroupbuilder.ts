@@ -70,6 +70,7 @@ import TSStatusExpression from '../expressions/tsstatusexpression';
 import TSNoteExpression from '../expressions/tsnoteexpression';
 import TSLeftRightExpression from '../expressions/tsleftrightexpression';
 import TSMidExpression from '../expressions/tsmidtexpression';
+import TSSplitExpression from '../expressions/tssplitexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -461,6 +462,9 @@ class TSTableGroupBuilder {
       case 'Select':
         result = this.createSelectExpression(stacked);
         break;
+      case 'Split':
+        result = this.createSplitExpression(stacked);
+        break;
       case 'Sqrt':
         result = new TSMathSqrtExpression(stacked.popExpressions());
         break;
@@ -766,6 +770,19 @@ class TSTableGroupBuilder {
     tuples.reverse();
     const selector = data.popExpressions();
     return new TSSelectExpression(selector, tuples, defaultValue);
+  }
+
+  private createSplitExpression(data: StackItem): TSSplitExpression {
+    const vars = [];
+    if (data.stackSize() < 3) throw Error('Cannot create Split missing Parameters!');
+    while (data.stackSize() > 2) {
+      const variable = data.popExpressions();
+      vars.push(variable);
+    }
+    vars.reverse();
+    const separatorExpression = data.popExpressions();
+    const splitVariableExpressoin = data.popExpressions();
+    return new TSSplitExpression(splitVariableExpressoin, separatorExpression, vars);
   }
 
   private createWhileExpression(data: StackItem): TSWhileExpression {
