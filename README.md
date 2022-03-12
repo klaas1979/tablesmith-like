@@ -447,6 +447,7 @@ Tablesmith functionnames are case insensitive, i.e.  `If`, `if`, `iF`, and `IF` 
 - AorAn (A or An)
 - Cap (Capitalize)
 - CapEachWord (Capitalize each word)
+- Char (Retrieve a single character)
 - Find (Find text within other text)
 - LCase (Lower case)
 - Left (Retrieve leftmost characters)
@@ -460,7 +461,6 @@ Tablesmith functionnames are case insensitive, i.e.  `If`, `if`, `iF`, and `IF` 
 
 **Not implemented:**
 
-- Char (Retrieve a single character)
 - CommaReplace (Replace or insert commas)
 - Ordinal (Ordinal number)
 - Plural (Make string plural)
