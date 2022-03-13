@@ -131,9 +131,7 @@ All functions with the annotation *(Extension)* or not included in Tablesmith 5.
 
 #### Description
 
-Tries to read a DSStore from given file, if DSStore cannot be read uses it creates a new DSStore from provided create parameters.
-
-See [DSCreate](#dscreate) and [DSRead](#dsread) for more information.
+Tries to read a DSStore from given storename, if DSStore does not exist it instead creates a new DSStore from provided create parameters. See [DSCreate](#dscreate) and [DSRead](#dsread) for more information.
 
 #### Example
 
