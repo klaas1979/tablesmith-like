@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.10.0](https://github.com/klaas1979/tablesmith-like/compare/v1.9.1...v1.10.0) (2022-03-13)
+
+
+### Features
+
+* added extension function 'DSReadOrCreate' and changed documentation to split base doc and function doc ([654374c](https://github.com/klaas1979/tablesmith-like/commit/654374c2806ac3773d21310c046b89b667140b63))
+* logical comparison trims results of compared values, to ensure that leading or trailing spaces are not part of the comparison result ([5c127be](https://github.com/klaas1979/tablesmith-like/commit/5c127be3fdf9eaf07ba6f923c2a410249fc66d82))
+
+
+### Bug Fixes
+
+* Syntax of 'Generate' was missing leading '~' char for called table. Added it for compatibility with old tables. ([ebe0a39](https://github.com/klaas1979/tablesmith-like/commit/ebe0a39869e0d5585405eeff46c8b36188584951))
+
 ### [1.9.1](https://github.com/klaas1979/tablesmith-like/compare/v1.9.0...v1.9.1) (2022-03-13)
 
 
