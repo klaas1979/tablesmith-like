@@ -41,6 +41,12 @@ describe('Parsing {If~', () => {
     expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('true');
   });
 
+  it('values with variable set', async () => {
+    simpleTable = '%var%,1\n%res%,default\n:Start\n1,{If~%var%=1?|res=done|/false}%res%\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('done');
+  });
+
   it('result with mixed expressions', async () => {
     simpleTable = '%var%,text\n:Start\n1,{If~1=1?true {Calc~1} %var%/false}\n';
     tablesmith.addTable('folder', filename, simpleTable);

@@ -276,12 +276,14 @@ IfExpressionPart
   = GroupCall IfExpressionPart*
   / TsFunction IfExpressionPart*
   / VariableGet IfExpressionPart*
+  / VariableSet IfExpressionPart*
   / ValueIfPart IfExpressionPart*
 
 GroupIdentifier
   = GroupCall GroupIdentifier*
   / TsFunction GroupIdentifier*
   / VariableGet GroupIdentifier*
+  / VariableSet GroupIdentifier*
   / ValueGroupIdentifier GroupIdentifier*
 
   VariableIdentifier
@@ -294,6 +296,7 @@ IfExpressionTextSlash
   = GroupCall IfExpressionTextSlash*
   / TsFunction IfExpressionTextSlash*
   / VariableGet IfExpressionTextSlash*
+  / VariableSet IfExpressionTextSlash*
   / ValueIfSlash IfExpressionTextSlash*
 
 /* Expressions that are allowed in true or false part after the "?" for a colon ":" If. */
@@ -301,6 +304,7 @@ IfExpressionTextColon
   = GroupCall IfExpressionTextColon*
   / TsFunction IfExpressionTextColon*
   / VariableGet IfExpressionTextColon*
+  / VariableSet IfExpressionTextColon*
   / ValueIfColon IfExpressionTextColon*
 
 /* Expressions where text is not matching "," that are allowed as value in a Select. */
@@ -308,6 +312,7 @@ ExpressionTextNoComma
   = GroupCall ExpressionTextNoComma*
   / TsFunction ExpressionTextNoComma*
   / VariableGet ExpressionTextNoComma*
+  / VariableSet ExpressionTextNoComma*
   / ValueNoComma ExpressionTextNoComma*
 
 /* Expressions where text is not matching "," that are allowed as value in a Select. */
@@ -315,18 +320,21 @@ ExpressionTextQuotation
   = GroupCall ExpressionTextQuotation*
   / TsFunction ExpressionTextQuotation*
   / VariableGet ExpressionTextQuotation*
+  / VariableSet ExpressionTextQuotation*
   / ValueQuotation ExpressionTextQuotation*
 
 ExpressionTextNoCommaNorPower
   = GroupCall ExpressionTextNoCommaNorPower*
   / TsFunction ExpressionTextNoCommaNorPower*
   / VariableGet ExpressionTextNoCommaNorPower*
+  / VariableSet ExpressionTextNoCommaNorPower*
   / ValueNoCommaNorPower ExpressionTextNoCommaNorPower*
 
 ExpressionTextNoCommaNorCurlyBraces
   = GroupCall ExpressionTextNoCommaNorCurlyBraces*
   / TsFunction ExpressionTextNoCommaNorCurlyBraces*
   / VariableGet ExpressionTextNoCommaNorCurlyBraces*
+  / VariableSet ExpressionTextNoCommaNorCurlyBraces*
   / ValueNoCommaNorCurlyBraces ExpressionTextNoCommaNorCurlyBraces*
 
 FunctionsZeroParams
