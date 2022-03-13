@@ -350,8 +350,8 @@ FunctionsOneParam
           }); }
 
 FunctionsTwoParams
-  = '{' _ name:(@'Char'i / @'Color'i / @'DSRead'i / @'DSRemove'i / @'DSWrite'i / @'InputText'i / @'Line'i
-  / @'Left'i / @'Param'i / @'Right'i) '~' { errorHandling(() => {
+  = '{' _ name:(@'Char'i / @'Color'i / @'DSRead'i / @'DSRemove'i / @'DSWrite'i
+  / @'InputText'i / @'Line'i / @'Left'i / @'Param'i / @'Right'i) '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
@@ -362,8 +362,8 @@ FunctionsThreeParams
           }); }
 
 FunctionsManyParams
-  = '{' _ name:(@'DSAddNR'i / @'DSAdd'i / @'DSCreate'i / @'DSSet'i / @'InputList'i / @'Lockout'i
-  / @'MaxVal'i / @'MinVal'i / @'Unlock'i) '~' { errorHandling(() => {
+  = '{' _ name:(@'DSAddNR'i / @'DSAdd'i / @'DSCreate'i / @'DSReadOrCreate'i / @'DSSet'i
+  / @'InputList'i / @'Lockout'i / @'MaxVal'i / @'MinVal'i / @'Unlock'i) '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 

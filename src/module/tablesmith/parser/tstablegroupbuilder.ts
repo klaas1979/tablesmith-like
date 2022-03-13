@@ -71,6 +71,7 @@ import TSNoteExpression from '../expressions/tsnoteexpression';
 import TSLeftRightExpression from '../expressions/tsleftrightexpression';
 import TSMidExpression from '../expressions/tsmidtexpression';
 import TSSplitExpression from '../expressions/tssplitexpression';
+import TSDSReadOrCreateExpression from '../expressions/tsdsreadorcreateexpression';
 
 /**
  * Group Builder is the main helper for Tablesmith parsing to hold togehter the context of a single TSGroup
@@ -372,6 +373,9 @@ class TSTableGroupBuilder {
       case 'DSWrite':
         result = this.createDSStoreExpression(stacked);
         break;
+      case 'DSReadOrCreate':
+        result = this.createDSReadOrCreateExpression(stacked);
+        break;
       case 'Floor':
         result = new TSMathFloorExpression(stacked.popExpressions());
         break;
@@ -534,6 +538,19 @@ class TSTableGroupBuilder {
     const indexExpression = data.popExpressions();
     const storeVariableExpression = data.popExpressions();
     return new TSDSSetExpression(data.name, storeVariableExpression, fields.reverse(), indexExpression);
+  }
+
+  private createDSReadOrCreateExpression(data: StackItem): TSDSReadOrCreateExpression {
+    if (data.stackSize() % 2 === 1) throw Error(`Missing default values for DSReadOrCreate!`);
+    const fields: DSFieldExpression[] = [];
+    while (data.stackSize() > 2) {
+      const defaultvalue = data.popExpressions();
+      const field = data.popExpressions();
+      fields.push(new DSFieldExpression(field, defaultvalue));
+    }
+    const storenameExpression = data.popExpressions();
+    const storeVariableExpression = data.popExpressions();
+    return new TSDSReadOrCreateExpression(storeVariableExpression, storenameExpression, fields.reverse());
   }
 
   private createDSCreateExpression(data: StackItem): TSDSCreateExpression {

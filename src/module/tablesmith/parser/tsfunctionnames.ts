@@ -33,6 +33,7 @@ const NAMES = [
   'DSRandomize',
   'DSRemove',
   'DSRead',
+  'DSReadOrCreate',
   'DSWrite',
   'Floor',
   'Find',

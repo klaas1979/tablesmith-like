@@ -40,6 +40,37 @@ describe('Datastores', () => {
     expect(result.getErrorMessage()).toContain('Error: ');
     expect(await db.get('storename')).toBeUndefined();
   });
+
+  it('{DSReadOrCreate~ parses correctly', async () => {
+    simpleTable = `:Start\n1,{DSReadOrCreate~[groupForVar],[groupForStorename],v1,0,v2,1}`;
+    const table = tablesmith.addTable('folder', filename, simpleTable);
+    expect(table.groupForName('Start')?.lastRange()?.getExpression()).toBe(
+      '{DSReadOrCreate~[groupForVar],[groupForStorename],v1,0,v2,1}',
+    );
+  });
+
+  it('{DSReadOrCreate~create for non existing store', async () => {
+    simpleTable = `%storevar%,\n:Start\n1,{DSReadOrCreate~storevar,storename,v1,0,v2,1}{DSCount~storevar}`;
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('0');
+    expect(await db.get('storename')).toBeUndefined();
+  });
+
+  it('{DSReadOrCreate~read for existing store', async () => {
+    data.set(
+      'storename',
+      JSON.stringify([
+        { v1: '0', v2: '1' },
+        { v1: 'v1', v2: 'v2' },
+      ]),
+    );
+    simpleTable = `%storevar%,\n:Start\n1,{DSReadOrCreate~storevar,storename,v1,0,v2,1}{DSCount~storevar}`;
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('1');
+  });
+
   describe('{DSCount~', () => {
     it('parses correctly', async () => {
       simpleTable = `:Start\n1,{DSCount~[groupForStoreVar]}`;
