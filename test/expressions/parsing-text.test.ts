@@ -5,6 +5,34 @@ import { tstables } from '../../src/module/tablesmith/tstables';
 let filename: string;
 let simpleTable: string;
 
+describe('_ line breaks', () => {
+  beforeEach(() => {
+    tablesmith.reset();
+    filename = 'simpletable';
+  });
+
+  it('line break not printed', async () => {
+    simpleTable = ':Start\n1,1\n_2';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('12');
+  });
+
+  it('line break trailing spaces not trimmed', async () => {
+    simpleTable = ':Start\n1,1  \n_2';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('1  2');
+  });
+
+  it('comment above line break', async () => {
+    simpleTable = ':Start\n1,1\n# comment\n_2';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('12');
+  });
+});
+
 describe('{Find~', () => {
   beforeEach(() => {
     tablesmith.reset();

@@ -583,7 +583,7 @@ int
 
 /** A break within a before, after or Range of a group to make the table more human readable. */
 _'Multi Line Whitespace with _'
-= __ ([\n] '_' __)?
+= __ ([\n] Comment* '_' __)?
 
 __ 'Whitspace'
   = spaces:[\t \u00A0]*
