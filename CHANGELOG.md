@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.9.1](https://github.com/klaas1979/tablesmith-like/compare/v1.9.0...v1.9.1) (2022-03-13)
+
+
+### Bug Fixes
+
+* Multiline with '_' can be mixed with comments ([c045c6e](https://github.com/klaas1979/tablesmith-like/commit/c045c6ea7e04f279513a606adfa676352b18c48f))
+* Variable Set Expressions can be used at most places (was missing in parser) ([7a4fcca](https://github.com/klaas1979/tablesmith-like/commit/7a4fccad2df4b0fbaac4c07bb14ea82f449d2739))
+
 ## [1.9.0](https://github.com/klaas1979/tablesmith-like/compare/v1.8.0...v1.9.0) (2022-03-12)
 
 
