@@ -9,7 +9,7 @@ describe('{Generate~', () => {
     filename = 'simpletable';
   });
   it('only group: first call text, second GroupCall', async () => {
-    simpleTable = `:Start\n1,{Generate~0,summary,other}\n:other\n1,other`;
+    simpleTable = `:Start\n1,{Generate~0,summary,~other}\n:other\n1,other`;
     tablesmith.addTable('folder', filename, simpleTable);
     const result = await tablesmith.evaluate(`[${filename}]`);
     expect(result.asString()).toBe('summary');
@@ -19,7 +19,7 @@ describe('{Generate~', () => {
     expect(result.asString()).toBe('other');
   });
   it('table.group: first call text, second GroupCall', async () => {
-    simpleTable = `:Start\n1,{Generate~0,summary,simpletable.other}\n:other\n1,other`;
+    simpleTable = `:Start\n1,{Generate~0,summary,~simpletable.other}\n:other\n1,other`;
     tablesmith.addTable('folder', filename, simpleTable);
     const result = await tablesmith.evaluate(`[${filename}]`);
     expect(result.asString()).toBe('summary');
@@ -30,7 +30,7 @@ describe('{Generate~', () => {
   });
   it('table(parameter): first call text, second GroupCall', async () => {
     tablesmith.addTable('folder', 'called', '%var%,0\n@var,default,prompt\n:Start\n1,%var%');
-    simpleTable = `:Start\n1,{Generate~0,summary,called(other)}`;
+    simpleTable = `:Start\n1,{Generate~0,summary,~called(other)}`;
     tablesmith.addTable('folder', filename, simpleTable);
     const result = await tablesmith.evaluate(`[${filename}]`);
     expect(result.asString()).toBe('summary');
@@ -40,7 +40,7 @@ describe('{Generate~', () => {
     expect(result.asString()).toBe('other');
   });
   it('error for type != 0', async () => {
-    simpleTable = `:Start\n1,{Generate~1,summary,simpletable.other}\n:other\n1,other`;
+    simpleTable = `:Start\n1,{Generate~1,summary,~simpletable.other}\n:other\n1,other`;
     tablesmith.addTable('folder', filename, simpleTable);
     const result = await tablesmith.evaluate(`[${filename}]`);
     expect(result.getErrorMessage()).toContain('Error: ');

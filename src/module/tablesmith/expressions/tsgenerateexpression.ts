@@ -58,6 +58,8 @@ export default class TSGenerateExpression extends BaseTSExpression {
 
   async evaluateCall(evalcontext: EvaluationContext) {
     let call = (await this.groupCallExpression.evaluate(evalcontext)).asString();
+    if (call.length == 0 || call[0] !== '~') throw Error(`Generate Call must start with '~' got '${call}'`);
+    call = call.slice(1);
     const match = call.match(/^[^.(]+(\..+)?(\(.+\))?$/);
     call = match && (match[1] || match[2]) ? call : `${evalcontext.getCurrentCallTablename()}.${call}`;
     return '[' + call + ']';
