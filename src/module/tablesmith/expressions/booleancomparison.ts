@@ -20,8 +20,8 @@ export default class BooleanComparison extends BaseTSExpression {
   async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
     let boolResult;
     try {
-      const e1 = (await this.ifExpression1.evaluate(evalcontext)).asString(),
-        e2 = (await this.ifExpression2.evaluate(evalcontext)).asString();
+      const e1 = (await this.ifExpression1.evaluate(evalcontext)).trim(),
+        e2 = (await this.ifExpression2.evaluate(evalcontext)).trim();
       switch (this.operator) {
         case '=':
           boolResult = e1 == e2;

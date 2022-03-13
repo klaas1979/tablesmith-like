@@ -16,6 +16,12 @@ describe('Parsing {And~', () => {
     expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('{And~1=1,2=2}');
   });
 
+  it('with vars', async () => {
+    simpleTable = '%c%,4\n%p%,6\n%n%,3\n:Start\n1,{AND~%c%!=%n%,%c%!=%p%}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('1');
+  });
+
   it('sub expression error => -1', async () => {
     simpleTable = ':Start\n1,{And~[missingGroup]=1,2=2}\n';
     tablesmith.addTable('folder', filename, simpleTable);
