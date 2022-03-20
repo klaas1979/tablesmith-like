@@ -12,7 +12,7 @@ import CallResult from '../../tablesmith/callresult';
 const TABLESMITH_SELECTOR = `modules/${TABLESMITH_ID}/templates/tablesmithselector.hbs`;
 
 interface TableSelectionOptions extends FormApplicationOptions {
-  someCustomOption?: boolean;
+  evaluate?: boolean;
 }
 
 /**
@@ -26,7 +26,7 @@ export default class TableSelectionForm extends FormApplication<
   data: TableSelectionFormData;
   constructor(tableCallValues: TableCallValues, options?: TableSelectionOptions) {
     super(tableCallValues, options);
-    this.data = new TableSelectionFormData({ folders: tstables.folders, callValues: new TableCallValues() });
+    this.data = new TableSelectionFormData({ folders: tstables.folders, callValues: tableCallValues });
   }
   /**
    * Adds additional options to default options.
@@ -81,7 +81,7 @@ export default class TableSelectionForm extends FormApplication<
     switch (action) {
       case 'evaluate':
         Logger.debug(false, 'pre evaluateTable call', this.data.callValues);
-        this._evaluateTable();
+        this.evaluateTable();
         break;
       case 'group-reroll':
         this._rerollGroup(elementData);
@@ -131,7 +131,10 @@ export default class TableSelectionForm extends FormApplication<
     }
   }
 
-  async _evaluateTable() {
+  /**
+   * Evaluate table with current options.
+   */
+  async evaluateTable() {
     Logger.debug(false, 'Evaluating table', this.data);
     if (this.data.callValues.table) {
       this.data.mapParametersToCallValues();

@@ -43,6 +43,17 @@ export default class TablesmithApi {
   }
 
   /**
+   * Shows the selector form to select and execute Tables.
+   * @param callValues to prefill for with or undefined to start with emtpy form.
+   * @returns TableSelectionForm that has already been rendered.
+   */
+  evaluateForm(callValues: TableCallValues = new TableCallValues()): TableSelectionForm {
+    const form = this.showForm(callValues);
+    form.evaluateTable();
+    return form;
+  }
+
+  /**
    * Parses Table call values from string and returns parse object.
    * @param expression to parse.
    * @returns TableCallValues for expression.
@@ -52,7 +63,7 @@ export default class TablesmithApi {
     try {
       result = tablesmith.parseEvaluateCall(call);
     } catch (error) {
-      Logger.info(false, `Could not parse Expression '${call}'`);
+      Logger.info(false, `Could not parse Expression '${call}'`, error);
     }
     return result;
   }
@@ -64,6 +75,8 @@ export default class TablesmithApi {
    * @param options Options object for evaluation.
    * @param options.toChat defaults to true, boolean value if results should be added to chat.
    * @param options.toJournal defaults to false, boolean value if results should be added to journal.
+   * @param options.toDialog defaults to false, boolean value if results should be displayed in result dialog.
+   * If toDialog is true, will ignore toChat and toJournal option.
    * @param options.lenient defaults to false, should the evaluation try to create a valid expression
    * by fixing standard errors?.
    * @param options.journal? optional object donating the journal to add results to.
@@ -77,12 +90,14 @@ export default class TablesmithApi {
     options: {
       toChat?: boolean;
       toJournal?: boolean;
+      toDialog?: boolean;
       lenient?: boolean;
       journal?: { folder: string; name: string };
       journalOptions?: { includeTimestamp?: boolean; notify?: boolean };
     } = {
       toChat: true,
       toJournal: false,
+      toDialog: false,
       lenient: false,
       journal: undefined,
       journalOptions: { includeTimestamp: true, notify: true },
@@ -91,16 +106,18 @@ export default class TablesmithApi {
     if (options.lenient && typeof call === 'string') call = this.enhanceCall(call);
     const callValues = this.parseEvaluateCall(call);
     let result: CallResult = new CallResult(callValues ? callValues : call);
-    if (callValues) {
+    if (options.toDialog) {
+      this.evaluateForm(callValues);
+    } else if (callValues) {
       const submitted = await ParamInputForm.gather(callValues);
       if (!submitted)
         Logger.warn(false, 'Gathering Parameters Form for Table closed, using default parameters!', callValues);
       result = await tablesmith.evaluate(callValues);
       Logger.debug(false, 'Result for', callValues, result);
-      if (options.toChat) {
+      if (!options.toDialog && options.toChat) {
         new ResultsTo().chat(callValues, result);
       }
-      if (options.toJournal) {
+      if (!options.toDialog && options.toJournal) {
         new ResultsTo().journal(callValues, result, options.journal, options.journalOptions);
       }
     }

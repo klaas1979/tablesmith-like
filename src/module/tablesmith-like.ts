@@ -40,6 +40,7 @@ import { promptForInputList } from './foundry/forms/inputlistprompt';
 import { DSStores } from './tablesmith/dsstore/dsstores';
 import DSDatabase from './foundry/dsdatabase';
 import { promptStatus } from './foundry/forms/statusnotification';
+import { wrapEnrichHTML } from './enrichhtml-wrapper';
 
 // Initialize module
 Hooks.once('init', async () => {
@@ -72,6 +73,7 @@ Hooks.once('ready', async () => {
   const dsStores = new DSStores(new DSDatabase());
   tablesmith.registerDSStores(dsStores);
   wrapRollTable();
+  wrapEnrichHTML();
 });
 
 // Add any additional hooks if necessary

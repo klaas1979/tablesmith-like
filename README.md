@@ -16,6 +16,7 @@ Tablesmith is useful for Character and NPC generation, Solo play, generating Enc
   - [Tablesmith Form](#tablesmith-form)
   - [Macro](#macro)
   - [Chat Commands](#chat-commands)
+  - [Tablesmith Links](#tablesmith-links)
   - [API](#api)
 - [Tablesmith Tables](#tablesmith-tables)
   - [Loaded tables](#loaded-tables)
@@ -86,6 +87,15 @@ The module adds a compendium with simple macros to demonstrate the usage of the 
 ### Chat Commands
 
 The chat commands `ts` and `tablesmith` can be used to call a table directly by using the standard call syntax as parameter. The enclosing brackets `[]` can be ommitted for convenience.
+
+### Tablesmith Links
+
+Links to Table calls including parameter values can be created with this link syntax:
+`@Tablesmith[CallSyntax]{Link Name}` or `@TS[CallSyntax]{Link Name}`
+
+Where `CallSyntax` must be in format defined above. This links can be embedded anywhere where FoundryVTT `@Marco` / `@Compendium` / ... links work.
+
+This links are useful to embed in JournalEntries RollTables or Chat Messages to have a shortcut to a Tablesmith call.
 
 ### API
 

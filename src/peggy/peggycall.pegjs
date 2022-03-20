@@ -38,7 +38,7 @@ Count
   = ':' first:[1-9] tail:[0-9]* { return [first, ...tail].join(''); }
 
 Name
-  = $[a-z0-9 _]i+
+  = $[a-z0-9 _-]i+
 
 _ "Whitespace"
   = [\t ]*
