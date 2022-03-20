@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.11.0](https://github.com/klaas1979/tablesmith-like/compare/v1.10.0...v1.11.0) (2022-03-20)
+
+
+### Features
+
+* Linking to Tablesmith calls including parameters with syntax analog to @Macro or @Compendium links ([8b9cd79](https://github.com/klaas1979/tablesmith-like/commit/8b9cd79a073c0c49f086e6f1e36a70e85f987930))
+
+
+### Bug Fixes
+
+* compatibility with version 9.255 ([b5f275d](https://github.com/klaas1979/tablesmith-like/commit/b5f275dffe3c67c1ddd74d416c5442f8616c4d87))
+
 ## [1.10.0](https://github.com/klaas1979/tablesmith-like/compare/v1.9.1...v1.10.0) (2022-03-13)
 
 
