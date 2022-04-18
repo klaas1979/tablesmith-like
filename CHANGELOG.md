@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.11.1](https://github.com/klaas1979/tablesmith-like/compare/v1.11.0...v1.11.1) (2022-04-18)
+
+
+### Bug Fixes
+
+* escaping of special characters was not working in for InputList and other functions [#8](https://github.com/klaas1979/tablesmith-like/issues/8) ([d18f78d](https://github.com/klaas1979/tablesmith-like/commit/d18f78d344c6359742d0d427bce556b4d29927e8))
+* prompts can contain html-tags that are rendered like line breaks ([8a47c68](https://github.com/klaas1979/tablesmith-like/commit/8a47c687d73a64f632bf80b884981dbc18fd7873))
+
 ## [1.11.0](https://github.com/klaas1979/tablesmith-like/compare/v1.10.0...v1.11.0) (2022-03-20)
 
 
