@@ -18,6 +18,15 @@ describe('Parsing {InputList', () => {
     expect(table.groupForName('Start')?.lastRange()?.getExpression()).toBe('{InputList~2,Prompt,A,B,C,D,E}');
     expect((await tablesmith.evaluate(`[simpletable]`)).asString()).toEqual('3');
   });
+  it('% can be added in prompt', async () => {
+    simpleTable = ':Start\n1,{InputList~2,1/%,A,B}\n';
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const cb = async (defaultValue: number, prompt: string, options: string[]): Promise<number> => 1;
+    tablesmith.registerInputListCallback(cb);
+    const table = tablesmith.addTable('folder', filename, simpleTable);
+    expect(table.groupForName('Start')?.lastRange()?.getExpression()).toBe('{InputList~2,1/%,A,B}');
+    expect((await tablesmith.evaluate(`[simpletable]`)).asString()).toEqual('1');
+  });
   it('error index below lower bounds', async () => {
     simpleTable = ':Start\n1,{InputList~0,Prompt,A,B}\n';
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -532,7 +532,7 @@ ValueIfColon
 
 /** Text that is allowed within an If with colon ":" {IIf~}. */
  PlainTextIfColon
- = text:([^:{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ { return text.join(''); }
+ = text:([^:/{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ { return text.join(''); }
 
 ValueNoComma
   = text:PlainTextNoComma { errorHandling(() => {
@@ -541,7 +541,7 @@ ValueNoComma
 
  /** Text that is allowed within an selections where a comma ',' happens. */
  PlainTextNoComma
- = text:([^,{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ { return text.join(''); }
+ = text:([^,/{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ { return text.join(''); }
 
 ValueQuotation
   = text:PlainTextQuotation { errorHandling(() => {
@@ -550,7 +550,7 @@ ValueQuotation
 
  /** Text that is allowed within an selections where a comma ',' happens. */
  PlainTextQuotation
- = '"' text:([^"{}[\]%|/\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ '"' { return text.join(''); }
+ = '"' text:([^/"{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ '"' { return text.join(''); }
 
 ValueNoCommaNorPower
   = text:PlainTextNoCommaNorPower { errorHandling(() => {
@@ -559,7 +559,7 @@ ValueNoCommaNorPower
 
 /** Text that is allowed within an selections where a comma ',' or power '^' happens. */
 PlainTextNoCommaNorPower
- = text:([^^,{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ { return text.join(''); }
+ = text:([^^,/{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ { return text.join(''); }
 
  ValueNoCommaNorCurlyBraces
   = text:PlainTextNoCommaNorCurlyBraces { errorHandling(() => {
