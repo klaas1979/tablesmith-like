@@ -447,7 +447,7 @@ MathTerm
           }); }
   
 MathMult
-  = op:(@'d' / @'*' / @'/') { errorHandling(() => { 
+  = op:(@'d'i / @'*' / @'/') { errorHandling(() => { 
             options?.pf.addMathTerm(op);
           }); }
 

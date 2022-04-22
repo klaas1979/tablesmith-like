@@ -113,7 +113,7 @@ class TSTableGroupBuilder {
   addMathTerm(operator: string): void {
     if (['+', '-'].includes(operator)) {
       this.stack.stackMathSumOperator(operator);
-    } else if (['d', '*', '/'].includes(operator)) {
+    } else if (['d', 'D', '*', '/'].includes(operator)) {
       this.stack.stackMathMultOperator(operator);
     }
     this.stack.stackParameter();
@@ -185,6 +185,7 @@ class TSTableGroupBuilder {
       case '/':
         return new DivTerm(a, b);
       case 'd':
+      case 'D':
         return new InnerDiceTerm(a, b);
       default:
         throw Error(`Cannot add math term, unknown operator '${operator}'!`);

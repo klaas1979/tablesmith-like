@@ -62,6 +62,12 @@ describe('Parsing {Dice~} and {Calc~}', () => {
     tablesmith.reset();
     filename = 'simpletable';
   });
+  it('uppercase 1D4', () => {
+    simpleTable = ':Start\n1,{Dice~1D4}\n';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = tstables.getLastTSTable()?.groupForName('Start')?.ranges[0]?.getExpression();
+    expect(result).toBe('{Dice~1d4}');
+  });
 
   ['3d6+3', '1d4+3d6+4d8', '((5+5)/10)d(10-9)'].forEach((term) => {
     [`{Calc~${term}}`, `{Dice~${term}}`].forEach((tsCall) => {

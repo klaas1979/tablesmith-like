@@ -240,7 +240,12 @@ Iteration (Get the current roll the table is on)
 
 ### Dice
 
-**Extension**: accepts all Calc expressions and multiply dice not only a modificator (+, -) as inTablesmith 5.2. The 'd' binds first, only braces bind before. Is interchangeable with *Calc*
+**Extension**:
+
+- the d in the roll expression is case insensitive, i.e. `1d4` is equal to `1D4`
+- accepts all Calc expressions and multiply dice not only a modificator (+, -) as inTablesmith 5.2.
+- The 'd' binds first, only braces bind before.
+- Is interchangeable with *Calc*
 
 ### Calc
 
