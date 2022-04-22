@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.11.2](https://github.com/klaas1979/tablesmith-like/compare/v1.11.1...v1.11.2) (2022-04-22)
+
+
+### Bug Fixes
+
+* dice expressions can use d and D case insensitive fixing [#9](https://github.com/klaas1979/tablesmith-like/issues/9) ([2ed483b](https://github.com/klaas1979/tablesmith-like/commit/2ed483b985e4220470df41d5bd5d62f6fcc154e2))
+
 ### [1.11.1](https://github.com/klaas1979/tablesmith-like/compare/v1.11.0...v1.11.1) (2022-04-18)
 
 
