@@ -14,6 +14,7 @@ command: |
     game.modules.get('tablesmith-like').api.rolltable2JournalTab(table, options);
   })();
 folder: null
+---
 name: "Compendium2Tab"
 type: script
 img: icons/svg/clockwork.svg
