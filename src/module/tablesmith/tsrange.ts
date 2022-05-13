@@ -49,7 +49,7 @@ class TSRange {
     try {
       return await this.expressions.evaluate(evalcontext);
     } catch (error) {
-      throw Error(`Error in Range '${this.upper}-${this.lower}'=>'${this.getExpression()}':\n${error}`);
+      throw Error(`Error in Range '${this.lower}-${this.upper}'=>'${this.getExpression()}':\n${error}`);
     }
   }
 
