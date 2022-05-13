@@ -21,7 +21,7 @@ img: icons/svg/clockwork.svg
 scope: global
 command: |
   // Converts a complete Compendium of RollTables to matching folder of Tablesmith Tables (Journal Entry .tab)
-  let compendium = 'Ironsworn Tables'; // Enter the existing compendium name to convert
+  let compendium = 'COMPENDIUM NAME'; // Enter the existing compendium name to convert
   let options = { overwrite: true }; // overwrite exitisting Journal Entries for large compendia
   options.folder = compendium; // the folder name to add entries too
   
