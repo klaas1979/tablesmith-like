@@ -166,7 +166,12 @@ export default class TablesmithApi {
     content += '</p>';
 
     const foldername = options.folder ? options.folder : TABLE_TRANSFORM_BASE_FOLDER;
-    const journalname = `${rolltable.name}.tab`;
+    const journalname =
+      `${rolltable.name}`
+        .replace(/[.{(\[]-/g, ':')
+        .replace(/[^a-z0-9 _:]/gi, ' ')
+        .replace(/ +/g, ' ')
+        .trim() + '.tab';
     let folder = getFolders().contents.find((f) => f.name === foldername);
     if (!folder) folder = await Folder.create({ name: foldername, type: 'JournalEntry' });
     const journalEntry = getJournal().contents.find((j) => {

@@ -574,9 +574,9 @@ PlainTextNoCommaNorCurlyBraces
 VariableName
   = $[a-z0-9_]i+
 
-/* Simple name without Dot or special characters. */
+/* Simple used for tables and groups without some special characters reserved for function calls. */
 Name
-  = $[a-z0-9 _]i+
+  = $[a-z0-9 _:]i+
 
 int
  = $([0-9]+)
