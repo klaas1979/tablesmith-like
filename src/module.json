@@ -17,6 +17,12 @@
       "type": "Macro"
     },
     {
+      "name": "tablesmith-like-conversions",
+      "label": "Tablesmith Conversions",
+      "path": "./packs/conversions.db",
+      "type": "Macro"
+    },
+    {
       "name": "tablesmith-like-examples",
       "label": "Tablesmith Example Tables",
       "path": "./packs/examples.db",

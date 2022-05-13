@@ -1,0 +1,19 @@
+name: "RollTable2Tab"
+type: script
+img: icons/svg/clockwork.svg
+scope: global
+command: |
+  // Converts a single RollTable to a Tablesmith Table (Journal Entry .tab)
+  let tableName = 'TABLE NAME TO CONVERT'; // Enter the existing tables name to convert
+  
+  // Do not change this
+  (async () => {
+    const table = game.tables.find(t => t.name === tableName);
+    let content = '<p>:Start<br>';
+    content += table.data.results.map(e => {
+                   return `${e.data.range[1]},${e.data.text}`
+                 } ).join('<br>');
+    content += '</p>';
+    JournalEntry.create({ name: `${tableName}.tab`, content: content });
+  })();
+folder: null
