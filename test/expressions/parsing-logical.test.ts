@@ -239,10 +239,4 @@ describe('Parsing {IsNumber~', () => {
     tablesmith.addTable('folder', filename, simpleTable);
     expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('0');
   });
-
-  it('can have 2+ arguments', async () => {
-    simpleTable = ':Start\n1,{And~1<2,1=2,1<2,1=2,1<2,1=2}\n';
-    tablesmith.addTable('folder', filename, simpleTable);
-    expect((await tablesmith.evaluate(`[${filename}]`)).asString()).toBe('0');
-  });
 });

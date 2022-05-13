@@ -13,7 +13,7 @@ export default class TSIsNumberExpression extends BaseTSExpression {
   }
   async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
     const value = (await this.expression.evaluate(evalcontext)).asString();
-    const result = !Number.isNaN(Number.parseFloat(value)) || !Number.isNaN(Number.parseInt(value)) ? '1' : '0';
+    const result = !Number.isNaN(Number.parseFloat(value)) || !Number.isNaN(Number.parseInt(value)) ? 1 : 0;
     return new SingleTSExpressionResult(result);
   }
 
