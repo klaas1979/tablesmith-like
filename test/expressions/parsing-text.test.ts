@@ -25,6 +25,13 @@ describe('_ line breaks', () => {
     expect(result).toBe('1  2');
   });
 
+  it('no spaces around group calls', async () => {
+    simpleTable = ':Start\n1,[A][B]\n:A\n1,A\n:B\n1,B';
+    tablesmith.addTable('folder', filename, simpleTable);
+    const result = (await tablesmith.evaluate(`[${filename}]`)).asString();
+    expect(result).toBe('AB');
+  });
+
   it('comment above line break', async () => {
     simpleTable = ':Start\n1,1\n# comment\n_2';
     tablesmith.addTable('folder', filename, simpleTable);
