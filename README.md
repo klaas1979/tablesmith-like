@@ -13,6 +13,7 @@ Tablesmith is useful for Character and NPC generation, Solo play, generating Enc
 - [Foundry integration](#foundry-integration)
   - [Call Syntax](#call-syntax)
   - [Foundry Table integration](#foundry-table-integration)
+    - [Foundry RollTables in Tablesmith](#foundry-rolltables-in-tablesmith)
   - [Tablesmith Form](#tablesmith-form)
   - [Macro](#macro)
   - [Chat Commands](#chat-commands)
@@ -75,6 +76,10 @@ For all calls the tablename is not case sensitive for convenience. The following
 ### Foundry Table integration
 
 Any standard Table can call a Tablesmith table by using the Tablesmith Call syntax without any other text as *Result Details*. Only the chat message is altered and the call value is replaced with a rolled Tablesmith result. The `RollTable.draw` return value is left as is and contains the original data.
+
+#### Foundry RollTables in Tablesmith
+
+To integrate existing Foundry Tables some simple macros are included to read existing tables and transfer them into basic Tablesmith file format to integrate them in tablesmith tables, or more likely combine them with to provide more full fledged results.
 
 ### Tablesmith Form
 
