@@ -49,6 +49,10 @@ class EvaluationContext {
       storedRerollables: this.storedRerollables,
       storedGenerateExpressions: this.storedGenerateExpressions,
     });
+    if (this.inputListCallback) clone.registerInputListCallback(this.inputListCallback);
+    if (this.inputTextCallback) clone.registerInputTextCallback(this.inputTextCallback);
+    if (this.msgCallback) clone.registerMsgCallback(this.msgCallback);
+    if (this.statusCallback) clone.registerStatusCallback(this.statusCallback);
     for (const mapTuple of this.variables) {
       const varMap: Map<string, undefined | string | number> = new Map();
       clone.variables.set(mapTuple[0], varMap);
