@@ -11,6 +11,11 @@ export const SETTING_JOURNAL_FOLDER = 'result-journal-folder';
 export const SETTING_JOURNAL_FILE = 'rsulult-journal-file';
 
 /**
+ * Folder RollTables that are transformed are imported to.
+ */
+export const TABLE_TRANSFORM_BASE_FOLDER = 'Imported';
+
+/**
  * Returns game instance if initialized.
  * Helper to access Types see: https://github.com/League-of-Foundry-Developers/foundry-vtt-types/wiki/FAQ
  * @returns The current game instance.

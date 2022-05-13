@@ -4,16 +4,36 @@ img: icons/svg/clockwork.svg
 scope: global
 command: |
   // Converts a single RollTable to a Tablesmith Table (Journal Entry .tab)
-  let tableName = 'TABLE NAME TO CONVERT'; // Enter the existing tables name to convert
-  
+  let tableName = 'Prefix'; // Enter the existing tables name to convert
+  let options = { overwrite: false }; // overwrite existing JournalEntry if exists
+  options.folder = 'IMPORT FOLDER'; // Folder to add to if different from default folder
+
   // Do not change this
   (async () => {
     const table = game.tables.find(t => t.name === tableName);
-    let content = '<p>:Start<br>';
-    content += table.data.results.map(e => {
-                   return `${e.data.range[1]},${e.data.text}`
-                 } ).join('<br>');
-    content += '</p>';
-    JournalEntry.create({ name: `${tableName}.tab`, content: content });
+    game.modules.get('tablesmith-like').api.rolltable2JournalTab(table, options);
+  })();
+folder: null
+name: "Compendium2Tab"
+type: script
+img: icons/svg/clockwork.svg
+scope: global
+command: |
+  // Converts a complete Compendium of RollTables to matching folder of Tablesmith Tables (Journal Entry .tab)
+  let compendium = 'Ironsworn Tables'; // Enter the existing compendium name to convert
+  let options = { overwrite: true }; // overwrite exitisting Journal Entries for large compendia
+  options.folder = compendium; // the folder name to add entries too
+  
+  // Do not change this
+  (async () => {
+    game.packs.forEach(async(compendiumCollection) => {
+      const metadata = compendiumCollection.metadata;
+      if (metadata.label === compendium && metadata.type === 'RollTable') {
+        const tableEntries = await compendiumCollection.getDocuments();
+        for (entry of tableEntries) {
+          await game.modules.get('tablesmith-like').api.rolltable2JournalTab(entry, options);
+        };
+      }
+    });
   })();
 folder: null

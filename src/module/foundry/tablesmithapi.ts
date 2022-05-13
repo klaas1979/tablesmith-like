@@ -7,6 +7,7 @@ import ResultsTo from './resultsto';
 import { displayTableParseErrors } from './forms/displayparseerrors';
 import ParamInputForm from './forms/paraminputform';
 import CallResult from '../tablesmith/callresult';
+import { getFolders, getJournal, TABLE_TRANSFORM_BASE_FOLDER } from './helper';
 export default class TablesmithApi {
   constructor() {
     JournalTables.loadTablesFromJournal();
@@ -138,5 +139,41 @@ export default class TablesmithApi {
     call = call.trim();
     if (call[0] != '[') call = `[${call}]`; // wrap in Tablesmith call brackets if needed
     return call;
+  }
+
+  /**
+   * Converts given Rolltable to Tab Journal, that can be used as Tablesmith Table.
+   * @param rolltable to convert to JournalEntry.
+   * @param options used for transformation.
+   * @param options.overwrite if entry for name exists, should it be overwritten or not, defaults to false
+   * @param options.folder to add entry to, if non provided uses default one.
+   */
+  async rolltable2JournalTab(
+    rolltable: RollTable,
+    options: {
+      overwrite: boolean;
+      folder?: string;
+    } = {
+      overwrite: false,
+    },
+  ): Promise<void> {
+    let content = '<p>:Start<br>';
+    content += rolltable.data.results
+      .map((e) => {
+        return `${e.data.range[1]},${e.data.text}`;
+      })
+      .join('<br>');
+    content += '</p>';
+
+    const foldername = options.folder ? options.folder : TABLE_TRANSFORM_BASE_FOLDER;
+    const journalname = `${rolltable.name}.tab`;
+    let folder = getFolders().contents.find((f) => f.name === foldername);
+    if (!folder) folder = await Folder.create({ name: foldername, type: 'JournalEntry' });
+    const journalEntry = getJournal().contents.find((j) => {
+      return j.name === journalname && j.folder?.name === foldername;
+    });
+    if (journalEntry && options.overwrite) {
+      journalEntry.update({ content: content });
+    } else JournalEntry.create({ name: journalname, folder: folder, content: content });
   }
 }
