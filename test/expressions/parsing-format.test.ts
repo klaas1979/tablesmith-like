@@ -12,9 +12,9 @@ describe('Special chars escaping', () => {
   });
 
   it('escaped chars result in correct expression', () => {
-    simpleTable = ':Start\n1,/%/[/]/\n';
+    simpleTable = ':Start\n1,/%/[/]/{/}/\n';
     tablesmith.addTable('folder', filename, simpleTable);
-    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('/%/[/]/');
+    expect(tstables.getLastTSTable()?.groupForName('Start')?.lastRange()?.getExpression()).toBe('/%/[/]/{/}/');
   });
 
   it('/% results in %', async () => {

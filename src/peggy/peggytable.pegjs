@@ -146,89 +146,89 @@ StartCallParams
 /* This are all supported functions from Tablesmith */
 TsFunction
   = TSMathFunction
-  / IfSlash _ BooleanExpression _ IfQuestionmark _ IfExpressionTextSlash _ (IfSlashSeparator _ IfExpressionTextSlash? _)? '}' { errorHandling(() => {
+  / IfSlash _ BooleanExpression _ IfQuestionmark _ IfExpressionTextSlash _ (IfSlashSeparator _ IfExpressionTextSlash? _)? !'/' '}' { errorHandling(() => {
             options?.pf.createFunction();
           }); }
-  / IfColon _ BooleanExpression _ IfQuestionmark _ IfExpressionTextColon _ (IfColonSeparator _ IfExpressionTextColon? _)? '}' { errorHandling(() => {
+  / IfColon _ BooleanExpression _ IfQuestionmark _ IfExpressionTextColon _ (IfColonSeparator _ IfExpressionTextColon? _)? !'/' '}' { errorHandling(() => {
             options?.pf.createFunction();
           }); }
-  / WhileStart _ WhileExpression _ ParamSeparatorComma _ Expression _ '}' { errorHandling(() => {
+  / WhileStart _ WhileExpression _ ParamSeparatorComma _ Expression _ !'/' '}' { errorHandling(() => {
             options?.pf.createFunction();
           }); }
-  / LoopStart _ LoopExpression _ ParamSeparatorComma _ Expression _ '}' { errorHandling(() => {
+  / LoopStart _ LoopExpression _ ParamSeparatorComma _ Expression _ !'/' '}' { errorHandling(() => {
             options?.pf.createFunction();
           }); }
-  / SelectStart _ SelectExpression _ (ParamSeparatorComma _ ExpressionTextNoComma _)+ ExpressionTextNoComma? _ '}' { errorHandling(() => {
+  / SelectStart _ SelectExpression _ (ParamSeparatorComma _ ExpressionTextNoComma _)+ ExpressionTextNoComma? _ !'/' '}' { errorHandling(() => {
             options?.pf.createFunction();
           }); }
-  / StartLogicalExpression _ BooleanExpression (_ ParamSeparatorComma _ BooleanExpression)+ _ '}' { errorHandling(() => {
+  / StartLogicalExpression _ BooleanExpression (_ ParamSeparatorComma _ BooleanExpression)+ _ !'/' '}' { errorHandling(() => {
             options?.pf.createFunction();
           }); }
-  / FunctionsZeroParams _ '}' { errorHandling(() => {
+  / FunctionsZeroParams _ !'/' '}' { errorHandling(() => {
             options?.pf.createFunction();
           }); }
-  / FunctionsOneParam _ Expression _ '}' { errorHandling(() => {
+  / FunctionsOneParam _ Expression _ !'/' '}' { errorHandling(() => {
             options?.pf.createFunction();
           }); }
-  / FunctionsTwoParams _ ExpressionTextNoComma _ ParamSeparatorComma _ ExpressionTextNoComma _ '}' { errorHandling(() => {
+  / FunctionsTwoParams _ ExpressionTextNoComma _ ParamSeparatorComma _ ExpressionTextNoComma _ !'/' '}' { errorHandling(() => {
             options?.pf.createFunction();
           }); }
-  / FunctionsThreeParams _ ExpressionTextNoComma _ ParamSeparatorComma _ ExpressionTextNoComma _ ParamSeparatorComma _ Expression _ '}' { errorHandling(() => {
+  / FunctionsThreeParams _ ExpressionTextNoComma _ ParamSeparatorComma _ ExpressionTextNoComma _ ParamSeparatorComma _ Expression _ !'/' '}' { errorHandling(() => {
             options?.pf.createFunction();
           }); }
-  / FunctionsManyParams _ ExpressionTextNoComma _ (GroupLockParameter)+ '}' { errorHandling(() => {
+  / FunctionsManyParams _ ExpressionTextNoComma _ (GroupLockParameter)+ !'/' '}' { errorHandling(() => {
             options?.pf.createFunction();
           }); }
-  / SplitStart _ ExpressionTextNoComma _ ParamSeparatorComma _ ExpressionTextQuotation _ (GroupLockParameter)+ '}' { errorHandling(() => {
+  / SplitStart _ ExpressionTextNoComma _ ParamSeparatorComma _ ExpressionTextQuotation _ (GroupLockParameter)+ !'/' '}' { errorHandling(() => {
             options?.pf.createFunction();
           }); }
-  / DSFindStart _ ExpressionTextNoComma _ ParamSeparatorComma _ ExpressionTextNoComma _ ParamSeparatorComma _ BooleanExpression _ (_ ParamSeparatorComma _ BooleanExpression _ )* '}' { errorHandling(() => {
+  / DSFindStart _ ExpressionTextNoComma _ ParamSeparatorComma _ ExpressionTextNoComma _ ParamSeparatorComma _ BooleanExpression _ (_ ParamSeparatorComma _ BooleanExpression _ )* !'/' '}' { errorHandling(() => {
             options?.pf.createFunction();
           }); }
 
 DSFindStart
-  = '{' name:'DSFind'i '~' { errorHandling(() => {
+  = !'/' '{' name:'DSFind'i '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
 SplitStart
-  = '{' name:'Split'i '~' { errorHandling(() => {
+  = !'/' '{' name:'Split'i '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
 WhileStart
-  = '{' name:'While'i '~' { errorHandling(() => {
+  = !'/' '{' name:'While'i '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 WhileExpression
   = IfExpressionPart (_ BooleanOperator _ IfExpressionPart)?
 
 LoopStart
-  = '{' _ name:'Loop'i '~' { errorHandling(() => {
+  = !'/' '{' _ name:'Loop'i '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 LoopExpression
   = IfExpressionPart
 
 SelectStart
-  = '{' _ name:'Select'i '~' { errorHandling(() => {
+  = !'/' '{' _ name:'Select'i '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 SelectExpression
   = IfExpressionPart
 
 StartLogicalExpression
-  = '{' name:(@'Or'i / @'And'i / @'Xor'i) '~' { errorHandling(() => {
+  = !'/' '{' name:(@'Or'i / @'And'i / @'Xor'i) '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
 IfSlash
-  = '{' name:'If'i '~' { errorHandling(() => {
+  = !'/' '{' name:'If'i '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
 IfColon
-  = '{' name:'IIf'i '~' { errorHandling(() => {
+  = !'/' '{' name:'IIf'i '~' { errorHandling(() => {
             options?.pf.startFunction(name);
 
           }); }
@@ -338,31 +338,31 @@ ExpressionTextNoCommaNorCurlyBraces
   / ValueNoCommaNorCurlyBraces ExpressionTextNoCommaNorCurlyBraces*
 
 FunctionsZeroParams
-  = '{' _ name:(@'CR'i / @'LastRoll'i) '~' { errorHandling(() => {
+  = !'/' '{' _ name:(@'CR'i / @'LastRoll'i) '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
 FunctionsOneParam
-  = '{' _ name:(@'AorAn'i / @'Bold'i / @'CapEachWord'i / @'Cap'i / @'Count'i / @'DSCount'i / @'DSRandomize'i
+  = !'/' '{' _ name:(@'AorAn'i / @'Bold'i / @'CapEachWord'i / @'Cap'i / @'Count'i / @'DSCount'i / @'DSRandomize'i
   / @'IsNumber'i / @'Italic'i / @'LCase'i / @'Length'i / @'Msg'i / @'Note'i / @'Picture'i / @'Reset'i
   / @'Status'i / @'Trim'i / @'UCase'i / @'VowelStart'i) '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
 FunctionsTwoParams
-  = '{' _ name:(@'Char'i / @'Color'i / @'DSRead'i / @'DSRemove'i / @'DSWrite'i
+  = !'/' '{' _ name:(@'Char'i / @'Color'i / @'DSRead'i / @'DSRemove'i / @'DSWrite'i
   / @'InputText'i / @'Line'i / @'Left'i / @'Param'i / @'Right'i) '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
 FunctionsThreeParams
-  = '{' _ name:(@'CommaReplace'i / @'DSCalc'i / @'DSGet'i / @'Find'i / @'Generate'i / @'Mid'i
+  = !'/' '{' _ name:(@'CommaReplace'i / @'DSCalc'i / @'DSGet'i / @'Find'i / @'Generate'i / @'Mid'i
   / @'Replace'i) '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
 FunctionsManyParams
-  = '{' _ name:(@'DSAddNR'i / @'DSAdd'i / @'DSCreate'i / @'DSReadOrCreate'i / @'DSSet'i
+  = !'/' '{' _ name:(@'DSAddNR'i / @'DSAdd'i / @'DSCreate'i / @'DSReadOrCreate'i / @'DSSet'i
   / @'InputList'i / @'Lockout'i / @'MaxVal'i / @'MinVal'i / @'Unlock'i) '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
@@ -376,7 +376,7 @@ ParamSeparatorComma
           }); }
 
 TSMathFunction
-  = DiceOrCalc _ MathExpression _ '}' { errorHandling(() => {
+  = DiceOrCalc _ MathExpression _ !'/' '}' { errorHandling(() => {
             options?.pf.createFunction();
           }); }
   / MathOneParamFunctions
@@ -384,22 +384,22 @@ TSMathFunction
   / MathManyParamFunctions
   / MathPowerFunction // has '^' as separator in TS definition
 
-DiceOrCalc = '{' _ name:(@'Dice'i / @'Calc'i) '~'  { errorHandling(() => {
+DiceOrCalc = !'/' '{' _ name:(@'Dice'i / @'Calc'i) '~'  { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
 
 MathOneParamFunctions
-  = '{' _ MathOneParamFunctionsNames _ Expression _ '}' { errorHandling(() => {
+  = !'/' '{' _ MathOneParamFunctionsNames _ Expression _ !'/' '}' { errorHandling(() => {
             options?.pf.createFunction();
           }); }
 
 MathTwoParamFunctions
-  = '{' _ MathTwoParamFunctionsNames _ ExpressionTextNoComma _ ParamSeparatorComma _ Expression _ '}' { errorHandling(() => {
+  = !'/' '{' _ MathTwoParamFunctionsNames _ ExpressionTextNoComma _ ParamSeparatorComma _ Expression _ !'/' '}' { errorHandling(() => {
             options?.pf.createFunction();
           }); }
 
 MathManyParamFunctions
-  = '{' _ MathManyParamFunctionsNames _ ExpressionTextNoComma _ (ParamSeparatorComma _ ExpressionTextNoComma)+ _ '}' { errorHandling(() => {
+  = !'/' '{' _ MathManyParamFunctionsNames _ ExpressionTextNoComma _ (ParamSeparatorComma _ ExpressionTextNoComma)+ _ !'/' '}' { errorHandling(() => {
             options?.pf.createFunction();
           }); }
 
@@ -419,7 +419,7 @@ MathManyParamFunctionsNames
           }); }
 
 MathPowerFunction
-  = '{' _ MathPower _ ValueNoCommaNorPower _ MathPowerSeparator _ Expression _ '}' { errorHandling(() => {
+  = !'/' '{' _ MathPower _ ValueNoCommaNorPower _ MathPowerSeparator _ Expression _ !'/' '}' { errorHandling(() => {
             options?.pf.createFunction();
           }); }
 
@@ -479,7 +479,7 @@ Value
           }); }
 /** Matches all text that is printed verbose, without special chars that are key chars for the DSL. */
 PlainText
- = text:([^{}[\]%|/\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ { return text.join(''); }
+ = text:([^{}[\]%|/\n] / '/' @'%' / '/' @'[' / '/' @']' / '/' @'{' / '/' @'}' / @'/')+ { return text.join(''); }
 
 ValueIfPart
   = text:PlainTextIfPart { errorHandling(() => {
@@ -487,7 +487,7 @@ ValueIfPart
           }); }
 
 PlainTextIfPart
- = text:([^!=<>,?/{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ { return text.join(''); }
+ = text:([^!=<>,?/{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / '/' @'{' / '/' @'}' / @'/')+ { return text.join(''); }
 
 ValueVariableIdentifier
   = text:PlainTextVariableExpression { errorHandling(() => {
@@ -495,7 +495,7 @@ ValueVariableIdentifier
           }); }
 
 PlainTextVariableExpression
- = text:([^-+\\*&.=<>,?/(){}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']')+ { return text.join(''); }
+ = text:([^-+\\*&.=<>,?/(){}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / '/' @'{' / '/' @'}')+ { return text.join(''); }
 
  ValueGroupIdentifier
   = text:PlainTextGroupExpression { errorHandling(() => {
@@ -503,7 +503,7 @@ PlainTextVariableExpression
           }); }
 
 PlainTextGroupExpression
- = text:([^-+\\*&!=<>,?/(){}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']')+ { return text.join(''); }
+ = text:([^-+\\*&!=<>,?/(){}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / '/' @'{' / '/' @'}')+ { return text.join(''); }
 
 ValueMathFactorExpression
   = text:PlainTextValueMathFactorExpression { errorHandling(() => {
@@ -532,7 +532,7 @@ ValueIfColon
 
 /** Text that is allowed within an If with colon ":" {IIf~}. */
  PlainTextIfColon
- = text:([^:/{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ { return text.join(''); }
+ = text:([^:/{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / '/' @'{' / '/' @'}' / @'/')+ { return text.join(''); }
 
 ValueNoComma
   = text:PlainTextNoComma { errorHandling(() => {
@@ -541,7 +541,7 @@ ValueNoComma
 
  /** Text that is allowed within an selections where a comma ',' happens. */
  PlainTextNoComma
- = text:([^,/{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ { return text.join(''); }
+ = text:([^,/{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / '/' @'{' / '/' @'}' / @'/')+ { return text.join(''); }
 
 ValueQuotation
   = text:PlainTextQuotation { errorHandling(() => {
@@ -550,7 +550,7 @@ ValueQuotation
 
  /** Text that is allowed within an selections where a comma ',' happens. */
  PlainTextQuotation
- = '"' text:([^/"{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ '"' { return text.join(''); }
+ = '"' text:([^/"{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / '/' @'{' / '/' @'}' / @'/')+ '"' { return text.join(''); }
 
 ValueNoCommaNorPower
   = text:PlainTextNoCommaNorPower { errorHandling(() => {
@@ -559,7 +559,7 @@ ValueNoCommaNorPower
 
 /** Text that is allowed within an selections where a comma ',' or power '^' happens. */
 PlainTextNoCommaNorPower
- = text:([^^,/{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ { return text.join(''); }
+ = text:([^^,/{}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / '/' @'{' / '/' @'}' / @'/')+ { return text.join(''); }
 
  ValueNoCommaNorCurlyBraces
   = text:PlainTextNoCommaNorCurlyBraces { errorHandling(() => {
@@ -568,7 +568,7 @@ PlainTextNoCommaNorPower
 
 /** Text that is allowed within an selections where a comma ',' or power '()' happens. */
 PlainTextNoCommaNorCurlyBraces
- = text:([^,(){}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / @'/')+ { return text.join(''); }
+ = text:([^,(){}[\]%|\n] / '/' @'%' / '/' @'[' / '/' @']' / '/' @'{' / '/' @'}' / @'/')+ { return text.join(''); }
 
 /* Simple name without Dot or special characters. */
 VariableName

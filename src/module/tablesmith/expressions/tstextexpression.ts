@@ -18,6 +18,11 @@ export default class TSTextExpression extends BaseTSExpression {
   }
 
   getExpression(): string {
-    return this.text.replace(/%/g, '/%').replace(/\[/g, '/[').replace(/]/g, '/]');
+    return this.text
+      .replace(/%/g, '/%')
+      .replace(/\[/g, '/[')
+      .replace(/]/g, '/]')
+      .replace(/{/g, '/{')
+      .replace(/}/g, '/}');
   }
 }
