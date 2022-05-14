@@ -1,3 +1,4 @@
+import { Logger } from '../../../foundry/logger';
 import EvaluationContext from '../evaluationcontext';
 import TSExpression, { BaseTSExpression } from '../tsexpression';
 import { TSExpressionResult, SingleTSExpressionResult } from '../tsexpressionresult';
@@ -16,14 +17,21 @@ export default class InnerDiceTerm extends BaseTSExpression {
 
   async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
     let total = 0;
-    const concreteDices = (await this.dice.evaluate(evalcontext)).asNumber();
-    const concreteSides = (await this.sides.evaluate(evalcontext)).asNumber();
+    const concreteDices = await this.evalTerm(this.dice, evalcontext);
+    const concreteSides = await this.evalTerm(this.sides, evalcontext);
     for (let i = 0; i < concreteDices; i++) {
       const roll = evalcontext.roll(concreteSides);
       total += roll;
     }
 
     return new SingleTSExpressionResult(total);
+  }
+
+  private async evalTerm(term: TSExpression, evalcontext: EvaluationContext): Promise<number> {
+    const result = await term.evaluate(evalcontext);
+    if (Number.isNaN(Number.parseFloat(result.asString())))
+      Logger.warn(false, 'InnerDiceTerm no number', term.getExpression(), result);
+    return result.asInt();
   }
 
   getExpression(): string {
