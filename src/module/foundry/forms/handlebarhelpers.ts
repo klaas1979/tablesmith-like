@@ -9,7 +9,7 @@ export async function registerHandlebarHelpers() {
 
   Handlebars.registerHelper('ts-result', function (result: TSExpressionResult) {
     Logger.debug(false, 'ts-result', result);
-    return result.asString();
+    return TextEditor.enrichHTML(result.asString());
   });
 
   Handlebars.registerHelper('ts-resultSummary', function (result: TSExpressionResult): string {
