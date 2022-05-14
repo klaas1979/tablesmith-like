@@ -113,7 +113,7 @@ export default class TablesmithApi {
     const callValues = this.parseEvaluateCall(call);
     let result: CallResult = new CallResult(callValues ? callValues : call);
     if (options.toDialog) {
-      this.evaluateForm(callValues);
+      this.evaluateForm(callValues).bringToTop();
     } else if (callValues) {
       const submitted = await ParamInputForm.gather(callValues);
       if (!submitted)
