@@ -1,5 +1,6 @@
 import {
   getGame,
+  SETTING_FORM_LAST_TABLE,
   SETTING_IMPORT_FOLDERS,
   SETTING_JOURNAL_FILE,
   SETTING_JOURNAL_FOLDER,
@@ -45,5 +46,11 @@ export function registerSettings(): void {
     config: true,
     type: String,
     default: 'Roll Results',
+  });
+
+  getGame().settings.register(TABLESMITH_ID, SETTING_FORM_LAST_TABLE, {
+    scope: 'world',
+    config: false,
+    type: String,
   });
 }

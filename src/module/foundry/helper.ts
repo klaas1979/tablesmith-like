@@ -3,6 +3,7 @@ import TablesmithApi from './tablesmithapi';
 export const TABLESMITH_ID = 'tablesmith-like';
 export const PACK_FLAG_FOLDER = 'folder';
 
+export const SETTING_FORM_LAST_TABLE = 'form-last-table';
 export const SETTING_IMPORT_FOLDERS = 'journal-import-folders';
 export const SETTING_TSD_JOURNAL = 'journal-tsd-name';
 export const SETTING_TSD_FOLDER = 'journal-tsd-folder';
@@ -196,4 +197,21 @@ export function resultJournalFolder(): string {
 export function resultJournalName(): string {
   const folder = getGame().settings.get(TABLESMITH_ID, SETTING_JOURNAL_FILE) as string;
   return folder !== undefined ? `${folder}` : 'Roll Results';
+}
+
+/**
+ * Returns the last table called via form.
+ * @returns name for the last used table.
+ */
+export function getFormLastTablename(): string {
+  const name = getGame().settings.get(TABLESMITH_ID, SETTING_FORM_LAST_TABLE) as string;
+  return name;
+}
+
+/**
+ * Saves name of last used table to settings.
+ * @param name of table to save.
+ */
+export function saveFormLastTablename(name: string) {
+  getGame().settings.set(TABLESMITH_ID, SETTING_FORM_LAST_TABLE, name);
 }

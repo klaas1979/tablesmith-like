@@ -22,9 +22,15 @@ export default class TableSelectionFormData {
     this.folders = options.folders.map((f) => {
       return { name: f };
     });
-    if (this.folders.length > 0) this.setFoldername(this.folders[0].name);
-    if (!this.callValues.table && this.tables.length > 0) this.setTablename(this.tables[0].name);
-    else this._initParameters();
+    if (this.callValues.table) {
+      this.setFoldername(this.callValues.table.folder);
+      this.setTablename(this.callValues.tablename);
+    } else if (this.tables.length > 0) {
+      this.setTablename(this.tables[0].name);
+      if (this.folders.length > 0) this.setFoldername(this.folders[0].name);
+    }
+
+    this._initParameters();
     this.parameters.forEach((param, index) => {
       if (this.callValues.parameters && this.callValues.parameters.length > index)
         param.setDefaultValue(this.callValues.parameters[index]);

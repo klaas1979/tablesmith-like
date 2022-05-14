@@ -2,7 +2,7 @@ import { tablesmith } from '../../tablesmith/tablesmithinstance';
 import { tstables } from '../../tablesmith/tstables';
 import ResultsTo from '../resultsto';
 import { displayTableParseErrors } from './displayparseerrors';
-import { getGame, TABLESMITH_ID } from '../helper';
+import { getGame, saveFormLastTablename, TABLESMITH_ID } from '../helper';
 import JournalTables from '../journaltables';
 import { Logger } from '../logger';
 import { TableCallValues } from '../tablecallvalues';
@@ -46,6 +46,11 @@ export default class TableSelectionForm extends FormApplication<
 
     const mergedOptions = foundry.utils.mergeObject(defaults, overrides);
     return mergedOptions;
+  }
+
+  async close(options?: FormApplication.CloseOptions): Promise<void> {
+    saveFormLastTablename(this.data.callValues.tablename);
+    super.close(options);
   }
 
   async getData(): Promise<TableSelectionFormData> {

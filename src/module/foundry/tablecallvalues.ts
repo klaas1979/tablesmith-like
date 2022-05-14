@@ -69,4 +69,13 @@ export class TableCallValues {
     this.tablename = this.table ? this.table.name : this.tablename;
     this.groupname = this.group ? this.group.name : this.groupname;
   }
+
+  /**
+   * Sets table to given value and updates names.
+   * @param table to set.
+   */
+  setTable(table: TSTable) {
+    this.table = table;
+    this.updateNames();
+  }
 }

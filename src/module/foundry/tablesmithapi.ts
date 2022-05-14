@@ -7,7 +7,8 @@ import ResultsTo from './resultsto';
 import { displayTableParseErrors } from './forms/displayparseerrors';
 import ParamInputForm from './forms/paraminputform';
 import CallResult from '../tablesmith/callresult';
-import { getFolders, getJournal, TABLE_TRANSFORM_BASE_FOLDER } from './helper';
+import { getFolders, getFormLastTablename, getJournal, TABLE_TRANSFORM_BASE_FOLDER } from './helper';
+import { tstables } from '../tablesmith/tstables';
 export default class TablesmithApi {
   constructor() {
     JournalTables.loadTablesFromJournal();
@@ -38,6 +39,10 @@ export default class TablesmithApi {
    * @returns TableSelectionForm that has already been rendered.
    */
   showForm(callValues: TableCallValues = new TableCallValues()): TableSelectionForm {
+    if (callValues.tablename === '') {
+      const table = tstables.tableForName(getFormLastTablename());
+      if (table) callValues.setTable(table);
+    }
     const form = new TableSelectionForm(callValues);
     form.render(true);
     return form;
