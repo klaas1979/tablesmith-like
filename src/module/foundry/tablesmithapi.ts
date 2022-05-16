@@ -9,7 +9,10 @@ import ParamInputForm from './forms/paraminputform';
 import CallResult from '../tablesmith/callresult';
 import { getFolders, getFormLastTablename, getJournal, TABLE_TRANSFORM_BASE_FOLDER } from './helper';
 import { tstables } from '../tablesmith/tstables';
+import CallResultPaginator from './forms/callresultpaginator';
 export default class TablesmithApi {
+  callResultPaginator: CallResultPaginator = new CallResultPaginator();
+
   constructor() {
     JournalTables.loadTablesFromJournal();
   }
@@ -43,7 +46,7 @@ export default class TablesmithApi {
       const table = tstables.tableForName(getFormLastTablename());
       if (table) callValues.setTable(table);
     }
-    const form = new TableSelectionForm(callValues);
+    const form = new TableSelectionForm(callValues, this.callResultPaginator);
     form.render(true);
     return form;
   }
@@ -115,7 +118,7 @@ export default class TablesmithApi {
     if (options.toDialog) {
       this.evaluateForm(callValues).bringToTop();
     } else if (callValues) {
-      const submitted = await ParamInputForm.gather(callValues);
+      const submitted = await ParamInputForm.gather(callValues, this.callResultPaginator);
       if (!submitted)
         Logger.warn(false, 'Gathering Parameters Form for Table closed, using default parameters!', callValues);
       result = await tablesmith.evaluate(callValues);

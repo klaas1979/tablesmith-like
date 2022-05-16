@@ -3,6 +3,7 @@ import { TableParameter, TSTable } from '../../tablesmith/tstable';
 import { tstables } from '../../tablesmith/tstables';
 import { Logger } from '../logger';
 import { TableCallValues } from '../tablecallvalues';
+import CallResultPaginator from './callresultpaginator';
 
 /**
  * Data class used within the Form.
@@ -14,11 +15,18 @@ export default class TableSelectionFormData {
   callValues: TableCallValues = new TableCallValues();
   parameters: TableParameter[] = [];
   results: CallResult | undefined;
+  paginator: CallResultPaginator;
 
   constructor(
-    options: { folders: string[]; callValues: TableCallValues } = { folders: [], callValues: new TableCallValues() },
+    options: { folders: string[]; callValues: TableCallValues; paginator: CallResultPaginator } = {
+      folders: [],
+      callValues: new TableCallValues(),
+      paginator: new CallResultPaginator(),
+    },
   ) {
     this.callValues = options.callValues;
+    this.paginator = options.paginator;
+    this.results = this.paginator.current();
     this.folders = options.folders.map((f) => {
       return { name: f };
     });

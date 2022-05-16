@@ -19,9 +19,13 @@
     {{> modules/tablesmith-like/templates/paramspartial.hbs}}
     <div class="flexrow">
       <button type="button" data-action="evaluate"><i class="fas fa-dice-d20"></i> {{localize "TABLESMITH.evaluate.evaluate-table"}}</button>
+      <button type="button" data-action="prev" {{#if paginator.disablePrev}}disabled{{/if}}><i class="fas fa-angle-double-left"></i> {{localize "TABLESMITH.evaluate.prev"}}</button>
+      <button type="button" data-action="trash" {{#if paginator.disableTrash}}disabled{{/if}}><i class="fas fa-trash"></i> {{localize "TABLESMITH.evaluate.trash"}}</button>
+      <button type="button" data-action="next" {{#if paginator.disableNext}}disabled{{/if}}><i class="fas fa-angle-double-right"></i> {{localize "TABLESMITH.evaluate.next"}}</button>
       <button type="button" data-action="reload-tables"><i class="fas fa-undo"></i> {{localize "TABLESMITH.reload.tables"}}</button>
     </div>
   </section>
+
   <section style="flex0">
     {{#if results}}
       {{#if (ts-callError results)}}

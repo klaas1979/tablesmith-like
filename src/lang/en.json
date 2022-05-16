@@ -3,6 +3,9 @@
     "default-folder": "Default",
     "evaluate": {
       "error": "Error",
+      "prev": "Prev",
+      "trash": "Trash",
+      "next": "Next",
       "evaluate-table": "Evaluate",
       "input-list": "Select Item",
       "input-text": "Text Input",

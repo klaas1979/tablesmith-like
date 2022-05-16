@@ -1,6 +1,7 @@
 import { getGame, TABLESMITH_ID } from '../helper';
 import { Logger } from '../logger';
 import { TableCallValues } from '../tablecallvalues';
+import CallResultPaginator from './callresultpaginator';
 import TableSelectionFormData from './tableselectionformdata';
 
 const TABLESMITH_PARAMS = `modules/${TABLESMITH_ID}/templates/paraminput.hbs`;
@@ -20,12 +21,13 @@ class ParamInputForm extends FormApplication<FormApplicationOptions, TableSelect
   /**
    * Gathers parameters for given call Values if needed.
    * @param callValues to gather parameter input for.
+   * @param paginator the callResult Paginator to use in form.
    * @returns boolean true, if prameters set, false if input was aborted.
    */
-  static async gather(callValues: TableCallValues): Promise<boolean> {
+  static async gather(callValues: TableCallValues, paginator: CallResultPaginator): Promise<boolean> {
     try {
       if (callValues.needsParameters()) {
-        const data = new TableSelectionFormData({ folders: [], callValues: callValues });
+        const data = new TableSelectionFormData({ folders: [], callValues: callValues, paginator: paginator });
         const fromPromise = new Promise((resolve) => {
           const form = new ParamInputForm(data, resolve);
           form.render(true);

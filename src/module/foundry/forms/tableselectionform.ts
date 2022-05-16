@@ -8,6 +8,7 @@ import { Logger } from '../logger';
 import { TableCallValues } from '../tablecallvalues';
 import TableSelectionFormData from './tableselectionformdata';
 import CallResult from '../../tablesmith/callresult';
+import CallResultPaginator from './callresultpaginator';
 
 const TABLESMITH_SELECTOR = `modules/${TABLESMITH_ID}/templates/tablesmithselector.hbs`;
 
@@ -24,9 +25,13 @@ export default class TableSelectionForm extends FormApplication<
   TableCallValues
 > {
   data: TableSelectionFormData;
-  constructor(tableCallValues: TableCallValues, options?: TableSelectionOptions) {
+  constructor(tableCallValues: TableCallValues, paginator: CallResultPaginator, options?: TableSelectionOptions) {
     super(tableCallValues, options);
-    this.data = new TableSelectionFormData({ folders: tstables.folders, callValues: tableCallValues });
+    this.data = new TableSelectionFormData({
+      folders: tstables.folders,
+      callValues: tableCallValues,
+      paginator: paginator,
+    });
   }
   /**
    * Adds additional options to default options.
@@ -88,6 +93,18 @@ export default class TableSelectionForm extends FormApplication<
         Logger.debug(false, 'pre evaluateTable call', this.data.callValues);
         this.evaluateTable();
         break;
+      case 'prev':
+        Logger.debug(false, 'prev');
+        this._prev();
+        break;
+      case 'trash':
+        Logger.debug(false, 'trash');
+        this._trash();
+        break;
+      case 'next':
+        Logger.debug(false, 'next');
+        this._next();
+        break;
       case 'group-reroll':
         this._rerollGroup(elementData);
         break;
@@ -106,6 +123,21 @@ export default class TableSelectionForm extends FormApplication<
       default:
         Logger.error(true, 'Unknown action', action, clickedElement.data());
     }
+  }
+
+  _prev() {
+    this.data.results = this.data.paginator.prev();
+    this.render();
+  }
+
+  _next() {
+    this.data.results = this.data.paginator.next();
+    this.render();
+  }
+
+  _trash() {
+    this.data.results = this.data.paginator.trash();
+    this.render();
   }
 
   async _rerollGroup(elementData: JQuery.PlainObject) {
@@ -143,8 +175,8 @@ export default class TableSelectionForm extends FormApplication<
     Logger.debug(false, 'Evaluating table', this.data);
     if (this.data.callValues.table) {
       this.data.mapParametersToCallValues();
-
-      this.data.results = await tablesmith.evaluate(this.data.callValues);
+      this.data.paginator.addResult(await tablesmith.evaluate(this.data.callValues));
+      this.data.results = this.data.paginator.current();
       this.render();
     } else Logger.warn(false, 'No table selected!');
   }
