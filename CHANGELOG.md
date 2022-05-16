@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.12.0](https://github.com/klaas1979/tablesmith-like/compare/v1.11.2...v1.12.0) (2022-05-16)
+
+
+### Features
+
+* basic pagination of results with simple history / trash ([d64f17f](https://github.com/klaas1979/tablesmith-like/commit/d64f17feee851ab45cb2a852e07d59203d22d1ef))
+* conversion of Compendium with tables to JournalEntries within folder via Macro ([7ab026c](https://github.com/klaas1979/tablesmith-like/commit/7ab026c5164251d447ca1fa191823b7497a9d6d3))
+* dialog saves last used table and selects it on reopen for convenience ([387dfd5](https://github.com/klaas1979/tablesmith-like/commit/387dfd5ea440611014caf1db3c092ae5ac46e41e))
+* first stab on result pagination with resizeable window ([a99ba9f](https://github.com/klaas1979/tablesmith-like/commit/a99ba9f8dff4713ba986b3d82d0418823a3c5945))
+* it is possible to escape curly braces with /{ or /} ([ae1fe3a](https://github.com/klaas1979/tablesmith-like/commit/ae1fe3adb377e66c422731d8121c0144e2fa671d))
+* simple conversion of RollTable to Journal file to use RollTables as Tablesmith tables ([1e57eeb](https://github.com/klaas1979/tablesmith-like/commit/1e57eeb198bf60d774446a49bdecdd2adb2ac215))
+
+
+### Bug Fixes
+
+* callbacks not registered, making some functions not working in subcontexts ([eab0455](https://github.com/klaas1979/tablesmith-like/commit/eab04554ccc7df1bfc39ad3b5d03e0250d05ba15))
+* evaluate from HTML will bring dialog to front to directly see results ([3341597](https://github.com/klaas1979/tablesmith-like/commit/33415976728001739cc8935ed3ae4586f21d7af9))
+* Result text is transformed with enrichHTML to make all Foundry links work ([13cf9bf](https://github.com/klaas1979/tablesmith-like/commit/13cf9bf9381ea0288731d6f70906e98c060f85ab))
+* Spaces between results like group calls, where no space has been inserted, but was added from Template formatting ([8fc267a](https://github.com/klaas1979/tablesmith-like/commit/8fc267ad8a092d5d00907a19e3c87048a5845aab))
+* width fixed to have less jumping around for different tables ([c627bbb](https://github.com/klaas1979/tablesmith-like/commit/c627bbb0bb4f0da16920b3b51e35128adbe0a35c))
+
 ### [1.11.2](https://github.com/klaas1979/tablesmith-like/compare/v1.11.1...v1.11.2) (2022-04-22)
 
 
