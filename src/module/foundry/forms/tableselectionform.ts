@@ -41,7 +41,7 @@ export default class TableSelectionForm extends FormApplication<
 
     const overrides = {
       height: 'auto',
-      width: 'auto',
+      width: '450',
       resizable: true,
       id: 'tablesmith-selector',
       template: TABLESMITH_SELECTOR,
