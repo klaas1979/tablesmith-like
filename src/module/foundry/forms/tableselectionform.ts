@@ -41,7 +41,8 @@ export default class TableSelectionForm extends FormApplication<
 
     const overrides = {
       height: 'auto',
-      width: '720',
+      width: 'auto',
+      resizable: true,
       id: 'tablesmith-selector',
       template: TABLESMITH_SELECTOR,
       title: getGame().i18n.localize('TABLESMITH.evaluate.form'),
@@ -93,6 +94,14 @@ export default class TableSelectionForm extends FormApplication<
         Logger.debug(false, 'pre evaluateTable call', this.data.callValues);
         this.evaluateTable();
         break;
+      case 'start':
+        Logger.debug(false, 'start');
+        this._start();
+        break;
+      case 'end':
+        Logger.debug(false, 'end');
+        this._end();
+        break;
       case 'prev':
         Logger.debug(false, 'prev');
         this._prev();
@@ -123,6 +132,16 @@ export default class TableSelectionForm extends FormApplication<
       default:
         Logger.error(true, 'Unknown action', action, clickedElement.data());
     }
+  }
+
+  _start() {
+    this.data.results = this.data.paginator.start();
+    this.render();
+  }
+
+  _end() {
+    this.data.results = this.data.paginator.end();
+    this.render();
   }
 
   _prev() {
