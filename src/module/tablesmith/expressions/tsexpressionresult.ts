@@ -177,7 +177,7 @@ export class NoteTSExpressionResult extends BaseTSExpressionResult implements TS
 /**
  * A rerollable result is always a single result containing at least on other result, that is rerolled.
  * If reroll is not set the object acts as a collection for compatibility reasons.
- * The other result maybe a TSExpressionResultCollection.
+ * The other result may be a TSExpressionResultCollection.
  */
 export class RerollableTSExpressionResult extends BaseTSExpressionResult implements TSExpressionResult {
   result: TSExpressionResult;
@@ -208,13 +208,14 @@ export class RerollableTSExpressionResult extends BaseTSExpressionResult impleme
     return this.expression === undefined;
   }
   async reroll(): Promise<void> {
+    this.evalcontext?.setToReroll();
     if (this.expression) {
       if (!this.evalcontext) throw Error('evalcontext not set for rerollable!');
       this.result = await this.expression.evaluate(this.evalcontext);
       const rerollableResult = this.result as RerollableTSExpressionResult;
       this.result = rerollableResult.result;
       this.results = [this.result];
-    }
+    } else throw Error('Rerollable result cannot be rerolled, missing expression');
   }
 }
 
@@ -240,7 +241,7 @@ export class TSExpressionResultCollection extends BaseTSExpressionResult impleme
           !result._getLast()?.isNote()
         ) {
           let prev = result.pop()?.asString();
-          prev = prev == undefined ? '' : prev;
+          prev = prev === undefined ? '' : prev;
           result.addResult(new SingleTSExpressionResult(prev + r.asString()));
         } else result.addResult(r);
       }
