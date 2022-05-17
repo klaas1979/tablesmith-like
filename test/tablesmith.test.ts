@@ -231,13 +231,6 @@ describe('Tablesmith#evaluate Groups with Re-roll Tag ~', () => {
     tablesmith.reset();
     filename = 'simpletable';
   });
-  it('nested [other] Single result (not rerollable)', async () => {
-    simpleTable = `:Start\n1,1[other]2\n:other\n1,x`;
-    tablesmith.addTable('folder', filename, simpleTable);
-    const result = (await tablesmith.evaluate(`[${filename}]`)).get(0);
-    expect(result.isText()).toBeTruthy();
-    expect(result.asString()).toBe('1x2');
-  });
   it('nested [~other] result collection', async () => {
     simpleTable = `:Start\n1,1[~other]2\n:other\n1,x`;
     tablesmith.addTable('folder', filename, simpleTable);
