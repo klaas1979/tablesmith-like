@@ -236,8 +236,9 @@ export class TSExpressionResultCollection extends BaseTSExpressionResult impleme
         if (
           !r.isCollection() &&
           !r.isRerollable() &&
-          !result._getLast()?.isRerollable() &&
           !r.isNote() &&
+          !result._getLast()?.isCollection() &&
+          !result._getLast()?.isRerollable() &&
           !result._getLast()?.isNote()
         ) {
           let prev = result.pop()?.asString();
