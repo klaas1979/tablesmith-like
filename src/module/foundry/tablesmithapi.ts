@@ -56,7 +56,7 @@ export default class TablesmithApi {
    * @param callValues to prefill for with or undefined to start with emtpy form.
    * @returns TableSelectionForm that has already been rendered.
    */
-  evaluateForm(callValues: TableCallValues = new TableCallValues()): TableSelectionForm {
+  async evaluateForm(callValues: TableCallValues = new TableCallValues()): Promise<TableSelectionForm> {
     const form = this.showForm(callValues);
     form.evaluateTable();
     return form;
@@ -116,7 +116,8 @@ export default class TablesmithApi {
     const callValues = this.parseEvaluateCall(call);
     let result: CallResult = new CallResult(callValues ? callValues : call);
     if (options.toDialog) {
-      this.evaluateForm(callValues).bringToTop();
+      const form = await this.evaluateForm(callValues);
+      form.bringToTop();
     } else if (callValues) {
       const submitted = await ParamInputForm.gather(callValues, this.callResultPaginator);
       if (!submitted)
