@@ -18,8 +18,8 @@ class EvaluationContext {
   readStores: Map<string, DSStore>;
   storedRerollables: Map<string, RerollableTSExpressionResult>;
   storedNotes: Map<string, NoteTSExpressionResult>;
-  storedGenerateExpressions: Map<TSGenerateExpression, boolean>;
   dsStores: DSStores | undefined;
+  rerollState: boolean;
   inputListCallback: InputListCallback | undefined;
   inputTextCallback: InputTextCallback | undefined;
   msgCallback: MsgCallback | undefined;
@@ -29,6 +29,7 @@ class EvaluationContext {
     storedRerollables?: Map<string, RerollableTSExpressionResult>;
     storedNotes?: Map<string, NoteTSExpressionResult>;
     storedGenerateExpressions?: Map<TSGenerateExpression, boolean>;
+    rerollState?: boolean;
   }) {
     this.variables = new Map();
     this.callTables = [];
@@ -36,7 +37,7 @@ class EvaluationContext {
     this.readStores = options?.readStores ? options.readStores : new Map();
     this.storedRerollables = options?.storedRerollables ? options.storedRerollables : new Map();
     this.storedNotes = options?.storedNotes ? options.storedNotes : new Map();
-    this.storedGenerateExpressions = options?.storedGenerateExpressions ? options.storedGenerateExpressions : new Map();
+    this.rerollState = options?.rerollState ? options.rerollState : false;
   }
 
   /**
@@ -47,7 +48,6 @@ class EvaluationContext {
     const clone = new EvaluationContext({
       readStores: this.readStores,
       storedRerollables: this.storedRerollables,
-      storedGenerateExpressions: this.storedGenerateExpressions,
     });
     if (this.inputListCallback) clone.registerInputListCallback(this.inputListCallback);
     if (this.inputTextCallback) clone.registerInputTextCallback(this.inputTextCallback);
@@ -108,21 +108,18 @@ class EvaluationContext {
   }
 
   /**
-   * Adds given Generate Expression as evaluated.
-   * @param generateExpression to store.
+   * Sets to reroll state for generate expressions.
    */
-  addGenerated(generateExpression: TSGenerateExpression): void {
-    this.storedGenerateExpressions.set(generateExpression, true);
+  setToReroll() {
+    this.rerollState = true;
   }
 
   /**
-   * Checks if given Generate Expression has been evaluated evaluated.
-   * @param generateExpression to check.
-   * @returns boolean true if evaluated once, false if not.
+   * Checks if state is reroll for generate expressions.
+   * @returns boolean true if should be (re)rolled.
    */
-  isGenerated(generateExpression: TSGenerateExpression): boolean {
-    const generated = this.storedGenerateExpressions.get(generateExpression);
-    return generated === true ? true : false;
+  isReroll(): boolean {
+    return this.rerollState;
   }
 
   /**

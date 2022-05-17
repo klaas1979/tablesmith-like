@@ -27,8 +27,7 @@ export default class TSGenerateExpression extends BaseTSExpression {
     const type = (await this.typeExpression.evaluate(evalcontext)).asString();
     if (type != '0') throw Error(`Type for Generate '${type}' unknown, only supports type=0`);
     let result: RerollableTSExpressionResult;
-    if (!evalcontext.isGenerated(this)) {
-      evalcontext.addGenerated(this);
+    if (!evalcontext.isReroll()) {
       const text = await this.textExpression.evaluate(evalcontext);
       const textResult = new SingleTSExpressionResult(text.asString());
       result = new RerollableTSExpressionResult(evalcontext, textResult, this);
