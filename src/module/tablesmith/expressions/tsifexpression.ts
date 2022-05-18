@@ -27,7 +27,7 @@ export default class TSIfExpression extends BaseTSExpression {
   async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
     const boolResult = (await this.booleanComparision.evaluate(evalcontext)).asString();
     const result = await (boolResult == '1' ? this.trueVal.evaluate(evalcontext) : this.falseVal.evaluate(evalcontext));
-    return new SingleTSExpressionResult(result.asString());
+    return result;
   }
 
   getExpression(): string {
