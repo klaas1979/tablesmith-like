@@ -1,7 +1,7 @@
 import BooleanComparison from './booleancomparison';
 import EvaluationContext from './evaluationcontext';
 import { BaseTSExpression } from './tsexpression';
-import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
+import { TSExpressionResult } from './tsexpressionresult';
 import TSExpressions from './tsexpressions';
 
 /**
