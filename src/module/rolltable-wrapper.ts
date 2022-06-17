@@ -23,10 +23,11 @@ export function wrapRollTable(): void {
 async function rollTableDrawWrapper(
   this: RollTable,
   // eslint-disable-next-line @typescript-eslint/ban-types
-  wrapped: (options: { displayChat: boolean; rollMode: string }) => Promise<RollTableDraw>,
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  options: { displayChat: boolean; rollMode: string },
+  wrapped: (options: { displayChat: boolean; rollMode: string | undefined }) => Promise<RollTableDraw>,
+  options: { displayChat: boolean; rollMode: string | undefined },
 ): Promise<RollTableDraw> {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  options = options === undefined ? { displayChat: true, rollMode: undefined } : options;
   const displayChat = options.displayChat === undefined ? true : options.displayChat;
   options.displayChat = false;
   const draw = await wrapped(options);
@@ -40,7 +41,7 @@ async function rollTableDrawWrapper(
         storeResult(text, tsResult);
       }
     }
-    const rollMode = options.rollMode;
+    const rollMode = options?.rollMode;
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
     await this.toMessage(draw.results, { roll: draw.roll, messageOptions: { rollMode } });
