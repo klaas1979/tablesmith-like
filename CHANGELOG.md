@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.12.1](https://github.com/klaas1979/tablesmith-like/compare/v1.12.0...v1.12.1) (2022-06-17)
+
+
+### Bug Fixes
+
+* [#10](https://github.com/klaas1979/tablesmith-like/issues/10) handling of missing options in wrapper ([bd3a35a](https://github.com/klaas1979/tablesmith-like/commit/bd3a35a0f363793827a101de7d89a7e4a6db24d2))
+* generate expressions not working in If Expressions ([aedf187](https://github.com/klaas1979/tablesmith-like/commit/aedf187bcd27cfe074a0ef98063435db2ac2880f))
+* Generate Expressions work, even if a Group with a Generate Expression is rendered multiply times ([3f8eaf0](https://github.com/klaas1979/tablesmith-like/commit/3f8eaf035e91a63bf0b205a9aec24fabdf2e9dc1))
+* Generate rendering problems in some cases of tables ([d2e6ca1](https://github.com/klaas1979/tablesmith-like/commit/d2e6ca12f20bc0754bcd9c58ed7750da4fba0988))
+
 ## [1.12.0](https://github.com/klaas1979/tablesmith-like/compare/v1.11.2...v1.12.0) (2022-05-16)
 
 
