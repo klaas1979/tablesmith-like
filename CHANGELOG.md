@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.12.2](https://github.com/klaas1979/tablesmith-like/compare/v1.12.1...v1.12.2) (2022-08-17)
+
+
+### Bug Fixes
+
+* [#11](https://github.com/klaas1979/tablesmith-like/issues/11) error in handling non repeating groups ([e4a0c03](https://github.com/klaas1979/tablesmith-like/commit/e4a0c03a7057389e06ebba25656f1ba8a1438125))
+
 ### [1.12.1](https://github.com/klaas1979/tablesmith-like/compare/v1.12.0...v1.12.1) (2022-06-17)
 
 
