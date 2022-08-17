@@ -64,6 +64,7 @@ describe('TSGroup (repeating)', () => {
 
 describe('TSGroup (non repeating)', () => {
   beforeEach(() => {
+    evalcontext = new EvaluationContext();
     group = new TSGroup(name, false, true);
     range = group.addRange(1);
     rangeExpression = new TSTextExpression('One');
