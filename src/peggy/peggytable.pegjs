@@ -155,10 +155,10 @@ TsFunction
   / WhileStart _ WhileExpression _ ParamSeparatorComma _ Expression _ !'/' '}' { errorHandling(() => {
             options?.pf.createFunction();
           }); }
-  / LoopStart _ LoopExpression _ ParamSeparatorComma _ Expression _ !'/' '}' { errorHandling(() => {
+  / LoopStart _ IfExpressionPart _ ParamSeparatorComma _ Expression _ !'/' '}' { errorHandling(() => {
             options?.pf.createFunction();
           }); }
-  / SelectStart _ SelectExpression _ (ParamSeparatorComma _ ExpressionTextNoComma _)+ ExpressionTextNoComma? _ !'/' '}' { errorHandling(() => {
+  / SelectStart _ IfExpressionPart _ (ParamSeparatorComma _ ExpressionTextNoComma _)+ ExpressionTextNoComma? _ !'/' '}' { errorHandling(() => {
             options?.pf.createFunction();
           }); }
   / StartLogicalExpression _ BooleanExpression (_ ParamSeparatorComma _ BooleanExpression)+ _ !'/' '}' { errorHandling(() => {
@@ -207,15 +207,11 @@ LoopStart
   = !'/' '{' _ name:'Loop'i '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
-LoopExpression
-  = IfExpressionPart
 
 SelectStart
   = !'/' '{' _ name:'Select'i '~' { errorHandling(() => {
             options?.pf.startFunction(name);
           }); }
-SelectExpression
-  = IfExpressionPart
 
 StartLogicalExpression
   = !'/' '{' name:(@'Or'i / @'And'i / @'Xor'i) '~' { errorHandling(() => {
