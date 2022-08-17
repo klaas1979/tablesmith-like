@@ -1,28 +1,32 @@
 import { tstables } from '../tstables';
+import CallSplitter from './callsplitter';
 import EvaluationContext from './evaluationcontext';
 import TSExpression, { BaseTSExpression } from './tsexpression';
 import { TSExpressionResult, SingleTSExpressionResult } from './tsexpressionresult';
 
 /**
- * Simple Text Expression as value of a Range in a Group or part of the value, i.e. prefix or suffix to a TermExpression.
+ * Resets a non repeating Group.
  */
 export default class TSGroupResetExpression extends BaseTSExpression {
   tablename: string;
-  groupExpression: TSExpression;
-  constructor(tablename: string, groupExpression: TSExpression) {
+  tableAndGroupExpression: TSExpression;
+  constructor(tablename: string, tableAndGroupExpression: TSExpression) {
     super();
     this.tablename = tablename;
-    this.groupExpression = groupExpression;
+    this.tableAndGroupExpression = tableAndGroupExpression;
   }
   async evaluate(evalcontext: EvaluationContext): Promise<TSExpressionResult> {
-    const groupname = (await this.groupExpression.evaluate(evalcontext)).trim();
-    const group = tstables.tableForName(this.tablename)?.groupForName(groupname);
-    if (!group) throw Error(`Cannot reset group '${groupname}' in table '${this.tablename}', not defined!`);
-    group.reset();
+    const tableAndGroup = await this.tableAndGroupExpression.evaluate(evalcontext);
+    const splitted = CallSplitter.forGroup().split(evalcontext, tableAndGroup.asString());
+    const tsTable = tstables.tableForName(splitted.tablename);
+    if (!tsTable) throw Error(`Table '${splitted.tablename}' is not defined, cannot reset '${tableAndGroup}'`);
+    const tsGroup = tsTable.groupForName(splitted.variablename);
+    if (!tsGroup) throw Error(`Group '${splitted.variablename}' is not defined, cannot reset '${tableAndGroup}'`);
+    tsGroup.reset();
     return new SingleTSExpressionResult('');
   }
 
   getExpression(): string {
-    return `{Reset~${this.groupExpression.getExpression()}}`;
+    return `{Reset~${this.tableAndGroupExpression.getExpression()}}`;
   }
 }
