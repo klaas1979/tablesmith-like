@@ -129,7 +129,7 @@ class TSGroup {
         result = await this.result(evalcontext, range.getLower());
       }
     }
-    return result != undefined ? result : new SingleTSExpressionResult('<Non repeating Group maxed out!>');
+    return result != undefined ? result : new SingleTSExpressionResult('{Non repeating Group maxed out!}');
   }
 
   /**

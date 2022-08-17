@@ -83,7 +83,7 @@ describe('TSGroup (non repeating)', () => {
     result = await group.roll(evalcontext, modifier);
     expect(['One', 'Two']).toContain(result.asString());
     result = await group.roll(evalcontext, modifier);
-    expect(result.asString()).toBe('<Non repeating Group maxed out!>');
+    expect(result.asString()).toBe('{Non repeating Group maxed out!}');
   });
 
   it('#reset on maxed out group, restores entries', async () => {
@@ -91,7 +91,7 @@ describe('TSGroup (non repeating)', () => {
     await group.roll(evalcontext, modifier);
     await group.roll(evalcontext, modifier);
     result = await group.roll(evalcontext, modifier);
-    expect(result.asString()).toBe('<Non repeating Group maxed out!>');
+    expect(result.asString()).toBe('{Non repeating Group maxed out!}');
     group.reset();
     result = await group.roll(evalcontext, modifier);
     expect(['One', 'Two']).toContain(result.asString());

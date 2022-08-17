@@ -1,8 +1,6 @@
 import { tstables } from '../tstables';
 import CallSplitter from './callsplitter';
 import GroupCallModifierTerm from './terms/groupcallmodifierterm';
-import InnerDiceTerm from './terms/innerdiceterm';
-import IntTerm from './terms/intterm';
 import TSExpression, { BaseTSExpression } from './tsexpression';
 import TSExpressions from './tsexpressions';
 import { TSExpressionResult, RerollableTSExpressionResult } from './tsexpressionresult';
@@ -37,9 +35,6 @@ export default class TSGroupCallExpression extends BaseTSExpression {
     if (!tsTable) throw Error(`Table '${splitted.tablename}' is not defined cannot evaluate!`);
     const tsGroup = tsTable.groupForName(splitted.variablename);
     if (!tsGroup) throw Error(`Group '${splitted.variablename}' is not defined cannot evaluate!`);
-    const maxValue = tsGroup.getMaxValue();
-    const innerDiceTerm = new InnerDiceTerm(new IntTerm(1), new IntTerm(maxValue));
-    const termResult = await this.groupCallModifier.modify(innerDiceTerm).evaluate(evalcontext);
 
     let evaledParams: string[] = [];
     if (this.params && this.params.length > 0)
@@ -50,7 +45,7 @@ export default class TSGroupCallExpression extends BaseTSExpression {
       );
     evalcontext.pushCurrentCallTablename(tsTable.name);
     tsTable.setParametersForEvaluationByIndex(evalcontext, evaledParams);
-    const result = await tsGroup.result(evalcontext, termResult.asNumber());
+    const result = await tsGroup.roll(evalcontext, this.groupCallModifier);
     evalcontext.popCurrentCallTablename();
     return new RerollableTSExpressionResult(evalcontext, result, this.rerollable ? this : undefined);
   }
