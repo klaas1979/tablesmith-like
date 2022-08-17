@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.12.3](https://github.com/klaas1979/tablesmith-like/compare/v1.12.2...v1.12.3) (2022-08-17)
+
+
+### Bug Fixes
+
+* [#12](https://github.com/klaas1979/tablesmith-like/issues/12) Reset call works on groups in other table ([f5c932c](https://github.com/klaas1979/tablesmith-like/commit/f5c932cf9f9560054ea559b73f0a8513e31cecd9))
+
 ### [1.12.2](https://github.com/klaas1979/tablesmith-like/compare/v1.12.1...v1.12.2) (2022-08-17)
 
 
