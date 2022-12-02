@@ -19,11 +19,7 @@ interface TableSelectionOptions extends FormApplicationOptions {
 /**
  * Selection form for a Tablesmith call.
  */
-export default class TableSelectionForm extends FormApplication<
-  TableSelectionOptions,
-  TableSelectionFormData,
-  TableCallValues
-> {
+export default class TableSelectionForm extends FormApplication<TableSelectionOptions, TableCallValues> {
   data: TableSelectionFormData;
   constructor(tableCallValues: TableCallValues, paginator: CallResultPaginator, options?: TableSelectionOptions) {
     super(tableCallValues, options);
