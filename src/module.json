@@ -1,11 +1,13 @@
 {
-  "name": "tablesmith-like",
+  "id": "tablesmith-like",
   "title": "Tablesmith like Tables",
   "description": "Use Tablesmith-like tables in FoundryVTT and create complex nested tables",
   "version": "1.12.3",
-  "author": "Klaas Reineke",
-  "minimumCoreVersion": "9.242",
-  "compatibleCoreVersion": "9.255",
+  "authors": "Klaas Reineke",
+  "compatibility": {
+    "minimum": 10,
+    "verified": "10.291"
+  },
   "scripts": [],
   "esmodules": ["module/tablesmith-like.js"],
   "styles": ["styles/tablesmith-like.css"],
@@ -29,7 +31,7 @@
       "type": "JournalEntry"
     }
   ],
-  "dependencies": [
+  "requires": [
     {
       "name": "lib-wrapper"
     }
@@ -49,6 +51,8 @@
   "readme": "https://github.com/klaas1979/tablesmith-like/blob/main/README.md",
   "bugs": "https://github.com/klaas1979/tablesmith-like/issues",
   "changelog": "https://github.com/klaas1979/tablesmith-like/blob/main/CHANGELOG.md",
-  "system": [],
+  "relationships": {
+    "systems": []
+  },
   "library": false
 }
