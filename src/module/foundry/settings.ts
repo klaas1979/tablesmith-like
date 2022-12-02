@@ -52,5 +52,6 @@ export function registerSettings(): void {
     scope: 'world',
     config: false,
     type: String,
+    default: '',
   });
 }
