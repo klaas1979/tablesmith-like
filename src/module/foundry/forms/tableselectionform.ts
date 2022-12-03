@@ -55,7 +55,7 @@ export default class TableSelectionForm extends FormApplication<TableSelectionOp
     super.close(options);
   }
 
-  async getData(): Promise<TableSelectionFormData> {
+  getData(): MaybePromise<TableSelectionFormData> {
     Logger.debug(false, 'getData', this.data);
     return this.data;
   }
