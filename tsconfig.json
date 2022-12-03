@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "lib": ["DOM", "ES2020"],
+    "target": "es6",
+    "lib": ["DOM", "es6"],
     "types": ["@league-of-foundry-developers/foundry-vtt-types"],
     "esModuleInterop": true,
     "moduleResolution": "node",
