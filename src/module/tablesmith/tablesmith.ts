@@ -124,7 +124,6 @@ class Tablesmith {
     const content = _convertContentType(fileContent, contentType);
     tableparser.parse(content, this._parseOptions(tstable));
     tstables.addTable(tstable);
-    Logger.debug(false, 'Added table successful', filename, foldername, fileContent, tstable);
     return tstable;
   }
 
