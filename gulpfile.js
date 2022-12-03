@@ -64,9 +64,14 @@ function compilePacks() {
         let json = yaml.loadAll(file.contents.toString());
         // replace all Journal entries (.tab files) newlines with <br> to ensure correct display
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        for (let [index, entry] of json.entries()) {
-          if (entry['name']?.match(/\.tab/)) {
-            entry.content = entry.content.replaceAll('\n', '<br />');
+        for (let [folderIndex, folder] of json.entries()) {
+          if (folder.pages) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            for (let [pageIndex, page] of folder.pages.entries()) {
+              if (page['name']?.match(/\.tab/)) {
+                page.text.content = page.text.content.replaceAll('\n', '<br />');
+              }
+            }
           }
         }
         db.insert(json);

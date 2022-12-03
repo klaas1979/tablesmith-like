@@ -1,96 +1,79 @@
-name: Generate.tab
-flags:
-  tablesmith-like:
-    folder: Examples
-content: |
-  :Start
-  1,Main stuff ....
-  _{CR~} Appendix (not always needed): {Generate~0,Summary Text to show for not called,groupToCall}
-  :groupToCall
-  1,generated Result{Dice~1d100}
-sort: 0
-folder: null
-permission:
-  default: 0
----
-name: HtmlMarkupUse.tab
-flags:
-  tablesmith-like:
-    folder: Examples
-content: |
-  :Start
-  1,&lt;b&gt;bold&lt;/b&gt;&lt;hline align="center" width="50/%"/&gt; hline not rendered!&lt;em&gt;em&lt;/em&gt;
-sort: 0
-folder: null
-permission:
-  default: 0
----
-name: InputList.tab
-flags:
-  tablesmith-like:
-    folder: Examples
-content: |
-  :Start
-  1,{InputList~2,Prompt value,A,B,C,D,E}
-sort: 0
-folder: null
-permission:
-  default: 0
----
-name: Msg.tab
-flags:
-  tablesmith-like:
-    folder: Examples
-content: |
-  :Start
-  1,{Msg~Some message to prompt, evaluation is halted till use closes the dialog}
-sort: 0
-folder: null
-permission:
-  default: 0
----
-name: 'Parameter-List.tab'
-flags:
-  tablesmith-like:
-    folder: Examples
-content: |
-  %lvar%,
-  @lvar,2,What is your alignment?,chaotic,neutral,lawful
-  :Start
-  1,One: %lvar%
-  2,Two: %lvar%
-sort: 0
-folder: null
-permission:
-  default: 0
----
-name: Parameter-MultiList.tab
-flags:
-  tablesmith-like:
-    folder: Examples
-content: |
-  %mvar%,
-  @*mvar,01100,What is your alignment?,chaotic,neutral,lawful,good,evil
-  :Start
-  1,One: %mvar%
-  2,Two: %mvar%
-sort: 0
-folder: null
-permission:
-  default: 0
----
-name: Parameter-SimplePrompt.tab
-flags:
-  tablesmith-like:
-    folder: Examples
-content: |
-  %var2%,
-  @var2,default value var2,Prompt used for Var2
-  %var1%,
-  @var1,default value var1,Prompt for Var1
-  :Start
-  1,One: var1=%var1% var2=%var2%
-sort: 0
-folder: null
-permission:
-  default: 0
+
+name: Examples
+pages:
+  - 
+    name: Generate.tab
+    type: text
+    sort: 0
+    text:
+      format: 1
+      content: |
+        :Start
+        1,Main stuff ....
+        _{CR~} Appendix (not always needed): {Generate~0,Summary Text to show for not called,groupToCall}
+        :groupToCall
+        1,generated Result{Dice~1d100}
+  - 
+    name: HtmlMarkupUse.tab
+    type: text
+    sort: 0
+    text:
+      format: 1
+      content: |
+        :Start
+        1,&lt;b&gt;bold&lt;/b&gt;&lt;hline align="center" width="50/%"/&gt; hline not rendered!&lt;em&gt;em&lt;/em&gt;
+  - 
+    name: InputList.tab
+    type: text
+    sort: 0
+    text:
+      format: 1
+      content: |
+        :Start
+        1,{InputList~2,Prompt value,A,B,C,D,E}
+  - 
+    name: Msg.tab
+    type: text
+    sort: 0
+    text:
+      format: 1
+      content: |
+        :Start
+        1,{Msg~Some message to prompt, evaluation is halted till use closes the dialog}
+  - 
+    name: Parameter-List.tab
+    type: text
+    sort: 0
+    text:
+      format: 1
+      content: |
+        %lvar%,
+        @lvar,2,What is your alignment?,chaotic,neutral,lawful
+        :Start
+        1,One: %lvar%
+        2,Two: %lvar%
+  - 
+    name: Parameter-MultiList.tab
+    type: text
+    sort: 0
+    text:
+      format: 1
+      content: |
+        %mvar%,
+        @*mvar,01100,What is your alignment?,chaotic,neutral,lawful,good,evil
+        :Start
+        1,One: %mvar%
+        2,Two: %mvar%
+  - 
+    name: Parameter-SimplePrompt.tab
+    type: text
+    sort: 0
+    text:
+      format: 1
+      content: |
+        %var2%,
+        @var2,default value var2,Prompt used for Var2
+        %var1%,
+        @var1,default value var1,Prompt for Var1
+        :Start
+        1,One: var1=%var1% var2=%var2%
