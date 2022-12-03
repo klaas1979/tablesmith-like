@@ -26,7 +26,42 @@ export function getGame(): Game {
 }
 
 /**
- * Returns Journal Entry that contains all Dataset as separate flags.
+ * Returns Journal Entry for the results, containing the different result pages.
+ * @param journal optional parameter donating the journal to add results to.
+ * @returns stored Journal entry containing the datasets as flags.
+ */
+export async function getResultJournalPage(
+  pageName: string,
+  journal?: {
+    folder: string;
+    name: string;
+  },
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+): Promise<StoredDocument<JournalEntryPage>> {
+  const tsd = await getResultJournal(journal);
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  let page = tsd.pages.find((p) => p.name === pageName);
+  if (!page) {
+    page = tsd.createEmbeddedDocuments('JournalEntryPage', [
+      {
+        name: pageName,
+        type: 'text',
+        text: {
+          content: '',
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          format: CONST.JOURNAL_ENTRY_PAGE_FORMATS.HTML,
+        },
+      },
+    ]);
+  }
+  return page;
+}
+
+/**
+ * Returns Journal Entry for the results, containing the different result pages.
  * @param journal optional parameter donating the journal to add results to.
  * @returns stored Journal entry containing the datasets as flags.
  */
@@ -42,7 +77,7 @@ export async function getResultJournal(journal?: {
   if (!tsd) {
     let folder = getFolders().contents.find((f) => f.name === folderName);
     if (!folder) folder = await Folder.create({ name: folderName, type: 'JournalEntry' });
-    tsd = await JournalEntry.create({ name: journalName, folder: folder, content: '' });
+    tsd = await JournalEntry.create({ name: journalName, folder: folder });
   }
   if (!tsd) throw Error(`Could not load nor create Journal for Results folder '${folderName}' file '${journalName}'`);
   return tsd;

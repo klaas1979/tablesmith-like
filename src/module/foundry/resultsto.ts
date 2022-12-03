@@ -1,6 +1,6 @@
 import CallResult from '../tablesmith/callresult';
 import { TSExpressionResult } from '../tablesmith/expressions/tsexpressionresult';
-import { getGame, getResultJournal } from './helper';
+import { getGame, getResultJournalPage } from './helper';
 import { Logger } from './logger';
 import { TableCallValues } from './tablecallvalues';
 
@@ -31,12 +31,14 @@ export default class ResultsTo {
     journal?: { folder: string; name: string },
     options: { includeTimestamp?: boolean; notify?: boolean } = { includeTimestamp: true, notify: true },
   ): Promise<void> {
-    const journalEntry = await getResultJournal(journal);
+    const pageName = new Date().toDateInputString();
+    const journalPage = await getResultJournalPage(pageName, journal);
+    Logger.debug(false, 'Found JournalPage', journalPage, journalPage.text.content);
     const message = this._createJournalMessage(callValues, results, options);
-    journalEntry.update({ content: journalEntry.data.content + message });
+    journalPage.update({ text: { content: message + journalPage.text.content } });
     if (options.notify)
       ui.notifications?.info(getGame().i18n.localize('TABLESMITH.evaluate.result-to.journal-updated'));
-    Logger.debug(false, 'Journal updated with result');
+    Logger.debug(false, 'Journal updated with result', journalPage);
   }
 
   _chatResult(callValues: TableCallValues, result: TSExpressionResult, index: number) {
