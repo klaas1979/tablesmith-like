@@ -1,7 +1,6 @@
-import { JournalEntryData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
 import Tablesmith from '../tablesmith/tablesmith';
 import { tablesmith } from '../tablesmith/tablesmithinstance';
-import { getGame, getJournal, getPacks, importFolders, PACK_FLAG_FOLDER, TABLESMITH_ID } from './helper';
+import { getGame, getJournal, getPacks, importFolders, TABLESMITH_ID } from './helper';
 import { Logger } from './logger';
 
 const parseErrors: ParseError[] = [];
@@ -15,12 +14,16 @@ type ParseError = {
 class JournalTables {
   /** Loads all tables from Tablesmith Journal Folder. */
   static async loadTablesFromJournal(): Promise<ParseError[]> {
-    for (const entry of getJournal().contents) {
-      if (JournalTables.isTablesmithTable(entry.name)) {
-        const tablename = JournalTables.tableBasename(entry.name);
-        const folder = this.tableFolder(entry.folder?.name);
-        Logger.info(false, `Found Tablesmith folder '${entry.folder?.name}' table '${entry.name}'`, entry.data.content);
-        JournalTables.addTableHandleErrors(tablesmith, folder, tablename, entry.data.content);
+    for (const entry of getJournal()) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      for (const page of entry.pages) {
+        if (JournalTables.isTablesmithTable(page.name)) {
+          const tablename = JournalTables.tableBasename(page.name);
+          const folder = this.tableFolder(entry.name);
+          Logger.info(false, `Found Tablesmith folder '${entry.name}' table '${page.name}'`, page.text.content);
+          JournalTables.addTableHandleErrors(tablesmith, folder, tablename, page.text.content);
+        }
       }
     }
     await this.loadTablesFromPacks();
@@ -31,25 +34,28 @@ class JournalTables {
     for (const compendiumCollection of getPacks()) {
       const metadata = compendiumCollection.metadata;
       if (metadata.name.match(`${TABLESMITH_ID}.*`) && metadata.type === 'JournalEntry') {
-        const tableEntries = await compendiumCollection.getDocuments();
-        for (const tableEntry of tableEntries) {
-          let folder = tableEntry.getFlag(TABLESMITH_ID, PACK_FLAG_FOLDER) as string;
+        const tableFolders = await compendiumCollection.getDocuments();
+        for (const tableFolder of tableFolders) {
+          let folder = tableFolder.name;
           folder = this.tableFolder(folder);
-          const data = tableEntry.data as JournalEntryData;
-          if (importFolders().includes(folder)) {
-            Logger.info(
-              false,
-              `Found Table in Pack '${metadata.name}' folder '${folder}' table '${data.name}'`,
-              data.content,
-            );
-            JournalTables.addTableHandleErrors(tablesmith, folder, data.name, data.content);
-          } else
-            Logger.info(
-              false,
-              `Skipping Table in Pack '${metadata.name}' folder '${folder}' table '${
-                data.name
-              }' import Folders '${importFolders().join(',')}'`,
-            );
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          for (const page of tableFolder.pages) {
+            if (importFolders().includes(folder)) {
+              Logger.info(
+                false,
+                `Found Table in Pack '${metadata.name}' folder '${folder}' table '${page.name}'`,
+                page.text.content,
+              );
+              JournalTables.addTableHandleErrors(tablesmith, folder, page.name, page.text.content);
+            } else
+              Logger.info(
+                false,
+                `Skipping Table in Pack '${metadata.name}' folder '${folder}' table '${
+                  page.name
+                }' import Folders '${importFolders().join(',')}'`,
+              );
+          }
         }
       }
     }
