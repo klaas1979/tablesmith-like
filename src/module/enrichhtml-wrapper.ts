@@ -38,7 +38,7 @@ class TSTextEditor extends TextEditor {
     content: string,
     options?: Partial<TextEditor.EnrichOptions>,
   ): Promise<string> | string {
-    if (options && options['async']) {
+    if (options?.async) {
       const enriched = wrapped(content, options) as Promise<string>;
       const asyncEnrichHTML = enriched.then(
         (enrichedString: string) => {
