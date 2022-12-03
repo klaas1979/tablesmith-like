@@ -33,13 +33,29 @@ class TSTextEditor extends TextEditor {
   static enrichHtmlWrapper(
     this: TextEditor,
     // eslint-disable-next-line @typescript-eslint/ban-types
-    wrapped: (content: string, options?: Partial<TextEditor.EnrichOptions>) => string,
+    wrapped: (content: string, options?: Partial<TextEditor.EnrichOptions>) => Promise<string> | string,
     // eslint-disable-next-line @typescript-eslint/ban-types
     content: string,
     options?: Partial<TextEditor.EnrichOptions>,
-  ): string {
+  ): Promise<string> | string {
+    if (options?.async) {
+      const enriched = wrapped(content, options) as Promise<string>;
+      const asyncEnrichHTML = enriched.then(
+        (enrichedString: string) => {
+          return TSTextEditor.replaceTablesmithLinks(enrichedString);
+        },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (reason: any) => reason,
+      );
+      return asyncEnrichHTML;
+    } else {
+      return TSTextEditor.replaceTablesmithLinks(wrapped(content, options) as string);
+    }
+  }
+
+  static replaceTablesmithLinks(innerHTML: string): string {
     const html = document.createElement('div');
-    html.innerHTML = wrapped(content, options);
+    html.innerHTML = innerHTML;
     const text = TextEditor._getTextNodes(html);
     // @ts-expect-error: Wrong type definition
     TextEditor._replaceTextContent(text, TSTextEditor.rgx, TSTextEditor.createTablesmithLink);
