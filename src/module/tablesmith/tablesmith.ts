@@ -10,6 +10,7 @@ import CallResult from './callresult';
 import EvaluationContext from './expressions/evaluationcontext';
 import { InputListCallback, InputTextCallback, MsgCallback, StatusCallback } from './inputcallbacktypes';
 import { DSStores } from './dsstore/dsstores';
+import { Logger } from '../foundry/logger';
 
 /**
  * The Tablesmith class to setup the Tablesmith environment, contains all parsed tables and provides needed functionality
@@ -123,6 +124,7 @@ class Tablesmith {
     const content = _convertContentType(fileContent, contentType);
     tableparser.parse(content, this._parseOptions(tstable));
     tstables.addTable(tstable);
+    Logger.debug(false, 'Added table successful', filename, foldername, fileContent, tstable);
     return tstable;
   }
 
