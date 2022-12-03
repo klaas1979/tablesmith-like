@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.13.0](https://github.com/klaas1979/tablesmith-like/compare/v1.12.3...v1.13.0) (2022-12-03)
+
+
+### Features
+
+* [#14](https://github.com/klaas1979/tablesmith-like/issues/14) Default value for setting added ([d78cfb0](https://github.com/klaas1979/tablesmith-like/commit/d78cfb0e2810ee88adf3375ed4c0e2d283a4d540))
+* [#14](https://github.com/klaas1979/tablesmith-like/issues/14) Example tables compatibly to new Journal format in compendium ([8b7768f](https://github.com/klaas1979/tablesmith-like/commit/8b7768f553f61dfbd80840d9c23ef7d7e63e7f22))
+* [#14](https://github.com/klaas1979/tablesmith-like/issues/14) loading of Tables from Compendium and Journal using the new Journal system in V10 with pages ([923a403](https://github.com/klaas1979/tablesmith-like/commit/923a4037c5728e34159f62dfbfba7d52545e8fb7))
+* [#14](https://github.com/klaas1979/tablesmith-like/issues/14) new definitions of module.json ([d6f47e7](https://github.com/klaas1979/tablesmith-like/commit/d6f47e709c6c56955cc70cfcd5c942a6689ed818))
+* [#14](https://github.com/klaas1979/tablesmith-like/issues/14) to journal now uses the new structure and stores results on a page for the date ([9581b39](https://github.com/klaas1979/tablesmith-like/commit/9581b395696aa0958ec8428cf41b75b2c70853e7))
+* [#14](https://github.com/klaas1979/tablesmith-like/issues/14) Type Changes in FormApplication for V10 ([d78975b](https://github.com/klaas1979/tablesmith-like/commit/d78975b806c74e0873ea7d0fb2849c7e1006526e))
+* [#14](https://github.com/klaas1979/tablesmith-like/issues/14) wrapped enrichtHTML updated to use new async / sync handling with options.aync value. ([9b1ef6e](https://github.com/klaas1979/tablesmith-like/commit/9b1ef6ea458603728b11ebba68cecc11637416f7))
+
 ### [1.12.3](https://github.com/klaas1979/tablesmith-like/compare/v1.12.2...v1.12.3) (2022-08-17)
 
 
