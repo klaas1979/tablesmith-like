@@ -1,13 +1,10 @@
 import TablesmithApi from './tablesmithapi';
 
 export const TABLESMITH_ID = 'tablesmith-like';
-export const PACK_FLAG_FOLDER = 'folder';
-
 export const SETTING_FORM_LAST_TABLE = 'form-last-table';
 export const SETTING_IMPORT_FOLDERS = 'journal-import-folders';
 export const SETTING_TSD_JOURNAL = 'journal-tsd-name';
 export const SETTING_TSD_FOLDER = 'journal-tsd-folder';
-
 export const SETTING_JOURNAL_FOLDER = 'result-journal-folder';
 export const SETTING_JOURNAL_FILE = 'rsulult-journal-file';
 
