@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.13.2](https://github.com/klaas1979/tablesmith-like/compare/v1.13.1...v1.13.2) (2022-12-03)
+
+
+### Bug Fixes
+
+* values for AutoPublish ([8b15b53](https://github.com/klaas1979/tablesmith-like/commit/8b15b53054b0335b66afad49d2eaa89a3c99d0f3))
+
 ### [1.13.1](https://github.com/klaas1979/tablesmith-like/compare/v1.13.0...v1.13.1) (2022-12-03)
 
 
