@@ -38,6 +38,8 @@ class TSTextEditor extends TextEditor {
     content: string,
     options?: Partial<TextEditor.EnrichOptions>,
   ): Promise<string> | string {
+    // eslint-disable-next-line
+    // @ts-expect - error: Type definitions still in development for V10
     if (options?.async) {
       const enriched = wrapped(content, options) as Promise<string>;
       const asyncEnrichHTML = enriched.then(
