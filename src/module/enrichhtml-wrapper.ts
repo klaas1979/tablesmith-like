@@ -20,6 +20,14 @@ export function wrapEnrichHTML(): void {
   });
 }
 
+/**
+ * Generic options type to fix Github build error:
+ * [10:16:56] Error: /home/runner/work/tablesmith-like/tablesmith-like/src/module/enrichhtml-wrapper.ts(41,18):
+ * semantic error TS2339: Property 'async' does not exist on type 'Partial<EnrichOptions>'.
+ */
+type EnrichOptionsGeneric = {
+  [key: string]: unknown;
+};
 class TSTextEditor extends TextEditor {
   static rgx = new RegExp(`@(Tablesmith|TS)\\[([^\\]]+)\\](?:{([^}]+)})?`, 'g');
 
@@ -33,10 +41,10 @@ class TSTextEditor extends TextEditor {
   static enrichHtmlWrapper(
     this: TextEditor,
     // eslint-disable-next-line @typescript-eslint/ban-types
-    wrapped: (content: string, options?: Partial<TextEditor.EnrichOptions>) => Promise<string> | string,
+    wrapped: (content: string, options?: Partial<EnrichOptionsGeneric>) => Promise<string> | string,
     // eslint-disable-next-line @typescript-eslint/ban-types
     content: string,
-    options?: Partial<TextEditor.EnrichOptions>,
+    options?: Partial<EnrichOptionsGeneric>,
   ): Promise<string> | string {
     if (options?.async) {
       const enriched = wrapped(content, options) as Promise<string>;
