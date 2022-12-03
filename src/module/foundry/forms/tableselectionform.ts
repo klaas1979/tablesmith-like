@@ -19,7 +19,7 @@ interface TableSelectionOptions extends FormApplicationOptions {
 /**
  * Selection form for a Tablesmith call.
  */
-export default class TableSelectionForm extends FormApplication<TableSelectionOptions, TableCallValues> {
+export default class TableSelectionForm extends FormApplication<TableSelectionOptions, TableSelectionFormData> {
   data: TableSelectionFormData;
   constructor(tableCallValues: TableCallValues, paginator: CallResultPaginator, options?: TableSelectionOptions) {
     super(tableCallValues, options);
@@ -55,7 +55,7 @@ export default class TableSelectionForm extends FormApplication<TableSelectionOp
     super.close(options);
   }
 
-  getData(): MaybePromise<TableSelectionFormData> {
+  getData(): TableSelectionFormData | Promise<TableSelectionFormData> {
     Logger.debug(false, 'getData', this.data);
     return this.data;
   }
