@@ -64,7 +64,9 @@ Hooks.once('init', () => {
         iObj = Object.getPrototypeOf(iObj);
       }
       if (!descriptor || descriptor?.configurable === false)
-        throw `libWrapper Shim: '${target}' does not exist, could not be found, or has a non-configurable descriptor.`;
+        throw new Error(
+          `libWrapper Shim: '${target}' does not exist, could not be found, or has a non-configurable descriptor.`,
+        );
 
       let original = null;
       const wrapper =
@@ -87,7 +89,7 @@ Hooks.once('init', () => {
           descriptor.get = wrapper;
         }
       } else {
-        if (!descriptor.set) throw `libWrapper Shim: '${target}' does not have a setter`;
+        if (!descriptor.set) throw new Error(`libWrapper Shim: '${target}' does not have a setter`);
         original = descriptor.set;
         descriptor.set = wrapper;
       }
