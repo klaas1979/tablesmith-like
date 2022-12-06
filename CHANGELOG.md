@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.13.3](https://github.com/klaas1979/tablesmith-like/compare/v1.13.2...v1.13.3) (2022-12-06)
+
+
+### Bug Fixes
+
+* Link names for Tablesmith objects fixed, i.e. @TS[TableName]} and @TS[TableName]{Link Name} ([fde7275](https://github.com/klaas1979/tablesmith-like/commit/fde72753e4e2ba128335973dc627e74a9f673850))
+
 ### [1.13.2](https://github.com/klaas1979/tablesmith-like/compare/v1.13.1...v1.13.2) (2022-12-03)
 
 
