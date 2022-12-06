@@ -102,7 +102,7 @@ The chat commands `ts` and `tablesmith` can be used to call a table directly by 
 ### Tablesmith Links
 
 Links to Table calls including parameter values can be created with this link syntax:
-`@Tablesmith[CallSyntax]{Link Name}` or `@TS[CallSyntax]{Link Name}`
+`@Tablesmith[CallSyntax]{Link Name}` or `@TS[CallSyntax]{Link Name}`. The `{Link Name}` can be omitted, then the tablename is used instead.
 
 Where `CallSyntax` must be in format defined above. This links can be embedded anywhere where FoundryVTT `@Marco` / `@Compendium` / ... links work.
 
