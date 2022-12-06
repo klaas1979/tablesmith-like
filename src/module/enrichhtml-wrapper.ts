@@ -50,14 +50,19 @@ class TSTextEditor extends TextEditor {
       const enriched = wrapped(content, options) as Promise<string>;
       const asyncEnrichHTML = enriched.then(
         (enrichedString: string) => {
-          return TSTextEditor.replaceTablesmithLinks(enrichedString);
+          const tsReplaced = TSTextEditor.replaceTablesmithLinks(enrichedString);
+          Logger.debug(false, 'Async enriched / replaced', enrichedString, tsReplaced);
+          return tsReplaced;
         },
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (reason: any) => reason,
       );
       return asyncEnrichHTML;
     } else {
-      return TSTextEditor.replaceTablesmithLinks(wrapped(content, options) as string);
+      const enrichedString = wrapped(content, options) as string;
+      const tsReplaced = TSTextEditor.replaceTablesmithLinks(enrichedString);
+      Logger.debug(false, 'Sync enriched / replace', enrichedString, tsReplaced);
+      return tsReplaced;
     }
   }
 
@@ -65,18 +70,18 @@ class TSTextEditor extends TextEditor {
     const html = document.createElement('div');
     html.innerHTML = innerHTML;
     const text = TextEditor._getTextNodes(html);
-    // @ts-expect-error: Wrong type definition
     TextEditor._replaceTextContent(text, TSTextEditor.rgx, TSTextEditor.createTablesmithLink);
     return html.innerHTML;
   }
 
-  static createTablesmithLink(...match: RegExpMatchArray): Node {
-    Logger.debug(false, 'createTablesmithLink', match);
+  static createTablesmithLink(match: RegExpMatchArray): Node {
+    Logger.debug(false, 'createTablesmithLink', match, match.at(0), match.at(1), match.at(2), match.at(3));
     const a = document.createElement('a');
     a.classList.add('entity-link', 'content-link');
     a.setAttribute('data-type', 'Tablesmith');
     a.setAttribute('data-call', match[2]);
-    a.innerHTML = `<i class="fas fa-code"></i> ${match[3]}`;
+    const linkName = match[3] ? match[3] : match[2];
+    a.innerHTML = `<i class="fas fa-code"></i> ${linkName}`;
     return a;
   }
 }
