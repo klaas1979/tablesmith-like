@@ -1,4 +1,4 @@
-# Tablesmith like Tables <!-- omit in TOC -->
+# Tablesmith like Tables<!-- omit in TOC -->
 
 ![CI](https://github.com/klaas1979/tablesmith-like/actions/workflows/node.js.yml/badge.svg) [![GitHub release](https://img.shields.io/github/release/klaas1979/tablesmith-like?include_prereleases=&sort=semver&color=blue)](https://github.com/klaas1979/tablesmith-like/releases/) [![issues - tablesmith-like](https://img.shields.io/github/issues/klaas1979/tablesmith-like)](https://github.com/klaas1979/tablesmith-like/issues) [![License](https://img.shields.io/badge/License-MIT-blue)](https://github.com/klaas1979/tablesmith-like/blob/main/LICENSE.txt)
 
@@ -8,10 +8,10 @@ Tablesmith table syntax allows it to create anything from simple tables and nest
 
 Tablesmith is useful for Character and NPC generation, Solo play, generating Encounters, Inns, Weather and whatever else is needed in your adventure. Within the forum is a files area with a lot tables ranging from simple name tables up to complex content generation of all kind. Tablesmith supports Dataset to store data between calls or rolls and to share data between tables. A special feature is access to the Gamedata like Actors, Items and Journals via Datasets. Calls to tables can be stored in Links and called from Chat, JournalEntries or RollTable results.
 
-## Table of Contents <!-- omit in TOC -->
+## Table of Contents<!-- omit in TOC -->
 
-- [Tablesmith like Tables ](#tablesmith-like-tables-)
-  - [Table of Contents ](#table-of-contents-)
+- [Tablesmith like Tables](#tablesmith-like-tables)
+  - [Table of Contents](#table-of-contents)
   - [Foundry versions](#foundry-versions)
   - [Foundry integration](#foundry-integration)
     - [Call Syntax](#call-syntax)
@@ -50,6 +50,7 @@ Tablesmith is useful for Character and NPC generation, Solo play, generating Enc
   - [Licensing](#licensing)
 
 ## Foundry versions
+
 The plugin is only compatible with V10 use older Releases for V9.
 
 ## Foundry integration
