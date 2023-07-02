@@ -7,6 +7,8 @@ import { libWrapper } from './foundry/shims/libwrappershim';
  */
 export function wrapEnrichHTML(): void {
   libWrapper.register(TABLESMITH_ID, 'TextEditor.enrichHTML', TSTextEditor.enrichHtmlWrapper, 'WRAPPER');
+
+  // this listener handles click on Tablesmith links and evaluates the link with tablesmith
   addEventListener('click', async (event) => {
     const el = event.target;
     if (el) {
@@ -46,12 +48,13 @@ class TSTextEditor extends TextEditor {
     content: string,
     options?: Partial<EnrichOptionsGeneric>,
   ): Promise<string> | string {
-    if (options?.async) {
+    // enrichHTML becomes async, if undefined async is used till version V12
+    if (options?.async || options === undefined || options.async === undefined) {
       const enriched = wrapped(content, options) as Promise<string>;
       const asyncEnrichHTML = enriched.then(
         (enrichedString: string) => {
           const tsReplaced = TSTextEditor.replaceTablesmithLinks(enrichedString);
-          Logger.debug(false, 'Async enriched / replaced', enrichedString, tsReplaced);
+          Logger.debug(false, 'Async enriched / replaced', options, enrichedString, tsReplaced);
           return tsReplaced;
         },
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -61,7 +64,7 @@ class TSTextEditor extends TextEditor {
     } else {
       const enrichedString = wrapped(content, options) as string;
       const tsReplaced = TSTextEditor.replaceTablesmithLinks(enrichedString);
-      Logger.debug(false, 'Sync enriched / replace', enrichedString, tsReplaced);
+      Logger.debug(false, 'Sync enriched / replace', options, enrichedString, tsReplaced);
       return tsReplaced;
     }
   }
@@ -70,6 +73,7 @@ class TSTextEditor extends TextEditor {
     const html = document.createElement('div');
     html.innerHTML = innerHTML;
     const text = TextEditor._getTextNodes(html);
+    // @ts-expect-error: Interface is missing the types
     TextEditor._replaceTextContent(text, TSTextEditor.rgx, TSTextEditor.createTablesmithLink);
     return html.innerHTML;
   }

@@ -22,12 +22,13 @@ interface TableSelectionOptions extends FormApplicationOptions {
 export default class TableSelectionForm extends FormApplication<TableSelectionOptions, TableSelectionFormData> {
   data: TableSelectionFormData;
   constructor(tableCallValues: TableCallValues, paginator: CallResultPaginator, options?: TableSelectionOptions) {
-    super(tableCallValues, options);
-    this.data = new TableSelectionFormData({
+    const tempData = new TableSelectionFormData({
       folders: tstables.folders,
       callValues: tableCallValues,
       paginator: paginator,
     });
+    super(tempData, options);
+    this.data = tempData;
   }
   /**
    * Adds additional options to default options.
@@ -190,8 +191,10 @@ export default class TableSelectionForm extends FormApplication<TableSelectionOp
     Logger.debug(false, 'Evaluating table', this.data);
     if (this.data.callValues.table) {
       this.data.mapParametersToCallValues();
-      this.data.paginator.addResult(await tablesmith.evaluate(this.data.callValues));
+      const result = await tablesmith.evaluate(this.data.callValues);
+      this.data.paginator.addResult(result);
       this.data.results = this.data.paginator.current();
+      Logger.debug(false, 'result', result, this.data.paginator.current());
       this.render();
     } else Logger.warn(false, 'No table selected!');
   }

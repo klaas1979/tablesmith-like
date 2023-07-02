@@ -9,7 +9,8 @@ export async function registerHandlebarHelpers() {
 
   Handlebars.registerHelper('ts-result', function (result: TSExpressionResult) {
     Logger.debug(false, 'ts-result', result);
-    return TextEditor.enrichHTML(result.asString());
+    // TODO in V12 enrichHTML will be async only, will need async Handlebars fix
+    return TextEditor.enrichHTML(result.asString(), { async: false });
   });
 
   Handlebars.registerHelper('ts-resultSummary', function (result: TSExpressionResult): string {
