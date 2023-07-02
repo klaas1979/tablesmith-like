@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.14.0](https://github.com/klaas1979/tablesmith-like/compare/v1.13.3...v1.14.0) (2023-07-02)
+
+
+### Features
+
+* [#21](https://github.com/klaas1979/tablesmith-like/issues/21) compatibility with new version ([31340c9](https://github.com/klaas1979/tablesmith-like/commit/31340c93001c2d87cf348a87f915ba41c6880fc9))
+
+
+### Bug Fixes
+
+* V11 support breaking change enrichHTML becomes async, handlebar does not work with async methods ([9b12c96](https://github.com/klaas1979/tablesmith-like/commit/9b12c96701836d0f5bf37071fe545c7a2c5ec505))
+
 ### [1.13.3](https://github.com/klaas1979/tablesmith-like/compare/v1.13.2...v1.13.3) (2022-12-06)
 
 
